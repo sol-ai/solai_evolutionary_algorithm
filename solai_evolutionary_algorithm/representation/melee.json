@@ -1,0 +1,12 @@
+{
+  "raduis": [10.0, 50.0],
+  "distanceFromChar": [20.0, 300.0],
+  "activeHitboxTime": [1.0, 50.0],
+  "startUpTime": [1.0, 50.0],
+  "endLagTime": [1.0, 100.0],
+  "damage": [10.0, 400.0],
+  "baseKnockback": [50.0, 1000.0],
+  "knockBackRatio": [0.0, 1.0],
+  "knockBackPoint": [-500.0, 500.0],
+  "knockBackTowardPoint": [0, 1]
+}
