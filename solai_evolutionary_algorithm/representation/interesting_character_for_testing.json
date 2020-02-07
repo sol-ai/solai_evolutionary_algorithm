@@ -1,0 +1,47 @@
+{
+  "character_config": {
+    "radius": 25.0,
+    "moveAccel": 2000.0,
+    "abilities": {
+      "ability1": {
+        "type": "melee",
+        "raduis": 40.0,
+        "distanceFromChar": 100.0,
+        "activeHitboxTime": 30.0,
+        "startUpTime": 20.0,
+        "endLagTime": 12.0,
+        "damage": 140.0,
+        "baseKnockback": 120.0,
+        "knockBackRatio": 1240.0,
+        "knockBackPoint": 120.0,
+        "knockBackTowardPoint": 0
+      },
+      "ability2": {
+        "type": "melee",
+        "raduis": 40.0,
+        "distanceFromChar": 100.0,
+        "activeHitboxTime": 30.0,
+        "startUpTime": 20.0,
+        "endLagTime": 12.0,
+        "damage": 140.0,
+        "baseKnockback": 120.0,
+        "knockBackRatio": 1240.0,
+        "knockBackPoint": 120.0,
+        "knockBackTowardPoint": 0
+      },
+      "ability3": {
+        "type": "melee",
+        "raduis": 40.0,
+        "distanceFromChar": 100.0,
+        "activeHitboxTime": 30.0,
+        "startUpTime": 20.0,
+        "endLagTime": 12.0,
+        "damage": 140.0,
+        "baseKnockback": 120.0,
+        "knockBackRatio": 1240.0,
+        "knockBackPoint": 120.0,
+        "knockBackTowardPoint": 0
+      }
+    }
+  }
+}

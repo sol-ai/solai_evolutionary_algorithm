@@ -1,4 +1,5 @@
-from socket.character_queue import CharacterQueue
+from ..socket.character_queue import CharacterQueue
+
 
 class Evolution:
 
@@ -7,7 +8,6 @@ class Evolution:
 
     def evolve(self):
         offspring = None
-        character_queue.push
 
     def get_fittest_individuals(self):
         return 0

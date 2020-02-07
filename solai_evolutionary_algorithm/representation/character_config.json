@@ -3,10 +3,10 @@
   "character_config": {
     "radius": [12.0, 40.0],
     "moveAccel": [500.0, 3000.0],
-    "moveSet": {
-      "move1": { "type": ["melee", "projectile"] },
-      "move2": { "type": ["melee", "projectile"] },
-      "move3": { "type": ["melee", "projectile"] }
+    "abilities": {
+      "ability1": { "type": ["melee", "projectile"] },
+      "ability2": { "type": ["melee", "projectile"] },
+      "ability3": { "type": ["melee", "projectile"] }
     }
   }
 }
