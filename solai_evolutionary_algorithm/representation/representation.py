@@ -1,5 +1,7 @@
 import json
 import random
+import uuid
+import os.path
 
 
 class Representation:
@@ -14,8 +16,20 @@ class Representation:
         return 0
 
     def generate_random_character_file(self):
+        new_character = self.generate_random_character()
+        file_name = "character_" + new_character["characterId"] + ".json"
+        path = "./sample_characters/"
+        with open(path + file_name, 'w', encoding='utf-8') as output_file:
+            json.dump(new_character, output_file, ensure_ascii=False, indent=4)
+
+    def generate_random_character_for_runtime(self):
+        new_character = self.generate_random_character()
+        return new_character
+
+    def generate_random_character(self):
         no_of_abilites = self.no_of_abilities
         new_character = {}
+        new_character["characterId"] = str(uuid.uuid1())
         with open('character_config.json', 'r') as character:
             data = json.load(character)
             config = data['character_config']
@@ -35,9 +49,6 @@ class Representation:
                               str(i+1)] = self.__generate_random_ability()
 
         return new_character
-
-    def generate_random_character_for_runtime(self):
-        pass
 
     def __generate_random_ability(self):
         ability_type = self.ability_types[random.randint(
@@ -89,3 +100,8 @@ class Representation:
                             0, no_values-1)]
 
             return projectile_ability
+
+
+r = Representation()
+char = r.generate_random_character_for_runtime()
+r.generate_random_character_file()
