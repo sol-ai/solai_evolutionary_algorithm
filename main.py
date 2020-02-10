@@ -17,6 +17,7 @@ def main():
 def dummy_simulation():
     dummy_simulation = DummySimulation()
     dummy_simulation.load_interesting_character()
+    dummy_simulation.print_init_population_data()
 
 
 if __name__ == "__main__":
