@@ -14,7 +14,7 @@
         "baseKnockback": 120.0,
         "knockBackRatio": 1240.0,
         "knockBackPoint": 120.0,
-        "knockBackTowardPoint": 0
+        "knockBackTowardPoint": false
       },
       "ability2": {
         "type": "melee",
@@ -27,7 +27,7 @@
         "baseKnockback": 120.0,
         "knockBackRatio": 1240.0,
         "knockBackPoint": 120.0,
-        "knockBackTowardPoint": 0
+        "knockBackTowardPoint": false
       },
       "ability3": {
         "type": "melee",
@@ -40,7 +40,7 @@
         "baseKnockback": 120.0,
         "knockBackRatio": 1240.0,
         "knockBackPoint": 120.0,
-        "knockBackTowardPoint": 0
+        "knockBackTowardPoint": false
       }
     }
   }

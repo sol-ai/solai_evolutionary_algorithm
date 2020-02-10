@@ -1,4 +1,11 @@
+import json
+import random
+
+
 class Representation:
+
+    ability_types = ["melee", "projectile"]
+    no_of_abilities = 3
 
     def __init__(self):
         pass
