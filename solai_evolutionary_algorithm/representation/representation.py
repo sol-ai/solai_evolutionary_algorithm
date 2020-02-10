@@ -89,9 +89,3 @@ class Representation:
                             0, no_values-1)]
 
             return projectile_ability
-
-
-r = Representation()
-
-print("\n\n\n\n")
-print(r.generate_random_character_file(), "\n\n\n\n\n\n")
