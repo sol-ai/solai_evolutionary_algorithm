@@ -1,4 +1,4 @@
-from ..socket.character_queue import CharacterQueue
+from solai_evolutionary_algorithm.socket.character_queue import CharacterQueue
 
 
 class Evolution:
