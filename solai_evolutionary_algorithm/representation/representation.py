@@ -55,48 +55,27 @@ class Representation:
     def __generate_random_ability(self):
         ability_type = self.ability_types[random.randint(
             0, len(self.ability_types)-1)]
-        if ability_type == "melee":
-            return self.__generate_random_melee_ability()
-        if ability_type == "projectile":
-            return self.__generate_random_projectile_ability()
+        return self.__generate_random_ability_by_type(ability_type)
 
-    def __generate_random_melee_ability(self):
-        melee_ability = {}
+    def __generate_random_ability_by_type(self, ability_type):
+        ability = {}
         data = self.melee_config
-        melee_ability["type"] = data["type"]
+        ability["type"] = data["type"]
         for attribute in data:
-            if attribute not in melee_ability:
+            if attribute not in ability:
                 min_value = data[attribute][0]
                 max_value = data[attribute][1]
+                print(min_value)
+                print(type(min_value))
                 if type(min_value) == int:
-                    melee_ability[attribute] = random.randint(
+                    ability[attribute] = random.randint(
                         min_value, max_value)
                 elif type(min_value) == float:
-                    melee_ability[attribute] = random.uniform(
+                    ability[attribute] = random.uniform(
                         min_value, max_value)
                 elif type(min_value) == bool or type(min_value) == str:
                     no_values = len(data[attribute])
-                    melee_ability[attribute] = data[attribute][random.randint(
-                        0, no_values-1)]
-            return melee_ability
-
-    def __generate_random_projectile_ability(self):
-        projectile_ability = {}
-        data = self.projectile_config
-        projectile_ability["type"] = data["type"]
-        for attribute in data:
-            if attribute not in projectile_ability:
-                min_value = data[attribute][0]
-                max_value = data[attribute][1]
-                if type(min_value) == int:
-                    projectile_ability[attribute] = random.randint(
-                        min_value, max_value)
-                elif type(min_value) == float:
-                    projectile_ability[attribute] = random.uniform(
-                        min_value, max_value)
-                elif type(min_value) == bool or type(min_value) == str:
-                    no_values = len(data[attribute])
-                    projectile_ability[attribute] = data[attribute][random.randint(
+                    ability[attribute] = data[attribute][random.randint(
                         0, no_values-1)]
 
-        return projectile_ability
+        return ability

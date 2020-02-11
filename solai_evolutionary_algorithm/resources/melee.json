@@ -1,6 +1,6 @@
 {
   "type": "melee",
-  "raduis": [100, 500],
+  "radius": [100, 500],
   "distanceFromChar": [200, 3000],
   "activeHitboxTime": [10, 500],
   "startUpTime": [10, 500],
