@@ -16,6 +16,10 @@ class Representation:
     projectile_config = json.load(resource_stream(
         'solai_evolutionary_algorithm', 'resources/projectile.json'))
 
+    def __init__(self):
+        self.ability_configs = {
+            'melee': self.melee_config, 'projectile': self.projectile_config}
+
     def generate_initial_population(self, n):
         return 0
 
@@ -55,18 +59,17 @@ class Representation:
     def __generate_random_ability(self):
         ability_type = self.ability_types[random.randint(
             0, len(self.ability_types)-1)]
+        print(ability_type)
         return self.__generate_random_ability_by_type(ability_type)
 
     def __generate_random_ability_by_type(self, ability_type):
         ability = {}
-        data = self.melee_config
+        data = self.ability_configs[ability_type]
         ability["type"] = data["type"]
         for attribute in data:
             if attribute not in ability:
                 min_value = data[attribute][0]
                 max_value = data[attribute][1]
-                print(min_value)
-                print(type(min_value))
                 if type(min_value) == int:
                     ability[attribute] = random.randint(
                         min_value, max_value)
