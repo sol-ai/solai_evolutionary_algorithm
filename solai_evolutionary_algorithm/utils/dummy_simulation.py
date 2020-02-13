@@ -8,16 +8,25 @@ from pkg_resources import resource_stream
 class DummySimulation:
 
     solution_genome = json.load(resource_stream(
-        'solai_evolutionary_algorithm', 'resources/sample_characters/interesting_character_for_testing.json'))
+        'solai_evolutionary_algorithm', 'resources/sample_characters/interesting_character_for_testing.json'))['character_config']
     init_population = []
     useful_functions = UsefulFunctions()
+    representation = Representation()
 
     def __init__(self):
         self.representation = Representation()
         return
 
-    def evaluate_fitness(self, genome):
-        return
+    def evolve(self):
+        fitnesses = self.evaluate_fitness_of_population(self.init_population)
+        print(fitnesses)
+
+    def evaluate_fitness_of_population(self, population):
+        fitnesses = {}
+        for individual in population:
+            fitnesses[individual['characterId']] = self.dummy_fitness_function(
+                individual)
+        return fitnesses
 
     def generate_init_population(self, n=10):
         for _ in range(n):
@@ -30,18 +39,4 @@ class DummySimulation:
         print("\n", self.solution_genome, "\n")
 
     def dummy_fitness_function(self, genome):
-        return 0
-
-    def euclidean_distance(self, genome1, genome2):
-        normalize_genome = self.useful_functions.normalize_genome
-        flatten = self.useful_functions.flatten
-
-        flat_genome1 = flatten(genome1)
-        flat_genome2 = flatten(genome2)
-        genome1_list = list(flat_genome1.values())
-        genome2_list = list(flat_genome2.values())
-
-    def test_euclidean_distance(self):
-        test_genome1 = self.init_population[0]
-        test_genome2 = self.init_population[1]
-        self.euclidean_distance(test_genome1, test_genome2)
+        return 100-self.representation.euclidean_distance(self.solution_genome, genome)

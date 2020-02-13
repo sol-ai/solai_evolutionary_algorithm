@@ -5,7 +5,7 @@
     "abilities": {
       "ability1": {
         "type": "melee",
-        "raduis": 40.0,
+        "radius": 40.0,
         "distanceFromChar": 100.0,
         "activeHitboxTime": 30.0,
         "startUpTime": 20.0,
@@ -18,7 +18,7 @@
       },
       "ability2": {
         "type": "melee",
-        "raduis": 40.0,
+        "radius": 40.0,
         "distanceFromChar": 100.0,
         "activeHitboxTime": 30.0,
         "startUpTime": 20.0,
@@ -31,7 +31,7 @@
       },
       "ability3": {
         "type": "melee",
-        "raduis": 40.0,
+        "radius": 40.0,
         "distanceFromChar": 100.0,
         "activeHitboxTime": 30.0,
         "startUpTime": 20.0,

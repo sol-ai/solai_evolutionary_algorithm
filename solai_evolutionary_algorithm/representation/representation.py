@@ -2,6 +2,7 @@ import json
 import random
 import uuid
 import os
+from solai_evolutionary_algorithm.utils.useful_functions import UsefulFunctions
 from pkg_resources import resource_stream
 
 
@@ -16,9 +17,8 @@ class Representation:
     projectile_config = json.load(resource_stream(
         'solai_evolutionary_algorithm', 'resources/projectile.json'))
 
-    def __init__(self):
-        self.ability_configs = {
-            'melee': self.melee_config, 'projectile': self.projectile_config}
+    ability_configs = {'melee': melee_config, 'projectile': projectile_config}
+    useful_functions = UsefulFunctions()
 
     def generate_initial_population(self, n):
         return 0
@@ -49,17 +49,17 @@ class Representation:
         max_moveAccel = config["moveAccel"][1]
         moveAccel = random.randint(min_moveAccel, max_moveAccel)
         new_character["moveAccel"] = moveAccel
+        new_character["abilities"] = {}
 
         for i in range(no_of_abilites):
-            new_character["ability" +
-                          str(i+1)] = self.__generate_random_ability()
+            new_character["abilities"]["ability" +
+                                       str(i+1)] = self.__generate_random_ability()
 
         return new_character
 
     def __generate_random_ability(self):
         ability_type = self.ability_types[random.randint(
             0, len(self.ability_types)-1)]
-        print(ability_type)
         return self.__generate_random_ability_by_type(ability_type)
 
     def __generate_random_ability_by_type(self, ability_type):
@@ -82,3 +82,28 @@ class Representation:
                         0, no_values-1)]
 
         return ability
+
+    def euclidean_distance(self, genome1, genome2):
+        normalize_genome = self.useful_functions.normalize_genome
+        normalized_genome1 = normalize_genome(genome1)
+        normalized_genome2 = normalize_genome(genome2)
+
+        genome1_abilities = normalized_genome1['abilities']
+        genome2_abilities = normalized_genome2['abilities']
+
+        distance = 0
+        for ability in genome1_abilities:
+            distance += self.euclidean_distance_ability(
+                genome1_abilities[ability], genome2_abilities[ability])
+
+        return distance
+
+    def euclidean_distance_ability(self, ability1, ability2):
+        if ability1['type'] != ability2['type']:
+            return 10
+        distance = 0
+        for attribute in ability1:
+            if type(ability1[attribute]) == str:
+                continue
+            distance += (ability1[attribute] - ability2[attribute])**2
+        return distance
