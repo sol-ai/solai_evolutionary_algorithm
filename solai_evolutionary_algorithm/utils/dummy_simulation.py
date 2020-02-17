@@ -1,4 +1,6 @@
 import json
+import operator
+import pprint
 from solai_evolutionary_algorithm.representation.character_config_to_genome import character_config_to_genome
 from solai_evolutionary_algorithm.representation.representation import Representation
 from solai_evolutionary_algorithm.utils.useful_functions import UsefulFunctions
@@ -20,6 +22,11 @@ class DummySimulation:
     def evolve(self):
         fitnesses = self.evaluate_fitness_of_population()
 
+        g = 0
+
+        max_fitness_char_id = max(fitnesses.items(), key=operator.itemgetter(1))[0]
+        char = self.get_character_by_id(max_fitness_char_id)
+
     def evaluate_fitness_of_population(self):
         population = self.init_population
         fitnesses = {}
@@ -40,3 +47,10 @@ class DummySimulation:
 
     def dummy_fitness_function(self, genome):
         return 100-self.representation.euclidean_distance(self.solution_genome, genome)
+
+    def get_character_by_id(self, id):
+        character = None
+        for c in self.init_population:
+            if c['characterId'] == id:
+                character = c
+        return character
