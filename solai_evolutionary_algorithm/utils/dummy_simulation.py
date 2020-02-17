@@ -17,14 +17,14 @@ class DummySimulation:
 
     def __init__(self):
         self.representation = Representation()
-        return
 
     def evolve(self):
         fitnesses = self.evaluate_fitness_of_population()
 
         g = 0
 
-        max_fitness_char_id = max(fitnesses.items(), key=operator.itemgetter(1))[0]
+        max_fitness_char_id = max(
+            fitnesses.items(), key=operator.itemgetter(1))[0]
         char = self.get_character_by_id(max_fitness_char_id)
 
     def evaluate_fitness_of_population(self):
