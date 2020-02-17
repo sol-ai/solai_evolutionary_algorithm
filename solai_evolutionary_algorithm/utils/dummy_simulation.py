@@ -24,6 +24,8 @@ class DummySimulation:
             fitnesses.items(), key=operator.itemgetter(1))[0]
         char = self.get_character_by_id(max_fitness_char_id)
 
+        # TODO create mate and mutation functions
+
     def evaluate_fitness_of_population(self):
         population = self.init_population
         fitnesses = {}
