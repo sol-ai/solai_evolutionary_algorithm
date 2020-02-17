@@ -15,9 +15,6 @@ class DummySimulation:
     useful_functions = UsefulFunctions()
     representation = Representation()
 
-    def __init__(self):
-        self.representation = Representation()
-
     def evolve(self):
         fitnesses = self.evaluate_fitness_of_population()
 
