@@ -18,10 +18,10 @@ class DummySimulation:
         return
 
     def evolve(self):
-        fitnesses = self.evaluate_fitness_of_population(self.init_population)
-        print(fitnesses)
+        fitnesses = self.evaluate_fitness_of_population()
 
-    def evaluate_fitness_of_population(self, population):
+    def evaluate_fitness_of_population(self):
+        population = self.init_population
         fitnesses = {}
         for individual in population:
             fitnesses[individual['characterId']] = self.dummy_fitness_function(

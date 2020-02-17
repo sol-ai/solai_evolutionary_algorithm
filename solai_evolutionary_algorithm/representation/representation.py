@@ -92,9 +92,11 @@ class Representation:
         genome2_abilities = normalized_genome2['abilities']
 
         distance = 0
-        for ability in genome1_abilities:
+
+        for ability1, ability2 in zip(genome1_abilities, genome2_abilities):
+            genome1_abilities[ability1]
             distance += self.euclidean_distance_ability(
-                genome1_abilities[ability], genome2_abilities[ability])
+                genome1_abilities[ability1], genome2_abilities[ability2])
 
         return distance
 

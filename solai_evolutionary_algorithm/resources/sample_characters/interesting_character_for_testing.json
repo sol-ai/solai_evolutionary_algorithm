@@ -12,7 +12,7 @@
         "endLagTime": 12.0,
         "damage": 140.0,
         "baseKnockback": 120.0,
-        "knockBackRatio": 1240.0,
+        "knockBackRatio": 0.5,
         "knockBackPoint": 120.0,
         "knockBackTowardPoint": false
       },
@@ -25,7 +25,7 @@
         "endLagTime": 12.0,
         "damage": 140.0,
         "baseKnockback": 120.0,
-        "knockBackRatio": 1240.0,
+        "knockBackRatio": 0.5,
         "knockBackPoint": 120.0,
         "knockBackTowardPoint": false
       },
@@ -38,7 +38,7 @@
         "endLagTime": 12.0,
         "damage": 140.0,
         "baseKnockback": 120.0,
-        "knockBackRatio": 1240.0,
+        "knockBackRatio": 0.2,
         "knockBackPoint": 120.0,
         "knockBackTowardPoint": false
       }
