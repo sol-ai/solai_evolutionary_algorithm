@@ -4,6 +4,7 @@ import pprint
 from solai_evolutionary_algorithm.representation.character_config_to_genome import character_config_to_genome
 from solai_evolutionary_algorithm.representation.representation import Representation
 from solai_evolutionary_algorithm.utils.useful_functions import UsefulFunctions
+from solai_evolutionary_algorithm.evolution.evolution import Evolution
 from pkg_resources import resource_stream
 
 
@@ -14,17 +15,26 @@ class DummySimulation:
     init_population = []
     useful_functions = UsefulFunctions()
     representation = Representation()
+    evolution = Evolution()
 
     def evolve(self):
         fitnesses = self.evaluate_fitness_of_population()
+        sorted_fitnesses = sorted((value, key)
+                                  for (key, value) in fitnesses.items())
 
         g = 0
 
-        max_fitness_char_id = max(
-            fitnesses.items(), key=operator.itemgetter(1))[0]
-        char = self.get_character_by_id(max_fitness_char_id)
+        char1_id = sorted_fitnesses[-1][1]
+        char2_id = sorted_fitnesses[-2][1]
 
-        # TODO create mate and mutation functions
+        char1 = self.get_character_by_id(char1_id)
+        char2 = self.get_character_by_id(char2_id)
+
+        new_char = self.evolution.crossover_scheme1(char1, char2)
+        print(new_char)
+        print(self.representation.euclidean_distance(char1, new_char))
+
+        # TODO create crossover and mutation functions
 
     def evaluate_fitness_of_population(self):
         population = self.init_population
