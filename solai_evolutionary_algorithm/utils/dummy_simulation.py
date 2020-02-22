@@ -1,6 +1,5 @@
 import json
 import operator
-import pprint
 from solai_evolutionary_algorithm.representation.character_config_to_genome import character_config_to_genome
 from solai_evolutionary_algorithm.representation.representation import Representation
 from solai_evolutionary_algorithm.utils.useful_functions import UsefulFunctions
