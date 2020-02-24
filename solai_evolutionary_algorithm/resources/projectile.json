@@ -9,7 +9,7 @@
   "rechargeTime": [13, 80],
   "damage": [15, 250],
   "baseKnockBack": [50, 800],
-  "knockbackRatio": [0.2, 1.0],
+  "knockbackRatio": [0.1, 1.0],
   "knockbackPoint": [-500, 500],
   "knockbackTowardPoint": [false, true]
 }

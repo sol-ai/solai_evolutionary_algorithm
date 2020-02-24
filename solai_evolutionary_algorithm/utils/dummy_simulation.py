@@ -30,9 +30,9 @@ class DummySimulation:
         char2 = self.get_character_by_id(char2_id)
 
         new_char = self.evolution.crossover_scheme1(char1, char2)
-        print('new char pre mutation\n', new_char)
+        print("new char pre mutation\n\n", new_char)
         self.evolution.mutation_scheme1(new_char)
-        print('\nnew char post mutation\n', new_char)
+        print("\n\nnew char post mutation\n\n", new_char)
 
         # TODO create crossover and mutation functions
 
@@ -50,8 +50,10 @@ class DummySimulation:
             self.init_population.append(individual)
 
     def print_init_population_data(self):
+        i = 0
         for individual in self.init_population:
-            print("\n", individual, "\n")
+            i += 1
+            print("\n", "individual no", i, "\n", individual, "\n")
         print("\n", self.solution_genome, "\n")
 
     def dummy_fitness_function(self, genome):

@@ -94,14 +94,15 @@ class Evolution:
                 max_value_attribute = ranges[attribute][1]
                 mutation_factor = random.uniform(0.5, 1.5)
                 if mutation_factor > 1:
-                    new_attribute_value = int(
-                        min(mutation_factor*attribute_value, max_value_attribute))
+                    new_attribute_value = \
+                        min(mutation_factor*attribute_value, max_value_attribute)
                 else:
-                    new_attribute_value = int(
-                        max(mutation_factor*attribute_value, min_value_attribute))
+                    new_attribute_value = \
+                        max(mutation_factor*attribute_value, min_value_attribute)
             else:
                 flip_probability = 0.8
                 if (random.random() > (1-flip_probability)):
+                    print("\n\n\nin the if statement\n\n")
                     new_attribute_value = not attribute_value
 
             ability[attribute] = new_attribute_value
