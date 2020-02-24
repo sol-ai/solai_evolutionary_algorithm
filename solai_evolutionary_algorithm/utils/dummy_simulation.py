@@ -30,8 +30,9 @@ class DummySimulation:
         char2 = self.get_character_by_id(char2_id)
 
         new_char = self.evolution.crossover_scheme1(char1, char2)
-        print(new_char)
-        print(self.representation.euclidean_distance(char1, new_char))
+        print('new char pre mutation\n', new_char)
+        self.evolution.mutation_scheme1(new_char)
+        print('\nnew char post mutation\n', new_char)
 
         # TODO create crossover and mutation functions
 
