@@ -11,5 +11,5 @@
   "baseKnockBack": [50, 800],
   "knockbackRatio": [0.2, 1.0],
   "knockbackPoint": [-500, 500],
-  "knockbackTowardsPoint": [false, true]
+  "knockbackTowardPoint": [false, true]
 }
