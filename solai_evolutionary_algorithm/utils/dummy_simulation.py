@@ -12,6 +12,8 @@ class DummySimulation:
     solution_genome = json.load(resource_stream(
         'solai_evolutionary_algorithm', 'resources/sample_characters/interesting_character_for_testing.json'))['character_config']
     init_population = []
+    generation_pool = []
+
     useful_functions = UsefulFunctions()
     representation = Representation()
     evolution = Evolution()
@@ -32,7 +34,6 @@ class DummySimulation:
         new_char = self.evolution.crossover_scheme1(char1, char2)
         new_char_copy = self.representation.copy_character_new_id(new_char)
         self.evolution.mutation_scheme1(new_char_copy)
-        print("new char\n\n", new_char, "\n\nNew char copy\n\n", new_char_copy)
 
     def evaluate_fitness_of_population(self):
         population = self.init_population
