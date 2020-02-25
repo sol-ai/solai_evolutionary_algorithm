@@ -4,6 +4,7 @@ import uuid
 import os
 from solai_evolutionary_algorithm.utils.useful_functions import UsefulFunctions
 from pkg_resources import resource_stream
+from copy import deepcopy
 
 
 class Representation:
@@ -56,6 +57,11 @@ class Representation:
                                        str(i+1)] = self.__generate_random_ability()
 
         return new_character
+
+    def copy_character_new_id(self, genome):
+        character_copy = deepcopy(genome)
+        character_copy['characterId'] = str(uuid.uuid1())
+        return character_copy
 
     def __generate_random_ability(self):
         ability_type = self.ability_types[random.randint(

@@ -30,11 +30,9 @@ class DummySimulation:
         char2 = self.get_character_by_id(char2_id)
 
         new_char = self.evolution.crossover_scheme1(char1, char2)
-        print("new char pre mutation\n\n", new_char)
-        self.evolution.mutation_scheme1(new_char)
-        print("\n\nnew char post mutation\n\n", new_char)
-
-        # TODO create crossover and mutation functions
+        new_char_copy = self.representation.copy_character_new_id(new_char)
+        self.evolution.mutation_scheme1(new_char_copy)
+        print("new char\n\n", new_char, "\n\nNew char copy\n\n", new_char_copy)
 
     def evaluate_fitness_of_population(self):
         population = self.init_population

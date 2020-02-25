@@ -1,4 +1,4 @@
-import copy
+from copy import deepcopy
 import random
 from solai_evolutionary_algorithm.socket.character_queue import CharacterQueue
 from solai_evolutionary_algorithm.representation.representation import Representation
@@ -27,7 +27,7 @@ class Evolution:
     """
 
     def crossover_scheme1(self, genome1, genome2):
-        new_character = copy.deepcopy(genome1)
+        new_character = deepcopy(genome1)
         ability_swap_number = 'ability' + \
             str(random.randint(1, len(genome1['abilities'])))
 
@@ -100,10 +100,11 @@ class Evolution:
                     new_attribute_value = \
                         max(mutation_factor*attribute_value, min_value_attribute)
             else:
-                flip_probability = 0.8
+                flip_probability = 0.2
                 if (random.random() > (1-flip_probability)):
-                    print("\n\n\nin the if statement\n\n")
                     new_attribute_value = not attribute_value
+                else:
+                    new_attribute_value = attribute_value
 
             ability[attribute] = new_attribute_value
     """
