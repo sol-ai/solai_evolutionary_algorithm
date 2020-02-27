@@ -58,7 +58,7 @@ class Representation:
 
         return new_character
 
-    def copy_character_new_id(self, genome):
+    def clone_character(self, genome):
         character_copy = deepcopy(genome)
         character_copy['characterId'] = str(uuid.uuid1())
         return character_copy

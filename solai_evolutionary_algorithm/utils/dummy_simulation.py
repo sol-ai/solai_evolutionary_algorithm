@@ -12,31 +12,54 @@ class DummySimulation:
     solution_genome = json.load(resource_stream(
         'solai_evolutionary_algorithm', 'resources/sample_characters/interesting_character_for_testing.json'))['character_config']
     init_population = []
-    generation_pool = []
 
     useful_functions = UsefulFunctions()
     representation = Representation()
     evolution = Evolution()
 
     def evolve(self):
-        fitnesses = self.evaluate_fitness_of_population()
+
+        current_population = self.init_population
+        population_size = len(current_population)
+        fitnesses = self.evaluate_fitness_of_population(current_population)
         sorted_fitnesses = sorted((value, key)
                                   for (key, value) in fitnesses.items())
 
         g = 0
 
-        char1_id = sorted_fitnesses[-1][1]
-        char2_id = sorted_fitnesses[-2][1]
+        while g < 1000:
+            g += 1
+            print("-- Generation %i --" % g)
 
-        char1 = self.get_character_by_id(char1_id)
-        char2 = self.get_character_by_id(char2_id)
+            char1_id = sorted_fitnesses[-1][1]
+            char2_id = sorted_fitnesses[-2][1]
 
-        new_char = self.evolution.crossover_scheme1(char1, char2)
-        new_char_copy = self.representation.copy_character_new_id(new_char)
-        self.evolution.mutation_scheme1(new_char_copy)
+            char1 = self.get_character_in_population_by_id(
+                char1_id, current_population)
+            char2 = self.get_character_in_population_by_id(
+                char2_id, current_population)
 
-    def evaluate_fitness_of_population(self):
-        population = self.init_population
+            child = self.evolution.crossover_scheme1(char1, char2)
+
+            current_population = [char1, char2]
+            remaining = population_size - len(current_population)
+
+            for _ in range(remaining):
+                child_clone_mutated = self.representation.clone_character(
+                    child)
+                self.evolution.mutation_scheme1(child_clone_mutated)
+                current_population.append(child_clone_mutated)
+
+            fitnesses = self.evaluate_fitness_of_population(current_population)
+            sorted_fitnesses = sorted((value, key)
+                                      for (key, value) in fitnesses.items())
+            print(sorted_fitnesses)
+            best_char_id = sorted_fitnesses[-1][1]
+            best_char = self.get_character_in_population_by_id(
+                best_char_id, current_population)
+            print(best_char)
+
+    def evaluate_fitness_of_population(self, population):
         fitnesses = {}
         for individual in population:
             fitnesses[individual['characterId']] = self.dummy_fitness_function(
@@ -49,18 +72,16 @@ class DummySimulation:
             self.init_population.append(individual)
 
     def print_init_population_data(self):
-        i = 0
-        for individual in self.init_population:
-            i += 1
-            print("\n", "individual no", i, "\n", individual, "\n")
+        for index, individual in enumerate(self.init_population):
+            print("\n", "individual no", index, "\n", individual, "\n")
         print("\n", self.solution_genome, "\n")
 
     def dummy_fitness_function(self, genome):
         return 100-self.representation.euclidean_distance(self.solution_genome, genome)
 
-    def get_character_by_id(self, id):
+    def get_character_in_population_by_id(self, id, population):
         character = None
-        for c in self.init_population:
+        for c in population:
             if c['characterId'] == id:
                 character = c
         return character
