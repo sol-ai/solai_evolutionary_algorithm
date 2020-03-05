@@ -19,5 +19,4 @@ def dummy_simulation():
     init_population_size = 10
     dummy_simulation = DummySimulation()
     dummy_simulation.generate_init_population(init_population_size)
-    dummy_simulation.print_init_population_data()
     dummy_simulation.evolve()

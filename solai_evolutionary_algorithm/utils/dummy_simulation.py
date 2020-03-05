@@ -29,7 +29,7 @@ class DummySimulation:
 
         while g < 1000:
             g += 1
-            print("-- Generation %i --" % g)
+            print("\n\n-- Generation %i --" % g)
 
             char1_id = sorted_fitnesses[-1][1]
             char2_id = sorted_fitnesses[-2][1]
@@ -54,10 +54,10 @@ class DummySimulation:
             sorted_fitnesses = sorted((value, key)
                                       for (key, value) in fitnesses.items())
             print(sorted_fitnesses)
-            best_char_id = sorted_fitnesses[-1][1]
-            best_char = self.get_character_in_population_by_id(
-                best_char_id, current_population)
-            print(best_char)
+            # best_char_id = sorted_fitnesses[-1][1]
+            # best_char = self.get_character_in_population_by_id(
+            #     best_char_id, current_population)
+            # print(best_char)
 
     def evaluate_fitness_of_population(self, population):
         fitnesses = {}
@@ -74,7 +74,6 @@ class DummySimulation:
     def print_init_population_data(self):
         for index, individual in enumerate(self.init_population):
             print("\n", "individual no", index, "\n", individual, "\n")
-        print("\n", self.solution_genome, "\n")
 
     def dummy_fitness_function(self, genome):
         return 100-self.representation.euclidean_distance(self.solution_genome, genome)
