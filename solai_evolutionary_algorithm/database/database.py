@@ -3,7 +3,7 @@ import pymongo
 
 class Database:
 
-    client = pymongo.MongoClient("mongodb://localhost:27017")
+    client = pymongo.MongoClient("mongodb://mongodb:27017")
     db = client["mydatabase"]
     col = db["friends"]
 
@@ -20,6 +20,8 @@ class Database:
         self.col.insert_many(my_friends)
         for friend in self.col.find():
             print(friend)
+
+        self.client.close()
 
 
 Database()

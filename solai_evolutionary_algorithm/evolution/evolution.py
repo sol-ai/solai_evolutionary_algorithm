@@ -1,4 +1,5 @@
 from copy import deepcopy
+import uuid
 import random
 from solai_evolutionary_algorithm.socket.character_queue import CharacterQueue
 from solai_evolutionary_algorithm.representation.representation import Representation
@@ -33,6 +34,7 @@ class Evolution:
 
         genome2_ability = genome2['abilities'][ability_swap_number]
         new_character['abilities'][ability_swap_number] = genome2_ability
+        new_character['characterId'] = str(uuid.uuid1())
 
         return new_character
 

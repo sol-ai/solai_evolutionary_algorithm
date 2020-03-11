@@ -1,6 +1,6 @@
 FROM python:3.8
-
-RUN pip install pipenv
-RUN pipenv install
+ADD . /solai_evolutionary_algorithm
+WORKDIR /solai_evolutionary_algorithm
+RUN pip install -r requirements.txt
 
 EXPOSE 27017

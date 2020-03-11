@@ -1,12 +1,11 @@
 version: "3"
 services:
-  py-mongo:
-    build:
-      context: ${PWD}
-    volumes:
-      - $PWD/mongo-data:/data/db
+  mongodb:
+    image: mongo
     ports:
       - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-        - MONGO_INITDB_ROOT_PASSWORD=1234
+  python-ea:
+    build: .
+    command: python -m solai_evolutionary_algorithm
+    links:
+      - mongodb
