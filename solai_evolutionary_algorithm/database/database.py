@@ -1,27 +1,24 @@
 import pymongo
+from copy import deepcopy
 
 
 class Database:
 
     client = pymongo.MongoClient("mongodb://mongodb:27017")
-    db = client["mydatabase"]
-    col = db["friends"]
+    db = client["solai_characters"]
+    dummy_characters_generations = db["dummy_generations"]
 
     def __init__(self):
-        my_friends = [
-            {"name": "Tristan"},
-            {"name": "Hilmo"},
-            {"name": "Gard"},
-            {"name": "Håkon"},
-            {"name": "Peder"}
-        ]
+        self.dummy_characters_generations.delete_many({})
 
-        self.col.delete_many({})
-        self.col.insert_many(my_friends)
-        for friend in self.col.find():
-            print(friend)
+    def add_dummy_generation(self, generation, generation_number):
+        dummy_characters_generations = self.dummy_characters_generations
+        generation_entry = {
+            'generationNumber': generation_number, 'characters': generation}
+        dummy_characters_generations.insert_one(generation_entry)
 
+    def close_connection(self):
         self.client.close()
 
-
-Database()
+    def get_generation(self, generation_number):
+        return self.dummy_characters_generations.find_one({'generationNumber': generation_number})

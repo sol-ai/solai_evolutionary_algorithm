@@ -4,6 +4,7 @@ from solai_evolutionary_algorithm.representation.character_config_to_genome impo
 from solai_evolutionary_algorithm.representation.representation import Representation
 from solai_evolutionary_algorithm.utils.useful_functions import UsefulFunctions
 from solai_evolutionary_algorithm.evolution.evolution import Evolution
+from solai_evolutionary_algorithm.database.database import Database
 from pkg_resources import resource_stream
 
 
@@ -12,12 +13,14 @@ class DummySimulation:
     solution_genome = json.load(resource_stream(
         'solai_evolutionary_algorithm', 'resources/sample_characters/interesting_character_for_testing.json'))['character_config']
     init_population = []
-
+    database = Database()
     useful_functions = UsefulFunctions()
     representation = Representation()
     evolution = Evolution()
 
     def evolve(self):
+
+        database = self.database
 
         current_population = self.init_population
         population_size = len(current_population)
@@ -50,14 +53,21 @@ class DummySimulation:
                 self.evolution.mutation_scheme1(child_clone_mutated)
                 current_population.append(child_clone_mutated)
 
+            database.add_dummy_generation(current_population, g)
+
             fitnesses = self.evaluate_fitness_of_population(current_population)
             sorted_fitnesses = sorted((value, key)
                                       for (key, value) in fitnesses.items())
             print(sorted_fitnesses)
-            # best_char_id = sorted_fitnesses[-1][1]
-            # best_char = self.get_character_in_population_by_id(
-            #     best_char_id, current_population)
-            # print(best_char)
+
+        print(200*"=")
+        print(5*"\n")
+        print("Evolution done")
+        print(5*"\n")
+        print("Last generation", database.get_generation(g))
+        print(200*"=")
+        print(5*"\n")
+        database.close_connection()
 
     def evaluate_fitness_of_population(self, population):
         fitnesses = {}
