@@ -1,12 +1,16 @@
 import pymongo
 from copy import deepcopy
 
+HOST = "mongodb://mongodb:27017"
+DATABASE_NAME = "solai_characters"
+COLLECTION = "dummy_generations"
+
 
 class Database:
 
-    client = pymongo.MongoClient("mongodb://mongodb:27017")
-    db = client["solai_characters"]
-    dummy_characters_generations = db["dummy_generations"]
+    client = pymongo.MongoClient(HOST)
+    db = client[DATABASE_NAME]
+    dummy_characters_generations = db[COLLECTION]
 
     def __init__(self):
         self.dummy_characters_generations.delete_many({})
