@@ -87,7 +87,7 @@ class Evolution:
         else:
             ranges = self.projectile_ranges
         for attribute in ability:
-            if attribute == 'type':
+            if isinstance(attribute, str):
                 continue
             attribute_value = ability[attribute]
 

@@ -61,6 +61,8 @@ class UsefulFunctions:
         return normalized_genome
 
     def normalize(self, min_value, max_value, value):
+        if (max_value == min_value):
+            return 0
         if type(value) == str:
             return value
         else:

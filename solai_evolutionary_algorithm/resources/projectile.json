@@ -1,14 +1,15 @@
 {
+  "name": "abilityName",
   "type": "projectile",
   "radius": [5, 50],
   "distanceFromChar": [50, 200],
   "speed": [2, 50],
-  "lifetime": [20, 200],
+  "activeTime": [20, 200],
   "startupTime": [1, 100],
   "endlagTime": [6, 100],
   "rechargeTime": [13, 80],
   "damage": [15, 250],
-  "baseKnockBack": [50, 800],
+  "baseKnockback": [50, 800],
   "knockbackRatio": [0.1, 1.0],
   "knockbackPoint": [-500, 500],
   "knockbackTowardPoint": [false, true]

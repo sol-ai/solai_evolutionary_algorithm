@@ -1,13 +1,16 @@
 {
+  "name": "abilityName",
   "type": "melee",
   "radius": [100, 500],
   "distanceFromChar": [200, 3000],
-  "activeHitboxTime": [10, 500],
-  "startUpTime": [10, 500],
-  "endLagTime": [10, 1000],
+  "speed": [0, 0],
+  "activeTime": [10, 500],
+  "startupTime": [10, 500],
+  "endlagTime": [10, 1000],
+  "rechargeTime": [0, 80],
   "damage": [100, 4000],
   "baseKnockback": [500, 10000],
-  "knockBackRatio": [0.1, 1.0],
-  "knockBackPoint": [-5000, 5000],
-  "knockBackTowardPoint": [false, true]
+  "knockbackRatio": [0.1, 1.0],
+  "knockbackPoint": [-5000, 5000],
+  "knockbackTowardPoint": [false, true]
 }
