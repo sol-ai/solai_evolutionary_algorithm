@@ -6,6 +6,8 @@ services:
       - "27017:27017"
   python-ea:
     build: .
-    command: python -m solai_evolutionary_algorithm
+    command: python -m solai_evolutionary_algorithm run_with_database
     links:
       - mongodb
+  redis:
+    image: redis
