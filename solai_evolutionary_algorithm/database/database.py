@@ -8,11 +8,10 @@ COLLECTION = "dummy_generations"
 
 class Database:
 
-    client = pymongo.MongoClient(HOST)
-    db = client[DATABASE_NAME]
-    dummy_characters_generations = db[COLLECTION]
-
     def __init__(self):
+        self.client = pymongo.MongoClient(HOST)
+        self.db = self.client[DATABASE_NAME]
+        self.dummy_characters_generations = self.db[COLLECTION]
         self.dummy_characters_generations.delete_many({})
 
     def add_dummy_generation(self, generation, generation_number):

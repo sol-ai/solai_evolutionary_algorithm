@@ -16,8 +16,15 @@ def main():
     return fittest_individuals
 
 
-def dummy_simulation():
+def dummy_simulation_with_database():
     init_population_size = 10
-    dummy_simulation = DummySimulation()
+    dummy_simulation = DummySimulation(with_database=True)
+    dummy_simulation.generate_init_population(init_population_size)
+    dummy_simulation.evolve()
+
+
+def dummy_simulation_without_database():
+    init_population_size = 10
+    dummy_simulation = DummySimulation(with_database=False)
     dummy_simulation.generate_init_population(init_population_size)
     dummy_simulation.evolve()
