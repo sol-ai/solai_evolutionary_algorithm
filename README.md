@@ -8,3 +8,7 @@ To start ea:
 
     $ docker-compose build    
     $ docker-compose up    
+
+To test without db:
+    
+    $ python -m solai_evolutionary_algorithm 

@@ -11,6 +11,6 @@
   "damage": [100, 4000],
   "baseKnockback": [500, 10000],
   "knockbackRatio": [0.1, 1.0],
-  "knockbackPoint": [-5000, 5000],
+  "knockbackPoint": [-500, 500],
   "knockbackTowardPoint": [false, true]
 }
