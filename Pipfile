@@ -12,6 +12,7 @@ rope = "*"
 deap = "*"
 requests = "*"
 pymongo = "*"
+redis = "*"
 
 [requires]
 python_version = "3.8"
