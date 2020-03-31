@@ -9,6 +9,11 @@ To start ea:
     $ docker-compose build    
     $ docker-compose up    
 
-To test without db:
+To test without docker and the database:
     
+    
+    $ pipenv install
+
+To install dependencies, and then
+      
     $ python -m solai_evolutionary_algorithm 

@@ -32,7 +32,7 @@ class DummySimulation:
 
         g = 0
 
-        while g < 1000:
+        while g < 100:
             g += 1
             print("\n\n-- Generation %i --" % g)
 
