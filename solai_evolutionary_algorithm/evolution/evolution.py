@@ -39,9 +39,6 @@ class Evolution:
         return new_character
 
     def mutation_scheme1(self, genome):
-        """
-        This mutation scheme only affects the character's radius with a factor ranging from 0.5 to 1.5
-        """
         self.__mutate_radius(genome)
         self.__mutate_moveAccel(genome)
         self.__mutate_abilities(genome)
@@ -87,7 +84,7 @@ class Evolution:
         else:
             ranges = self.projectile_ranges
         for attribute in ability:
-            if isinstance(attribute, str):
+            if isinstance(ability[attribute], str):
                 continue
             attribute_value = ability[attribute]
 
