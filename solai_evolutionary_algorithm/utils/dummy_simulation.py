@@ -1,10 +1,12 @@
 import json
 import operator
+import time
 from solai_evolutionary_algorithm.representation.character_config_to_genome import character_config_to_genome
 from solai_evolutionary_algorithm.representation.representation import Representation
 from solai_evolutionary_algorithm.utils.useful_functions import UsefulFunctions
 from solai_evolutionary_algorithm.evolution.evolution import Evolution
 from solai_evolutionary_algorithm.database.database import Database
+from solai_evolutionary_algorithm.socket.character_queue import CharacterQueue
 from pkg_resources import resource_stream
 
 
@@ -12,7 +14,6 @@ class DummySimulation:
 
     def __init__(self, **kwargs):
         self.with_database = kwargs['with_database']
-
         self.solution_genome = json.load(resource_stream(
             'solai_evolutionary_algorithm', 'resources/sample_characters/interesting_character_for_testing.json'))['character_config']
         self.init_population = []
@@ -20,9 +21,11 @@ class DummySimulation:
         self.representation = Representation()
         self.evolution = Evolution()
 
-    def evolve(self):
         if self.with_database:
-            database = Database()
+            self.database = Database()
+            self.character_queue = CharacterQueue()
+
+    def evolve(self):
 
         current_population = self.init_population
         population_size = len(current_population)
@@ -32,7 +35,7 @@ class DummySimulation:
 
         g = 0
 
-        while g < 100:
+        while g < 1000:
             g += 1
             print("\n\n-- Generation %i --" % g)
 
@@ -56,7 +59,8 @@ class DummySimulation:
                 current_population.append(child_clone_mutated)
 
             if self.with_database:
-                database.add_dummy_generation(current_population, g)
+                self.database.add_dummy_generation(current_population, g)
+                self.character_queue.push_characters(current_population)
 
             fitnesses = self.evaluate_fitness_of_population(current_population)
             sorted_fitnesses = sorted((value, key)
@@ -69,8 +73,8 @@ class DummySimulation:
         print(5*"\n")
 
         if self.with_database:
-            print("Last generation", database.get_generation(g))
-            database.close_connection()
+            print("Last generation", self.database.get_generation(g))
+            self.database.close_connection()
 
         print(200*"=")
         print(5*"\n")
