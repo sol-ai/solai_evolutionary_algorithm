@@ -1,4 +1,5 @@
 import redis
+import sys
 import json
 
 
@@ -12,8 +13,8 @@ class CharacterQueue:
         self.r.lpush('characters', character_json)
 
     def push_characters(self, characters):
-        for character in characters:
-            self.push_character(character)
+        characters_strings = map(json.dumps, characters)
+        self.r.lpush('characters', *characters_strings)
 
     def pop_character(self):
         return self.r.lpop('characters')

@@ -74,7 +74,6 @@ class DummySimulation:
 
         if self.with_database:
             print("Last generation", self.database.get_generation(g))
-            print(self.character_queue.pop_character())
             self.database.close_connection()
 
         print(200*"=")
