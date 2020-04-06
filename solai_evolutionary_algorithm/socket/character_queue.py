@@ -8,12 +8,12 @@ class CharacterQueue:
         self.r = redis.StrictRedis(host='redis', port=6379, db=0)
 
     def push_character(self, character):
-        rval = json.dumps(character)
-        self.r.set('key1', rval)
+        character_json = json.dumps(character)
+        self.r.lpush('characters', character_json)
 
     def push_characters(self, characters):
         for character in characters:
             self.push_character(character)
 
-    def get_character(self):
-        print(self.r.get('key1'))
+    def pop_character(self):
+        return self.r.lpop('characters')
