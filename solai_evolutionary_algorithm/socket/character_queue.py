@@ -12,7 +12,8 @@ class CharacterQueue:
         self.r.set('key1', rval)
 
     def push_characters(self, characters):
-        pass
+        for character in characters:
+            self.push_character(character)
 
     def get_character(self):
         print(self.r.get('key1'))
