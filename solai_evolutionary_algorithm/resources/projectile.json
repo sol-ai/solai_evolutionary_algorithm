@@ -1,6 +1,6 @@
 {
   "name": "abilityName",
-  "type": "projectile",
+  "type": "PROJECTILE",
   "radius": [5, 50],
   "distanceFromChar": [50, 200],
   "speed": [2, 50],

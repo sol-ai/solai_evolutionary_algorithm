@@ -1,11 +1,11 @@
 {
   "character_config": {
     "radius": 25.0,
-    "moveAccel": 2000.0,
+    "moveVelocity": 2000.0,
     "abilities": {
       "ability1": {
         "name": "abilityName",
-        "type": "melee",
+        "type": "MELEE",
         "radius": 40.0,
         "distanceFromChar": 100.0,
         "speed": 0.0,
@@ -21,7 +21,7 @@
       },
       "ability2": {
         "name": "abilityName",
-        "type": "melee",
+        "type": "MELEE",
         "radius": 40.0,
         "distanceFromChar": 100.0,
         "speed": 0.0,
@@ -37,7 +37,7 @@
       },
       "ability3": {
         "name": "abilityName",
-        "type": "melee",
+        "type": "MELEE",
         "radius": 40.0,
         "distanceFromChar": 100.0,
         "speed": 0.0,

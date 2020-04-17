@@ -2,11 +2,11 @@
   "description": "the allowed ranges and values for a character",
   "character_config": {
     "radius": [12.0, 40.0],
-    "moveAccel": [500.0, 3000.0],
+    "moveVelocity": [200.0, 2000.0],
     "abilities": {
-      "ability1": { "type": ["melee", "projectile"] },
-      "ability2": { "type": ["melee", "projectile"] },
-      "ability3": { "type": ["melee", "projectile"] }
+      "ability1": { "type": ["MELEE", "PROJECTILE"] },
+      "ability2": { "type": ["MELEE", "PROJECTILE"] },
+      "ability3": { "type": ["MELEE", "PROJECTILE"] }
     }
   }
 }

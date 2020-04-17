@@ -1,5 +1,5 @@
-import json
 import operator
+import json
 import time
 from solai_evolutionary_algorithm.representation.character_config_to_genome import character_config_to_genome
 from solai_evolutionary_algorithm.representation.representation import Representation

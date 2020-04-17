@@ -1,6 +1,6 @@
 {
   "name": "abilityName",
-  "type": "melee",
+  "type": "MELEE",
   "radius": [100, 500],
   "distanceFromChar": [200, 3000],
   "speed": [0, 0],
