@@ -9,8 +9,6 @@ autopep8 = "*"
 rope = "*"
 
 [packages]
-deap = "*"
-requests = "*"
 pymongo = "*"
 redis = "*"
 

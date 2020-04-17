@@ -60,7 +60,8 @@ class DummySimulation:
 
             if self.with_database:
                 self.database.add_dummy_generation(current_population, g)
-                self.character_queue.push_characters(current_population)
+                self.character_queue.push_character_pair(char1, char2)
+                break
 
             fitnesses = self.evaluate_fitness_of_population(current_population)
             sorted_fitnesses = sorted((value, key)
