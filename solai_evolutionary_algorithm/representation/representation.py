@@ -46,10 +46,10 @@ class Representation:
         radius = random.randint(min_radius, max_radius)
         new_character["radius"] = radius
 
-        min_moveAccel = config["moveAccel"][0]
-        max_moveAccel = config["moveAccel"][1]
-        moveAccel = random.randint(min_moveAccel, max_moveAccel)
-        new_character["moveAccel"] = moveAccel
+        min_moveVelocity = config["moveVelocity"][0]
+        max_moveVelocity = config["moveVelocity"][1]
+        moveVelocity = random.randint(min_moveVelocity, max_moveVelocity)
+        new_character["moveVelocity"] = moveVelocity
         new_character["abilities"] = {}
 
         for i in range(no_of_abilites):

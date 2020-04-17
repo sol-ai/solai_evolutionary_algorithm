@@ -11,7 +11,7 @@ class UsefulFunctions:
         'solai_evolutionary_algorithm', 'resources/melee.json'))
     projectile_config = json.load(resource_stream(
         'solai_evolutionary_algorithm', 'resources/projectile.json'))
-    ability_configs = {'melee': melee_config, 'projectile': projectile_config}
+    ability_configs = {'MELEE': melee_config, 'PROJECTILE': projectile_config}
 
     def flatten(self, d, parent_key='', sep='_'):
         items = []
@@ -33,12 +33,12 @@ class UsefulFunctions:
         normalized_radius = self.normalize(min_radius, max_radius, radius)
         normalized_genome["radius"] = normalized_radius
 
-        min_moveAccel = config["moveAccel"][0]
-        max_moveAccel = config["moveAccel"][1]
-        moveAccel = genome["moveAccel"]
-        normalized_moveAccel = self.normalize(
-            min_moveAccel, max_moveAccel, moveAccel)
-        normalized_genome["moveAccel"] = normalized_moveAccel
+        min_moveVelocity = config["moveVelocity"][0]
+        max_moveVelocity = config["moveVelocity"][1]
+        moveVelocity = genome["moveVelocity"]
+        normalized_moveVelocity = self.normalize(
+            min_moveVelocity, max_moveVelocity, moveVelocity)
+        normalized_genome["moveVelocity"] = normalized_moveVelocity
 
         normalized_genome["abilities"] = {}
 

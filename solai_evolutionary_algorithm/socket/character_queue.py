@@ -18,3 +18,6 @@ class CharacterQueue:
 
     def pop_character(self):
         return self.r.lpop('characters')
+
+    def push_character_pair(self, character1, character2):
+        pass

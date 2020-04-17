@@ -40,7 +40,7 @@ class Evolution:
 
     def mutation_scheme1(self, genome):
         self.__mutate_radius(genome)
-        self.__mutate_moveAccel(genome)
+        self.__mutate_moveVelocity(genome)
         self.__mutate_abilities(genome)
 
     def mutation_scheme2(self, genome):
@@ -61,17 +61,19 @@ class Evolution:
 
         genome['radius'] = new_radius
 
-    def __mutate_moveAccel(self, genome):
-        moveAccel = genome['moveAccel']
-        max_moveAccel = self.character_config_ranges['moveAccel'][1]
-        min_moveAccel = self.character_config_ranges['moveAccel'][0]
+    def __mutate_moveVelocity(self, genome):
+        moveVelocity = genome['moveVelocity']
+        max_moveVelocity = self.character_config_ranges['moveVelocity'][1]
+        min_moveVelocity = self.character_config_ranges['moveVelocity'][0]
         mutation_factor = random.uniform(0.5, 1.5)
         if mutation_factor > 1:
-            new_moveAccel = int(min(mutation_factor*moveAccel, max_moveAccel))
+            new_moveVelocity = int(
+                min(mutation_factor*moveVelocity, max_moveVelocity))
         else:
-            new_moveAccel = int(max(mutation_factor*moveAccel, min_moveAccel))
+            new_moveVelocity = int(
+                max(mutation_factor*moveVelocity, min_moveVelocity))
 
-        genome['moveAccel'] = new_moveAccel
+        genome['moveVelocity'] = new_moveVelocity
 
     def __mutate_abilities(self, genome):
         abilities = genome['abilities']
