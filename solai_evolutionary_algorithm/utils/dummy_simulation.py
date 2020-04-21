@@ -7,7 +7,7 @@ from solai_evolutionary_algorithm.representation.representation import Represent
 from solai_evolutionary_algorithm.utils.useful_functions import UsefulFunctions
 from solai_evolutionary_algorithm.evolution.evolution import Evolution
 from solai_evolutionary_algorithm.database.database import Database
-from solai_evolutionary_algorithm.socket.character_queue import CharacterQueue
+from solai_evolutionary_algorithm.socket.character_queue import SimulationQueue
 from pkg_resources import resource_stream
 
 
@@ -31,7 +31,7 @@ class DummySimulation:
 
         queue_host = self.endpoints['redis_host']
         queue_port = self.endpoints['redis_port']
-        self.character_queue = CharacterQueue(queue_host, queue_port)
+        self.character_queue = SimulationQueue(queue_host, queue_port)
 
     def evolve(self):
 

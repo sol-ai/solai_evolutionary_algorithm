@@ -3,12 +3,14 @@ import uuid
 import random
 from itertools import combinations
 import sys
+import threading
 
 from solai_evolutionary_algorithm.representation.character_config_to_genome import character_config_to_genome
 from solai_evolutionary_algorithm.representation.representation import Representation
 from solai_evolutionary_algorithm.utils.useful_functions import UsefulFunctions
 from solai_evolutionary_algorithm.database.database import Database
-from solai_evolutionary_algorithm.socket.character_queue import CharacterQueue
+from solai_evolutionary_algorithm.socket.character_queue import SimulationQueue
+from solai_evolutionary_algorithm.evaluation.evaluation import Evaluation
 from pkg_resources import resource_stream
 
 
@@ -21,6 +23,7 @@ class Evolution:
         self.representation = Representation()
         self.useful_functions = UsefulFunctions()
         self.representation = Representation()
+        self.evaluation = Evaluation()
 
         self.character_config_ranges = self.representation.character_config
         self.melee_ranges = self.representation.melee_config
@@ -35,7 +38,8 @@ class Evolution:
         queue_host = self.endpoints['redis_host']
         queue_port = self.endpoints['redis_port']
 
-        self.character_queue = CharacterQueue(queue_host, queue_port)
+        self.simulation_queue = SimulationQueue(
+            queue_host, queue_port, init_population_size)
 
     def generate_init_population(self, n=10):
         init_population = []
@@ -47,27 +51,25 @@ class Evolution:
     def evolve(self):
 
         current_population = self.init_population
-        population_size = len(current_population)
 
         g = 0
 
-        character_pairs = combinations(current_population, 2)
-
-        for pair in character_pairs:
-            self.character_queue.push_character_pair(*pair)
-
-        simulation_result = self.character_queue.get_simulation_result()
-
-        while not simulation_result:
-            simulation_result = self.character_queue.get_simulation_result()
-
-        print(simulation_result)
-
+        self.evolve_one_generation(current_population)
         sys.exit()
 
         while g < 1000:
             g += 1
             print("\n\n-- Generation %i --" % g)
+
+    def evolve_one_generation(self, population):
+        character_pairs = combinations(population, 2)
+        population_size = len(population)
+
+        for pair in character_pairs:
+            self.simulation_queue.push_character_pair(*pair)
+
+        simulation_result = self.simulation_queue.get_simulation_results()
+        print(simulation_result)
 
     def get_fittest_individuals(self):
         return 0
