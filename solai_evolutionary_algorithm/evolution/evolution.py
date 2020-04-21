@@ -103,7 +103,6 @@ class Evolution:
             character_and_fitness_configs)
 
         self.simulation_queue.push_population(character_and_fitness_configs)
-        print(self.simulation_queue.get_population())
 
     def evaluate_one_generation(self, population):
 
