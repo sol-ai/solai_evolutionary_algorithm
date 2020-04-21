@@ -2,8 +2,8 @@
   "character_config": {
     "radius": 25.0,
     "moveVelocity": 2000.0,
-    "abilities": {
-      "ability1": {
+    "abilities": [
+      {
         "name": "abilityName",
         "type": "MELEE",
         "radius": 40.0,
@@ -19,7 +19,7 @@
         "knockbackPoint": 120.0,
         "knockbackTowardPoint": false
       },
-      "ability2": {
+      {
         "name": "abilityName",
         "type": "MELEE",
         "radius": 40.0,
@@ -35,7 +35,7 @@
         "knockbackPoint": 120.0,
         "knockbackTowardPoint": false
       },
-      "ability3": {
+      {
         "name": "abilityName",
         "type": "MELEE",
         "radius": 40.0,
@@ -51,6 +51,6 @@
         "knockbackPoint": 120.0,
         "knockbackTowardPoint": false
       }
-    }
+    ]
   }
 }

@@ -46,7 +46,7 @@ class SimulationQueue:
         current_generation_simulation_results = deepcopy(
             self.current_generation_simulation_results)
         self.current_generation_simulation_results = []
-        self.current_generation_simulation_results = 0
+        self.current_number_of_simulations = 0
         return current_generation_simulation_results
 
     def get_simulation_data(self):
@@ -59,3 +59,11 @@ class SimulationQueue:
         simulation_data = json.dumps({"simulationId": simulation_id,
                                       "charactersConfigs": character_configs, "metrics": metrics})
         return simulation_id, simulation_data
+
+    def push_population(self, population):
+        self.redis.lpush("queue:population", json.dumps(population))
+
+    def get_population(self):
+        result = self.redis.blpop("queue:population")
+        result = json.loads(result[1].decode("utf-8"))
+        return result

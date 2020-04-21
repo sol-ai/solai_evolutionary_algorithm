@@ -1,4 +1,5 @@
 from copy import deepcopy
+import json
 import uuid
 import random
 from itertools import combinations
@@ -52,18 +53,59 @@ class Evolution:
     def evolve(self):
 
         current_population = self.init_population
+        population_size = len(current_population)
 
         g = 0
 
-        fitnesses = self.evolve_one_generation(current_population)
+        fitnesses = self.evaluate_one_generation(current_population)
         sorted_fitnesses = sorted((value, key)
                                   for (key, value) in fitnesses.items())
 
-        while g < 10:
+        while g < 2:
             g += 1
-            print("\n\n-- Generation %i --" % g)
 
-    def evolve_one_generation(self, population):
+            char1_id = sorted_fitnesses[-1][1]
+            char2_id = sorted_fitnesses[-2][1]
+
+            char1 = self.get_character_in_population_by_id(
+                char1_id, current_population)
+            char2 = self.get_character_in_population_by_id(
+                char2_id, current_population)
+
+            child = self.crossover_scheme1(char1, char2)
+
+            current_population = [char1, char2]
+            remaining = population_size - len(current_population)
+
+            for _ in range(remaining):
+                child_clone_mutated = self.representation.clone_character(
+                    child)
+                self.mutation_scheme1(child_clone_mutated)
+                current_population.append(child_clone_mutated)
+
+            fitnesses = self.evaluate_one_generation(current_population)
+            sorted_fitnesses = sorted((value, key)
+                                      for (key, value) in fitnesses.items())
+
+            print("\n\n-- Generation %i --" % g)
+            print(sorted_fitnesses)
+
+        character_and_fitness_configs = []
+
+        for char in sorted_fitnesses:
+            fitness = char[0]
+            char_id = char[1]
+            character_config = self.get_character_in_population_by_id(
+                char_id, current_population)
+            character_and_fitness_configs.append((fitness, character_config))
+
+        character_and_fitness_configs = json.dumps(
+            character_and_fitness_configs)
+
+        self.simulation_queue.push_population(character_and_fitness_configs)
+        print(self.simulation_queue.get_population())
+
+    def evaluate_one_generation(self, population):
 
         sim_results = self.evaluation.evaluate_one_population(population)
         return sim_results
@@ -79,8 +121,7 @@ class Evolution:
 
     def crossover_scheme1(self, genome1, genome2):
         new_character = deepcopy(genome1)
-        ability_swap_number = 'ability' + \
-            str(random.randint(1, len(genome1['abilities'])))
+        ability_swap_number = (random.randint(0, len(genome1['abilities'])-1))
 
         genome2_ability = genome2['abilities'][ability_swap_number]
         new_character['abilities'][ability_swap_number] = genome2_ability
@@ -128,7 +169,7 @@ class Evolution:
     def __mutate_abilities(self, genome):
         abilities = genome['abilities']
         for ability in abilities:
-            self.__mutate_ability(abilities[ability])
+            self.__mutate_ability(ability)
 
     def __mutate_ability(self, ability):
         if ability['type'] == 'melee':
@@ -145,11 +186,11 @@ class Evolution:
                 max_value_attribute = ranges[attribute][1]
                 mutation_factor = random.uniform(0.5, 1.5)
                 if mutation_factor > 1:
-                    new_attribute_value = \
-                        min(mutation_factor*attribute_value, max_value_attribute)
+                    new_attribute_value = min(
+                        mutation_factor*attribute_value, max_value_attribute)
                 else:
-                    new_attribute_value = \
-                        max(mutation_factor*attribute_value, min_value_attribute)
+                    new_attribute_value = max(
+                        mutation_factor*attribute_value, min_value_attribute)
             else:
                 flip_probability = 0.2
                 if (random.random() > (1-flip_probability)):
@@ -160,6 +201,13 @@ class Evolution:
             ability[attribute] = new_attribute_value
     """
     --------------------------------------------------------
-    End of mutation and crossover section 
+    End of mutation and crossover section
     --------------------------------------------------------
     """
+
+    def get_character_in_population_by_id(self, id, population):
+        character = None
+        for c in population:
+            if c['characterId'] == id:
+                character = c
+        return character

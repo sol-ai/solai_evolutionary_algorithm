@@ -42,7 +42,7 @@ class Evaluation:
 
         fitnesses = deepcopy(self.current_population_fitness)
 
-        self.current_population_fitness = []
+        self.current_population_fitness = {}
 
         return fitnesses
 
