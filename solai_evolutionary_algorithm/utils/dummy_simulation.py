@@ -7,7 +7,7 @@ from solai_evolutionary_algorithm.representation.representation import Represent
 from solai_evolutionary_algorithm.utils.useful_functions import UsefulFunctions
 from solai_evolutionary_algorithm.evolution.evolution import Evolution
 from solai_evolutionary_algorithm.database.database import Database
-from solai_evolutionary_algorithm.socket.character_queue import SimulationQueue
+from solai_evolutionary_algorithm.socket.simulation_queue import SimulationQueue
 from pkg_resources import resource_stream
 
 

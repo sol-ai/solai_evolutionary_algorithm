@@ -9,7 +9,7 @@ from solai_evolutionary_algorithm.representation.character_config_to_genome impo
 from solai_evolutionary_algorithm.representation.representation import Representation
 from solai_evolutionary_algorithm.utils.useful_functions import UsefulFunctions
 from solai_evolutionary_algorithm.database.database import Database
-from solai_evolutionary_algorithm.socket.character_queue import SimulationQueue
+from solai_evolutionary_algorithm.socket.simulation_queue import SimulationQueue
 from solai_evolutionary_algorithm.evaluation.evaluation import Evaluation
 from pkg_resources import resource_stream
 
@@ -23,7 +23,6 @@ class Evolution:
         self.representation = Representation()
         self.useful_functions = UsefulFunctions()
         self.representation = Representation()
-        self.evaluation = Evaluation()
 
         self.character_config_ranges = self.representation.character_config
         self.melee_ranges = self.representation.melee_config
@@ -41,6 +40,8 @@ class Evolution:
         self.simulation_queue = SimulationQueue(
             queue_host, queue_port, init_population_size)
 
+        self.evaluation = Evaluation(self.simulation_queue)
+
     def generate_init_population(self, n=10):
         init_population = []
         for _ in range(n):
@@ -54,22 +55,18 @@ class Evolution:
 
         g = 0
 
-        self.evolve_one_generation(current_population)
-        sys.exit()
+        fitnesses = self.evolve_one_generation(current_population)
+        sorted_fitnesses = sorted((value, key)
+                                  for (key, value) in fitnesses.items())
 
-        while g < 1000:
+        while g < 10:
             g += 1
             print("\n\n-- Generation %i --" % g)
 
     def evolve_one_generation(self, population):
-        character_pairs = combinations(population, 2)
-        population_size = len(population)
 
-        for pair in character_pairs:
-            self.simulation_queue.push_character_pair(*pair)
-
-        simulation_result = self.simulation_queue.get_simulation_results()
-        print(simulation_result)
+        sim_results = self.evaluation.evaluate_one_population(population)
+        return sim_results
 
     def get_fittest_individuals(self):
         return 0
