@@ -1,4 +1,5 @@
 import operator
+import sys
 import json
 import time
 from solai_evolutionary_algorithm.representation.character_config_to_genome import character_config_to_genome
@@ -14,16 +15,23 @@ class DummySimulation:
 
     def __init__(self, **kwargs):
         self.with_database = kwargs['with_database']
+        self.endpoints = kwargs['endpoints']
+
         self.solution_genome = json.load(resource_stream(
             'solai_evolutionary_algorithm', 'resources/sample_characters/interesting_character_for_testing.json'))['character_config']
+
         self.init_population = []
+
         self.useful_functions = UsefulFunctions()
         self.representation = Representation()
         self.evolution = Evolution()
 
         if self.with_database:
             self.database = Database()
-            self.character_queue = CharacterQueue()
+
+        queue_host = self.endpoints['redis_host']
+        queue_port = self.endpoints['redis_port']
+        self.character_queue = CharacterQueue(queue_host, queue_port)
 
     def evolve(self):
 

@@ -1,4 +1,5 @@
 import sys
+import configparser
 from solai_evolutionary_algorithm.representation.representation import Representation
 from solai_evolutionary_algorithm.evolution.evolution import Evolution
 from solai_evolutionary_algorithm.utils.dummy_simulation import DummySimulation
@@ -18,15 +19,11 @@ def main():
     return fittest_individuals
 
 
-def dummy_simulation_with_database():
+def dummy_simulation(**kwargs):
     init_population_size = 10
-    dummy_simulation = DummySimulation(with_database=True)
-    dummy_simulation.generate_init_population(init_population_size)
-    dummy_simulation.evolve()
 
+    dummy_simulation = DummySimulation(
+        with_database=kwargs['with_database'], endpoints=kwargs['endpoints'])
 
-def dummy_simulation_without_database():
-    init_population_size = 10
-    dummy_simulation = DummySimulation(with_database=False)
     dummy_simulation.generate_init_population(init_population_size)
     dummy_simulation.evolve()

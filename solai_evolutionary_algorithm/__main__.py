@@ -1,9 +1,17 @@
 from solai_evolutionary_algorithm import main
 import sys
+import configparser
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        if 'run_with_database' in sys.argv:
-            main.dummy_simulation_with_database()
-    else:
-        main.dummy_simulation_without_database()
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+
+    environment = str(config['APP']['ENVIRONMENT']).upper()
+    print(dict(config))
+    endpoints = dict(config[environment + "_ENDPOINTS"])
+
+    with_database = False
+    if environment == 'PROUDCTION':
+        with_database = True
+
+    main.dummy_simulation(with_database=with_database, endpoints=endpoints)

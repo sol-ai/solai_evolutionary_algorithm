@@ -4,11 +4,9 @@ services:
     image: mongo
     ports:
       - "27017:27017"
-    volumes:
-      - ./mongo-volume:/data/db
   python-ea:
     build: .
-    command: python -m solai_evolutionary_algorithm run_with_database
+    command: python -m solai_evolutionary_algorithm
     links:
       - mongodb
   redis:

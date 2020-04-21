@@ -3,14 +3,14 @@ import uuid
 import sys
 import json
 
-HOST = "redis"
-SIMULATION_DATA_QUEUE_LEVEL = "queue:simulation-data"
+SIMULATION_DATA_QUEUE = "queue:simulation-data"
+SIMULATION_RESULT_QUEUE = 'queue:simulation-result'
 
 
 class CharacterQueue:
 
-    def __init__(self):
-        self.redis = redis.StrictRedis(host=HOST, port=6379, db=0)
+    def __init__(self, host='redis', port=6370):
+        self.redis = redis.StrictRedis(host=host, port=port, db=0)
 
     def push_character(self, character):
         character_json = json.dumps(character)
@@ -31,6 +31,9 @@ class CharacterQueue:
         simulation_id = str(uuid.uuid1())
         metrics = ["gameLength"]
         simulation_data = {'simulationId': simulation_id,
-                           'characterConfigs': character_configs, 'metrics': metrics}
+                           'charactersConfigs': character_configs, 'metrics': metrics}
         simulation_data_string = str(simulation_data)
-        self.redis.lpush(SIMULATION_DATA_QUEUE_LEVEL, simulation_data_string)
+        self.redis.lpush(SIMULATION_DATA_QUEUE, simulation_data_string)
+
+    def get_simulation_data(self):
+        return self.redis.lpop(SIMULATION_RESULT_QUEUE)

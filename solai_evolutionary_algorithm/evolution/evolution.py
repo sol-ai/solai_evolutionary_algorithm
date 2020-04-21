@@ -1,8 +1,13 @@
 from copy import deepcopy
 import uuid
 import random
-from solai_evolutionary_algorithm.socket.character_queue import CharacterQueue
+
+from solai_evolutionary_algorithm.representation.character_config_to_genome import character_config_to_genome
 from solai_evolutionary_algorithm.representation.representation import Representation
+from solai_evolutionary_algorithm.utils.useful_functions import UsefulFunctions
+from solai_evolutionary_algorithm.database.database import Database
+from solai_evolutionary_algorithm.socket.character_queue import CharacterQueue
+from pkg_resources import resource_stream
 
 
 class Evolution:
@@ -11,6 +16,9 @@ class Evolution:
     character_config_ranges = representation.character_config
     melee_ranges = representation.melee_config
     projectile_ranges = representation.projectile_config
+
+    def __init__(self, **kwargs):
+        pass
 
     def evolve(self):
         offspring = None
