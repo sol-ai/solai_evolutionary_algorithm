@@ -10,6 +10,8 @@ class Evaluation:
     fitness = None
     novelty = None
 
+    desired_game_length = 5000
+
     current_population_fitness = {}
 
     def __init__(self, simulation_queue):
@@ -37,6 +39,7 @@ class Evaluation:
             for result in simulation_result:
                 if simulation['simulationId'] == result['simulationId']:
                     current_simulations[i]['result'] = result['metrics']
+                    print(result['metrics'])
 
         self.evaluate_fitness(current_simulations)
 
@@ -54,7 +57,15 @@ class Evaluation:
             metrics_result = result['result']
 
             for metric in metrics_result:
-                if metrics_result[metric][0]:
-                    self.current_population_fitness[character1_id] += 10
-                else:
-                    self.current_population_fitness[character1_id] += 10
+                if metric == 'gameWon':
+                    if metrics_result[metric][0]:
+                        self.current_population_fitness[character1_id] += 10
+                    else:
+                        self.current_population_fitness[character2_id] += 10
+                if metric == 'gameLength':
+                    game_length = metrics_result[metric][0]
+                    difference = abs(self.desired_game_length - game_length)
+                    normalized_difference = difference/1000
+                    score = min(normalized_difference, 10)
+                    self.current_population_fitness[character1_id] += 10 - score
+                    self.current_population_fitness[character2_id] += 10 - score
