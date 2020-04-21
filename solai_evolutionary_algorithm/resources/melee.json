@@ -4,14 +4,14 @@
   "radius": [100, 500],
   "distanceFromChar": [200, 3000],
   "speed": [0, 0],
-  "startupTime": [10, 500],
+  "startupTime": [1, 50],
   "activeTime": [10, 500],
   "executionTime": [0, 1000],
   "endlagTime": [10, 1000],
   "rechargeTime": [0, 80],
   "damage": [100, 4000],
   "baseKnockback": [500, 10000],
-  "knockbackRatio": [0.1, 1.0],
-  "knockbackPoint": [-500, 500],
+  "knockbackRatio": [0.5, 1.0],
+  "knockbackPoint": [20, 500],
   "knockbackTowardPoint": [false, true]
 }

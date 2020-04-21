@@ -57,7 +57,7 @@ class Evaluation:
             metrics_result = result['result']
 
             for metric in metrics_result:
-                if metric == 'gameWon':
+                if metric == 'characterWon':
                     if metrics_result[metric][0]:
                         self.current_population_fitness[character1_id] += 10
                     else:

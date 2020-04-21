@@ -99,8 +99,7 @@ class Evolution:
                 char_id, current_population)
             character_and_fitness_configs.append((fitness, character_config))
 
-        character_and_fitness_configs = json.dumps(
-            character_and_fitness_configs)
+        character_and_fitness_configs = character_and_fitness_configs
 
         self.simulation_queue.push_population(character_and_fitness_configs)
 
