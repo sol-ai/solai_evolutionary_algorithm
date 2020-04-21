@@ -50,11 +50,10 @@ class Representation:
         max_moveVelocity = config["moveVelocity"][1]
         moveVelocity = random.randint(min_moveVelocity, max_moveVelocity)
         new_character["moveVelocity"] = moveVelocity
-        new_character["abilities"] = {}
+        new_character["abilities"] = []
 
         for i in range(no_of_abilites):
-            new_character["abilities"]["ability" +
-                                       str(i+1)] = self.__generate_random_ability()
+            new_character["abilities"].append(self.__generate_random_ability())
 
         return new_character
 

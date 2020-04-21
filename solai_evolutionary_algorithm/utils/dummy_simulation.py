@@ -24,7 +24,7 @@ class DummySimulation:
 
         self.useful_functions = UsefulFunctions()
         self.representation = Representation()
-        self.evolution = Evolution()
+        self.evolution = Evolution(**kwargs)
 
         if self.with_database:
             self.database = Database()

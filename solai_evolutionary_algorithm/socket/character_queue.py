@@ -28,12 +28,19 @@ class CharacterQueue:
 
     def push_simulation_data(self, character_configs):
         # TODO: Specify metrics somewhere else
-        simulation_id = str(uuid.uuid1())
-        metrics = ["gameLength"]
-        simulation_data = {'simulationId': simulation_id,
-                           'charactersConfigs': character_configs, 'metrics': metrics}
-        simulation_data_string = str(simulation_data)
-        self.redis.lpush(SIMULATION_DATA_QUEUE, simulation_data_string)
+        simulation_data = self.__generate_simulation_data(character_configs)
+        self.redis.lpush(SIMULATION_DATA_QUEUE, simulation_data)
+
+    def get_simulation_result(self):
+        return self.redis.lpop(SIMULATION_RESULT_QUEUE)
 
     def get_simulation_data(self):
-        return self.redis.lpop(SIMULATION_RESULT_QUEUE)
+        return self.redis.lpop(SIMULATION_DATA_QUEUE)
+
+    def __generate_simulation_data(self, character_configs):
+        # TODO: Specify metrics somewhere else
+        simulation_id = str(uuid.uuid1())
+        metrics = ["gameLength", "nearDeathFrames"]
+        simulation_data = json.dumps({"simulationId": simulation_id,
+                                      "charactersConfigs": character_configs, "metrics": metrics})
+        return simulation_data

@@ -1,6 +1,8 @@
 from copy import deepcopy
 import uuid
 import random
+from itertools import combinations
+import sys
 
 from solai_evolutionary_algorithm.representation.character_config_to_genome import character_config_to_genome
 from solai_evolutionary_algorithm.representation.representation import Representation
@@ -12,22 +14,63 @@ from pkg_resources import resource_stream
 
 class Evolution:
 
-    representation = Representation()
-    character_config_ranges = representation.character_config
-    melee_ranges = representation.melee_config
-    projectile_ranges = representation.projectile_config
+    def __init__(self, init_population_size=10, **kwargs):
+        self.with_database = kwargs['with_database']
+        self.endpoints = kwargs['endpoints']
 
-    def __init__(self, **kwargs):
-        pass
+        self.representation = Representation()
+        self.useful_functions = UsefulFunctions()
+        self.representation = Representation()
+
+        self.character_config_ranges = self.representation.character_config
+        self.melee_ranges = self.representation.melee_config
+        self.projectile_ranges = self.representation.projectile_config
+
+        self.init_population = self.generate_init_population(
+            init_population_size)
+
+        if self.with_database:
+            self.database = Database()
+
+        queue_host = self.endpoints['redis_host']
+        queue_port = self.endpoints['redis_port']
+
+        self.character_queue = CharacterQueue(queue_host, queue_port)
+
+    def generate_init_population(self, n=10):
+        init_population = []
+        for _ in range(n):
+            individual = self.representation.generate_random_character_for_runtime()
+            init_population.append(individual)
+        return init_population
 
     def evolve(self):
-        offspring = None
+
+        current_population = self.init_population
+        population_size = len(current_population)
+
+        g = 0
+
+        character_pairs = combinations(current_population, 2)
+
+        for pair in character_pairs:
+            self.character_queue.push_character_pair(*pair)
+
+        simulation_result = self.character_queue.get_simulation_result()
+
+        while not simulation_result:
+            simulation_result = self.character_queue.get_simulation_result()
+
+        print(simulation_result)
+
+        sys.exit()
+
+        while g < 1000:
+            g += 1
+            print("\n\n-- Generation %i --" % g)
 
     def get_fittest_individuals(self):
         return 0
-
-    def set_initial_population(self, init_population):
-        self.init_populatio = init_population
 
     """
     --------------------------------------------------------
