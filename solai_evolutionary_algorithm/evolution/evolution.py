@@ -61,7 +61,7 @@ class Evolution:
         sorted_fitnesses = sorted((value, key)
                                   for (key, value) in fitnesses.items())
 
-        while g < 2:
+        while g < 1:
             g += 1
 
             char1_id = sorted_fitnesses[-1][1]
@@ -98,8 +98,6 @@ class Evolution:
             character_config = self.get_character_in_population_by_id(
                 char_id, current_population)
             character_and_fitness_configs.append((fitness, character_config))
-
-        character_and_fitness_configs = character_and_fitness_configs
 
         self.simulation_queue.push_population(character_and_fitness_configs)
 
