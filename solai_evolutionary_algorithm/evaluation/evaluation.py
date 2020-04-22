@@ -28,18 +28,19 @@ class Evaluation:
 
         character_pairs = combinations(population, 2)
 
+        print("pushing simulations...\n\n")
         for pair in character_pairs:
             simulation_id = simulation_queue.push_character_pair(*pair)
             simulation_dict = {'simulationId': simulation_id,
                                'characters': [pair[0]['characterId'], pair[1]['characterId']]}
             current_simulations.append(simulation_dict)
 
+        print("waiting for simulation results...\n\n")
         simulation_result = simulation_queue.get_simulation_results()
         for i, simulation in enumerate(current_simulations):
             for result in simulation_result:
                 if simulation['simulationId'] == result['simulationId']:
                     current_simulations[i]['result'] = result['metrics']
-                    print(result['metrics'])
 
         self.evaluate_fitness(current_simulations)
 
@@ -66,6 +67,6 @@ class Evaluation:
                     game_length = metrics_result[metric][0]
                     difference = abs(self.desired_game_length - game_length)
                     normalized_difference = difference/1000
-                    score = min(normalized_difference, 10)
-                    self.current_population_fitness[character1_id] += 10 - score
-                    self.current_population_fitness[character2_id] += 10 - score
+                    score = min(normalized_difference, 100)
+                    self.current_population_fitness[character1_id] += 100 - score
+                    self.current_population_fitness[character2_id] += 100 - score
