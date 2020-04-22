@@ -68,5 +68,18 @@ class Evaluation:
                     difference = abs(self.desired_game_length - game_length)
                     normalized_difference = difference/1000
                     score = min(normalized_difference, 100)
-                    self.current_population_fitness[character1_id] += 100 - score
-                    self.current_population_fitness[character2_id] += 100 - score
+                    self.current_population_fitness[character1_id] += (
+                        100 - score)
+                    self.current_population_fitness[character2_id] += (
+                        100 - score)
+
+                    near_death_frames_character1 = metrics_result['nearDeathFrames'][0]
+                    near_death_frames_character2 = metrics_result['nearDeathFrames'][1]
+
+                    near_death_score1 = 100 * \
+                        (near_death_frames_character1/game_length)
+                    near_death_score2 = 100 * \
+                        (near_death_frames_character2/game_length)
+
+                    self.current_population_fitness[character1_id] += near_death_score1
+                    self.current_population_fitness[character2_id] += near_death_score2
