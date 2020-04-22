@@ -10,6 +10,8 @@ class Evaluation:
     fitness = None
     novelty = None
 
+    desired_game_length = 5000
+
     current_population_fitness = {}
 
     def __init__(self, simulation_queue):
@@ -26,12 +28,14 @@ class Evaluation:
 
         character_pairs = combinations(population, 2)
 
+        print("pushing simulations...\n\n")
         for pair in character_pairs:
             simulation_id = simulation_queue.push_character_pair(*pair)
             simulation_dict = {'simulationId': simulation_id,
                                'characters': [pair[0]['characterId'], pair[1]['characterId']]}
             current_simulations.append(simulation_dict)
 
+        print("waiting for simulation results...\n\n")
         simulation_result = simulation_queue.get_simulation_results()
         for i, simulation in enumerate(current_simulations):
             for result in simulation_result:
@@ -54,7 +58,15 @@ class Evaluation:
             metrics_result = result['result']
 
             for metric in metrics_result:
-                if metrics_result[metric][0]:
-                    self.current_population_fitness[character1_id] += 10
-                else:
-                    self.current_population_fitness[character1_id] += 10
+                if metric == 'characterWon':
+                    if metrics_result[metric][0]:
+                        self.current_population_fitness[character1_id] += 10
+                    else:
+                        self.current_population_fitness[character2_id] += 10
+                if metric == 'gameLength':
+                    game_length = metrics_result[metric][0]
+                    difference = abs(self.desired_game_length - game_length)
+                    normalized_difference = difference/1000
+                    score = min(normalized_difference, 100)
+                    self.current_population_fitness[character1_id] += 100 - score
+                    self.current_population_fitness[character2_id] += 100 - score
