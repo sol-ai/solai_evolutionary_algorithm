@@ -8,7 +8,7 @@ from solai_evolutionary_algorithm.socket.simulation_queue import SimulationQueue
 
 
 def main(**kwargs):
-    init_poplation_size = 3
+    init_poplation_size = 10
     evolution = Evolution(init_poplation_size, **kwargs)
     evolution.evolve()
     fittest_individuals = evolution.get_fittest_individuals()
