@@ -56,7 +56,9 @@ class Evolution:
         population_size = len(current_population)
 
         g = 0
+
         generations = 1000
+
 
         fitnesses = self.evaluate_one_generation(current_population)
         sorted_fitnesses = sorted((value, key)
