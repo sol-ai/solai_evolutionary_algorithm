@@ -20,6 +20,7 @@ class Evolution:
     def __init__(self, init_population_size=10, **kwargs):
         self.with_database = kwargs['with_database']
         self.endpoints = kwargs['endpoints']
+        self.metrics = kwargs['metrics']
 
         self.representation = Representation()
         self.useful_functions = UsefulFunctions()
@@ -39,7 +40,7 @@ class Evolution:
         queue_port = self.endpoints['redis_port']
 
         self.simulation_queue = SimulationQueue(
-            queue_host, queue_port, init_population_size)
+            queue_host, queue_port, init_population_size, self.metrics)
 
         self.evaluation = Evaluation(self.simulation_queue)
 
@@ -56,7 +57,7 @@ class Evolution:
         population_size = len(current_population)
 
         g = 0
-        generations = 10
+        generations = 1000
 
         fitnesses = self.evaluate_one_generation(current_population)
         sorted_fitnesses = sorted((value, key)

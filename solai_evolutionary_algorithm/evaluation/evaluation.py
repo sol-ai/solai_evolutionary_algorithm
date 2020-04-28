@@ -13,6 +13,7 @@ class Evaluation:
     desired_game_length = 5000
 
     current_population_fitness = {}
+    novel_archive = []
 
     def __init__(self, simulation_queue):
         self.simulation_queue = simulation_queue
@@ -50,12 +51,12 @@ class Evaluation:
 
         return fitnesses
 
-    def evaluate_fitness(self, simulation_results):
-        for result in simulation_results:
-            character1_id = result['characters'][0]
-            character2_id = result['characters'][1]
+    def evaluate_fitness(self, simulation_data):
+        for sim_data in simulation_data:
+            character1_id = sim_data['characters'][0]
+            character2_id = sim_data['characters'][1]
 
-            metrics_result = result['result']
+            metrics_result = sim_data['result']
 
             for metric in metrics_result:
                 if metric == 'characterWon':
@@ -67,11 +68,11 @@ class Evaluation:
                     game_length = metrics_result[metric][0]
                     difference = abs(self.desired_game_length - game_length)
                     normalized_difference = difference/1000
-                    score = min(normalized_difference, 100)
+                    game_length_score = min(normalized_difference, 100)
                     self.current_population_fitness[character1_id] += (
-                        100 - score)
+                        100 - game_length_score)
                     self.current_population_fitness[character2_id] += (
-                        100 - score)
+                        100 - game_length_score)
 
                     near_death_frames_character1 = metrics_result['nearDeathFrames'][0]
                     near_death_frames_character2 = metrics_result['nearDeathFrames'][1]
@@ -83,3 +84,6 @@ class Evaluation:
 
                     self.current_population_fitness[character1_id] += near_death_score1
                     self.current_population_fitness[character2_id] += near_death_score2
+
+    def evaluate_metric_score(self, metric):
+        pass
