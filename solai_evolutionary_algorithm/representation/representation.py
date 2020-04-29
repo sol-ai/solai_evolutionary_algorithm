@@ -52,7 +52,7 @@ class Representation:
         new_character["moveVelocity"] = moveVelocity
         new_character["abilities"] = []
 
-        for i in range(no_of_abilites):
+        for _ in range(no_of_abilites):
             new_character["abilities"].append(self.__generate_random_ability())
 
         return new_character
@@ -114,3 +114,10 @@ class Representation:
                 continue
             distance += (ability1[attribute] - ability2[attribute])**2
         return distance
+
+    def change_random_ability_of_character(self, character_config):
+        ability_number = random.randint(
+            0, len(character_config['abilities'])-1)
+
+        character_config['abilities'][ability_number] = self.__generate_random_ability(
+        )

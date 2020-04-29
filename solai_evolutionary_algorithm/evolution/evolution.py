@@ -5,6 +5,7 @@ import random
 from itertools import combinations
 import sys
 import threading
+from math import floor
 
 from solai_evolutionary_algorithm.representation.character_config_to_genome import character_config_to_genome
 from solai_evolutionary_algorithm.representation.representation import Representation
@@ -57,7 +58,10 @@ class Evolution:
         population_size = len(current_population)
 
         g = 0
-        generations = 1000
+        generations = 10
+        surviving_population_percentage = 0.2
+        surviving_population_number = floor(
+            population_size*surviving_population_percentage)
 
         fitnesses = self.evaluate_one_generation(current_population)
         sorted_fitnesses = sorted((value, key)
@@ -66,22 +70,26 @@ class Evolution:
         while g < generations:
             g += 1
 
-            char1_id = sorted_fitnesses[-1][1]
-            char2_id = sorted_fitnesses[-2][1]
+            surviving_characters = []
+            for i in range(-1, -surviving_population_number-1, -1):
+                char_id = sorted_fitnesses[i][1]
+                char = self.get_character_in_population_by_id(
+                    char_id, current_population)
+                surviving_characters.append(char)
 
-            char1 = self.get_character_in_population_by_id(
-                char1_id, current_population)
-            char2 = self.get_character_in_population_by_id(
-                char2_id, current_population)
+            children = []
 
-            child = self.crossover_scheme1(char1, char2)
+            for combos in combinations(surviving_characters, 2):
+                children.append(self.crossover_scheme1(combos[0], combos[1]))
 
-            current_population = [char1, char2]
+            current_population = []
+            current_population += surviving_characters + children
             remaining = population_size - len(current_population)
 
             for _ in range(remaining):
+                chosen_child = children[random.randint(0, len(children)-1)]
                 child_clone_mutated = self.representation.clone_character(
-                    child)
+                    chosen_child)
                 self.mutation_scheme1(child_clone_mutated)
                 current_population.append(child_clone_mutated)
 
@@ -102,7 +110,6 @@ class Evolution:
             character_and_fitness_configs.append((fitness, character_config))
 
         self.simulation_queue.push_population(character_and_fitness_configs)
-        # print(self.simulation_queue.get_population())
 
     def evaluate_one_generation(self, population):
 
@@ -132,6 +139,7 @@ class Evolution:
         self.__mutate_radius(genome)
         self.__mutate_moveVelocity(genome)
         self.__mutate_abilities(genome)
+        self.representation.change_random_ability_of_character(genome)
 
     def mutation_scheme2(self, genome):
         """
