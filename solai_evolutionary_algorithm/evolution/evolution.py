@@ -60,8 +60,8 @@ class Evolution:
         g = 0
         generations = 10
         surviving_population_percentage = 0.2
-        surviving_population_number = floor(
-            population_size*surviving_population_percentage)
+        surviving_population_number = max(floor(
+            population_size*surviving_population_percentage), 2)
 
         fitnesses = self.evaluate_one_generation(current_population)
         sorted_fitnesses = sorted((value, key)
@@ -100,14 +100,15 @@ class Evolution:
             print("\n\n-- Generation %i --" % g)
             print(sorted_fitnesses)
 
-        character_and_fitness_configs = []
+        character_and_fitness_configs = {}
 
         for char in sorted_fitnesses:
             fitness = char[0]
             char_id = char[1]
             character_config = self.get_character_in_population_by_id(
                 char_id, current_population)
-            character_and_fitness_configs.append((fitness, character_config))
+            character_and_fitness_configs[char_id] = {
+                'fitness': fitness, 'characterConfig': character_config}
 
         self.simulation_queue.push_population(character_and_fitness_configs)
 
