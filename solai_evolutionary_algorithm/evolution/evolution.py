@@ -100,15 +100,15 @@ class Evolution:
             print("\n\n-- Generation %i --" % g)
             print(sorted_fitnesses)
 
-        character_and_fitness_configs = {}
+        character_and_fitness_configs = []
 
         for char in sorted_fitnesses:
             fitness = char[0]
             char_id = char[1]
             character_config = self.get_character_in_population_by_id(
                 char_id, current_population)
-            character_and_fitness_configs[char_id] = {
-                'fitness': fitness, 'characterConfig': character_config}
+            character_and_fitness_configs.append(
+                {'characterId': char_id, 'fitness': fitness, 'characterConfig': character_config})
 
         self.simulation_queue.push_population(character_and_fitness_configs)
 
