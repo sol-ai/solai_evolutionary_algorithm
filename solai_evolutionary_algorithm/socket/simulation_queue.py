@@ -14,7 +14,7 @@ class SimulationQueue:
     current_generation_simulation_results = []
     current_number_of_simulations = 0
 
-    def __init__(self, host='redis', port=6370, population_size=10, metrics=[]):
+    def __init__(self, host='redis', port=6379, population_size=10, metrics=[]):
         self.population_size = population_size
         self.redis = redis.StrictRedis(host=host, port=port, db=0)
         self.metrics = metrics
