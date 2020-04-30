@@ -58,7 +58,7 @@ class Evolution:
         population_size = len(current_population)
 
         g = 0
-        generations = 10
+        generations = 3
         surviving_population_percentage = 0.2
         surviving_population_number = max(floor(
             population_size*surviving_population_percentage), 2)
@@ -132,7 +132,7 @@ class Evolution:
 
         genome2_ability = genome2['abilities'][ability_swap_number]
         new_character['abilities'][ability_swap_number] = genome2_ability
-        new_character['characterId'] = str(uuid.uuid1())
+        new_character['characterId'] = str(uuid.uuid4())
 
         return new_character
 
