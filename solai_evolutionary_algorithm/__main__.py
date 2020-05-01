@@ -9,8 +9,14 @@ if __name__ == '__main__':
     environment = str(config['APP']['ENVIRONMENT']).upper()
     endpoints = dict(config[environment + "_ENDPOINTS"])
 
+    metrics = []
+
+    for metric in config['METRICS']:
+        metrics.append(str(config['METRICS'][metric]))
+
     with_database = False
     if environment == 'PROUDCTION':
         with_database = True
 
-    main.main(with_database=with_database, endpoints=endpoints)
+    main.main(with_database=with_database,
+              endpoints=endpoints, metrics=metrics)

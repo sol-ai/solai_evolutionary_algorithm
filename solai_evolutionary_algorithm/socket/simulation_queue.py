@@ -14,16 +14,16 @@ class SimulationQueue:
     current_generation_simulation_results = []
     current_number_of_simulations = 0
 
-    def __init__(self, host='redis', port=6370, population_size=10):
+    def __init__(self, host='redis', port=6379, population_size=10, metrics=[]):
         self.population_size = population_size
         self.redis = redis.StrictRedis(host=host, port=port, db=0)
+        self.metrics = metrics
 
     def push_character_pair(self, character1, character2):
         self.current_number_of_simulations += 1
         return self.push_simulation_data([character1, character2])
 
     def push_simulation_data(self, character_configs):
-        # TODO: Specify metrics somewhere else
         simulation_id, simulation_data = self.__generate_simulation_data(
             character_configs)
         self.redis.lpush(SIMULATION_DATA_QUEUE, simulation_data)
@@ -55,9 +55,8 @@ class SimulationQueue:
     def __generate_simulation_data(self, character_configs):
         # TODO: Specify metrics somewhere else
         simulation_id = str(uuid.uuid1())
-        metrics = ["gameLength", "nearDeathFrames", "characterWon"]
         simulation_data = json.dumps({"simulationId": simulation_id,
-                                      "charactersConfigs": character_configs, "metrics": metrics})
+                                      "charactersConfigs": character_configs, "metrics": self.metrics})
         return simulation_id, simulation_data
 
     def push_population(self, population):
