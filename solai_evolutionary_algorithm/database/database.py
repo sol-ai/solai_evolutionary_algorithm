@@ -1,18 +1,28 @@
 import pymongo
 from copy import deepcopy
+from datetime import datetime
 
-HOST = "mongodb://mongodb:27017"
+HOST = "mongodb://127.0.0.1:27017"
 DATABASE_NAME = "solai_characters"
 DUMMY_COLLECTION = "simulations"
+GENERATIONS = "generations"
 
 
 class Database:
 
     def __init__(self):
+        #TODO: WIP
         self.client = pymongo.MongoClient(HOST)
         self.db = self.client[DATABASE_NAME]
+        self.evolutions = self.db[GENERATIONS]
         self.simulations = self.db[DUMMY_COLLECTION]
         self.simulations.delete_many({})
+
+    def create_evolution_collection(self):
+        current_time = str(datetime.now())
+        self.evolution = self.db["evolution"]
+        evolution = {"evolutionStart": current_time, "generations": []}
+        self.evolution.insert_one(evolution)
 
     def add_dummy_generation(self, generation, generation_number):
         characters_generation = self.simulations
