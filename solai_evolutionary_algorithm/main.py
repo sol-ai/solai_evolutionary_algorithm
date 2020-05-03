@@ -1,18 +1,18 @@
-import sys
-import configparser
-from solai_evolutionary_algorithm.representation.representation import Representation
 from solai_evolutionary_algorithm.evolution.evolution import Evolution
+from solai_evolutionary_algorithm.evolution.evolver import Evolver, EvolverConfig
 from solai_evolutionary_algorithm.utils.dummy_simulation import DummySimulation
-from solai_evolutionary_algorithm.database.database import Database
-from solai_evolutionary_algorithm.socket.simulation_queue import SimulationQueue
-
+import solai_evolutionary_algorithm.evolve_configurations.test_config as test_config
 
 def main(**kwargs):
-    poplation_size = 3
-    evolution = Evolution(poplation_size, **kwargs)
-    evolution.evolve()
-    fittest_individuals = evolution.get_fittest_individuals()
-    return fittest_individuals
+
+    evolver = Evolver()
+    evolver.evolve(test_config.test_config)
+
+    # poplation_size = 3
+    # evolution = Evolution(poplation_size, **kwargs)
+    # evolution.evolve()
+    # fittest_individuals = evolution.get_fittest_individuals()
+    # return fittest_individuals
 
 
 def dummy_simulation(**kwargs):

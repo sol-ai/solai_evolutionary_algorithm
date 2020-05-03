@@ -1,13 +1,9 @@
-import operator
-import sys
 import json
-import time
-from solai_evolutionary_algorithm.representation.character_config_to_genome import character_config_to_genome
 from solai_evolutionary_algorithm.representation.representation import Representation
 from solai_evolutionary_algorithm.utils.useful_functions import UsefulFunctions
 from solai_evolutionary_algorithm.evolution.evolution import Evolution
 from solai_evolutionary_algorithm.database.database import Database
-from solai_evolutionary_algorithm.socket.simulation_queue import SimulationQueue
+from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import SimulationQueue
 from pkg_resources import resource_stream
 
 

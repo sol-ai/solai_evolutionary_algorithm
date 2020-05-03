@@ -1,9 +1,13 @@
-from itertools import combinations
 from copy import deepcopy
+from itertools import combinations
+from typing import List, Optional
+
+from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import SimulationQueue
+from solai_evolutionary_algorithm.evolution.evolution_types import Population, FitnessEvaluation
+from solai_evolutionary_algorithm.utils.kwargs_utils import filter_not_none_values
 
 
-class Evaluation:
-
+class SimulationFitnessEvaluation(FitnessEvaluation):
     character_id = None
     fitness = None
     novelty = None
@@ -14,8 +18,24 @@ class Evaluation:
     current_population_fitness = {}
     novel_archive = []
 
-    def __init__(self, simulation_queue):
-        self.simulation_queue = simulation_queue
+    def __init__(
+            self,
+            metrics: List[str],
+            population_size: int,
+            queue_host: Optional[str] = None,
+            queue_port: Optional[int] = None
+    ):
+        self.simulation_queue = SimulationQueue(
+            population_size=population_size,
+            metrics=metrics,
+            **filter_not_none_values({
+                'host': queue_host,
+                'port': queue_port
+            })
+        )
+
+    def __call__(self, population: Population):
+        self.evaluate_one_population(population)
 
     def evaluate_one_population(self, population):
 
@@ -124,7 +144,7 @@ class Evaluation:
         for char in character_metrics_score:
             for metric in character_metrics_score[char]:
                 metric_score_per_game = character_metrics_score[char][metric] / \
-                    number_of_games_per_character
+                                        number_of_games_per_character
                 character_metrics_score[char][metric] = self.__evaluate_metric_score(
                     metric, metric_score_per_game)
 
@@ -135,4 +155,4 @@ class Evaluation:
             avg_score = 0.001
         else:
             avg_score = average_metric_score
-        return 1-min(abs(self.desired_values[metric] - avg_score)/self.desired_values[metric], 1)
+        return 1 - min(abs(self.desired_values[metric] - avg_score) / self.desired_values[metric], 1)

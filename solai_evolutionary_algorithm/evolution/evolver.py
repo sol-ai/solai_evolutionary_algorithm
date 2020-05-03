@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, FitnessEvaluator, \
+from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, FitnessEvaluation, \
     PopulationEvolver, EndCriteria, Population, EvaluatedPopulation
 
 
@@ -11,13 +11,13 @@ class FixedGenerationsEndCriteria:
 
     def __call__(self) -> bool:
         self.curr_generation += 1
-        return self.generations >= self.curr_generation
+        return self.curr_generation >= self.generations
 
 
 @dataclass(frozen=True)
 class EvolverConfig:
     initial_population_producer: InitialPopulationProducer
-    fitness_evaluator: FitnessEvaluator
+    fitness_evaluator: FitnessEvaluation
     population_evolver: PopulationEvolver
     end_criteria: EndCriteria
 
@@ -33,7 +33,10 @@ class Evolver:
         curr_population = initial_population
         generation = 0
         while True:
+            print(f"Starting generation {generation}")
+            print(f"Population: {curr_population}")
             evaluated_population: EvaluatedPopulation = config.fitness_evaluator(curr_population)
+            print(f"Evaluated population: {evaluated_population}")
             new_population: Population = config.population_evolver(evaluated_population)
             if config.end_criteria():
                 break

@@ -1,4 +1,4 @@
-from typing import Callable, List, Tuple, TypedDict, Any, TypeAlias
+from typing import Callable, List, Tuple, TypedDict, Any
 
 
 Individual = Any
@@ -14,7 +14,7 @@ SubPopulation = List[Individual]
 
 FitnessFunc = Callable[[Individual], List[float]]
 
-FitnessEvaluator = Callable[[Population], EvaluatedPopulation]
+FitnessEvaluation = Callable[[Population], EvaluatedPopulation]
 
 InitialPopulationProducer = Callable[[], Population]
 
