@@ -180,7 +180,7 @@ class Evolution:
             self.__mutate_ability(ability)
 
     def __mutate_ability(self, ability):
-        if ability['type'] == 'melee':
+        if ability['type'] == 'MELEE':
             ranges = self.melee_ranges
         else:
             ranges = self.projectile_ranges
