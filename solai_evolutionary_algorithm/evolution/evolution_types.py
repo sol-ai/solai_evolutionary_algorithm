@@ -12,8 +12,6 @@ EvaluatedIndividual = TypedDict("EvaluatedIndividual", {
 EvaluatedPopulation = List[EvaluatedIndividual]
 SubPopulation = List[Individual]
 
-FitnessFunc = Callable[[Individual], List[float]]
-
 FitnessEvaluation = Callable[[Population], EvaluatedPopulation]
 
 InitialPopulationProducer = Callable[[], Population]

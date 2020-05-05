@@ -23,7 +23,6 @@ class EvolverConfig:
 
 
 class Evolver:
-
     def __init__(self):
         pass
 
@@ -33,10 +32,7 @@ class Evolver:
         curr_population = initial_population
         generation = 0
         while True:
-            print(f"Starting generation {generation}")
-            print(f"Population: {curr_population}")
             evaluated_population: EvaluatedPopulation = config.fitness_evaluator(curr_population)
-            print(f"Evaluated population: {evaluated_population}")
             new_population: Population = config.population_evolver(evaluated_population)
             if config.end_criteria():
                 break

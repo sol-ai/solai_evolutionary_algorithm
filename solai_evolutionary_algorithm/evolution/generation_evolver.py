@@ -76,7 +76,7 @@ class DefaultGenerationEvolver:
         if crossover_count % 2 != 0:
             raise ValueError("Crossover amount does not add up to an even number given the population size")
 
-        crossover_individuals = ordered_population[:crossover_count]
+        crossover_individuals = ordered_population[:crossover_count]  # TODO something wrong
         elitism_individuals = ordered_population[:elitism_count]
         new_individuals = [self.config.new_individuals_producer() for _ in range(new_individuals_count)]
 

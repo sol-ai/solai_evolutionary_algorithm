@@ -48,7 +48,7 @@ class RandomBoundedProducer(InitialPopulationProducer):
     def generate_random_character(self):
         no_of_abilites = self.no_of_abilities
         new_character = {}
-        new_character["characterId"] = str(uuid.uuid1())
+        new_character["characterId"] = str(uuid.uuid4())
         config = self.character_config
 
         min_radius = config["radius"][0]
