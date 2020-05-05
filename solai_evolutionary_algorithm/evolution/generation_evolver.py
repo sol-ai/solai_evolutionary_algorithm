@@ -1,6 +1,8 @@
 import math
+import numbers
 from dataclasses import dataclass
 from functools import reduce
+from itertools import chain
 from typing import Callable, List, Optional
 
 from solai_evolutionary_algorithm.evolution.evolution_types import EvaluatedPopulation, Population, SubPopulation, \
@@ -47,7 +49,7 @@ class DefaultGenerationEvolver:
     def __call__(self, evaluated_population: EvaluatedPopulation) -> Population:
         def fitness_retriever(evaluated_individual: EvaluatedIndividual):
             fitness = evaluated_individual['fitness']
-            if type(fitness) == list and len(fitness) > 0 and type(fitness[0]) is float:
+            if type(fitness) == list and len(fitness) > 0 and isinstance(fitness[0], numbers.Number):
                 return sum(fitness)
             else:
                 raise ValueError("fitness must be a list of at least one float")
@@ -76,18 +78,27 @@ class DefaultGenerationEvolver:
         if crossover_count % 2 != 0:
             raise ValueError("Crossover amount does not add up to an even number given the population size")
 
-        crossover_individuals = ordered_population[:crossover_count]  # TODO something wrong
+        individuals_to_be_crossed = ordered_population[:crossover_count]
+        individual_pairs_to_be_crossed = [
+            individuals_to_be_crossed[i: i+2]
+            for i in range(0, len(individuals_to_be_crossed), 2)
+        ]
+        crossover_children = list(chain.from_iterable(
+            self.config.crossover(individual_pair)
+            for individual_pair in individual_pairs_to_be_crossed
+        ))
+
         elitism_individuals = ordered_population[:elitism_count]
         new_individuals = [self.config.new_individuals_producer() for _ in range(new_individuals_count)]
 
-        new_population = crossover_individuals + elitism_individuals + new_individuals
+        new_population = crossover_children + elitism_individuals + new_individuals
 
         def mutate(individual: Individual) -> Individual:
-            mutated_individual = list(reduce(
+            mutated_individual = reduce(
                 lambda prev_individual, new_mutation: new_mutation(prev_individual),
                 self.config.mutations,
                 individual
-            ))
+            )
             return mutated_individual
 
         new_mutated_population = [

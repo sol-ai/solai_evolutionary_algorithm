@@ -1,3 +1,4 @@
+from solai_evolutionary_algorithm.crossovers.ability_swap_crossover import AbilitySwapCrossover
 from solai_evolutionary_algorithm.evaluation.random_fitness_evaluation import RandomFitnessEvaluation
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evaluation import SimulationFitnessEvaluation
 from solai_evolutionary_algorithm.evolution.evolver import EvolverConfig, FixedGenerationsEndCriteria
@@ -17,15 +18,14 @@ test_config = EvolverConfig(
         metrics=["gameLength"],
         queue_host="localhost"
     ),
-    population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.PassThroughConfig),
-    # population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.Config(
-    #     population_orderer=None,
-    #     crossover_share=0,
-    #     elitism_share=0,
-    #     new_individuals_share=0,
-    #     crossover=None,
-    #     mutations=[],
-    #     new_individuals_producer=None
-    # )),
+    # population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.PassThroughConfig),
+    population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.Config(
+        crossover_share=0.6,
+        elitism_share=0.4,
+        new_individuals_share=0,
+        crossover=AbilitySwapCrossover(),
+        mutations=[],
+        new_individuals_producer=None
+    )),
     end_criteria=FixedGenerationsEndCriteria(generations=10)
 )
