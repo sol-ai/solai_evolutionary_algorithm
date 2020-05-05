@@ -1,3 +1,5 @@
+from typing import Tuple, Any, List, TypedDict, Dict, Optional
+
 import redis
 import uuid
 import sys
@@ -9,27 +11,38 @@ SIMULATION_DATA_QUEUE = "queue:simulation-data"
 SIMULATION_RESULT_QUEUE = 'queue:simulation-result'
 
 
+AbilityConfig = Dict[str, Any]
+
+CharacterConfig = TypedDict('CharacterConfig', {
+    'characterId': str,
+    'name': Optional[str],
+    'radius': float,
+    'moveVelocity': float,
+    'abilities': List[AbilityConfig]
+})
+
+SimulationData = TypedDict("SimulationData", {
+    "simulationId": str,
+    "charactersConfigs": List[CharacterConfig],
+    "metrics": List[str]
+})
+SimulationResult = TypedDict("SimulationResult", {
+    "simulationId": str,
+    "simulationData": SimulationData,
+    "metrics": Dict[str, List[float]]
+})
+
 class SimulationQueue:
 
-    current_generation_simulation_results = []
-    current_number_of_simulations = 0
-
-    def __init__(self, host='redis', port=6379, population_size=10, metrics=[]):
-        self.population_size = population_size
+    def __init__(self, host='redis', port=6379):
+        print(f"Connecting to redis simulation queue at host: {host} port: {port}")
         self.redis = redis.StrictRedis(host=host, port=port, db=0)
-        self.metrics = metrics
 
-    def push_character_pair(self, character1, character2):
-        self.current_number_of_simulations += 1
-        return self.push_simulation_data([character1, character2])
+    def push_simulation_data(self, simulation_data: SimulationData) -> None:
+        serialized_simulation_data = json.dumps(simulation_data)
+        self.redis.lpush(SIMULATION_DATA_QUEUE, serialized_simulation_data)
 
-    def push_simulation_data(self, character_configs):
-        simulation_id, simulation_data = self.__generate_simulation_data(
-            character_configs)
-        self.redis.lpush(SIMULATION_DATA_QUEUE, simulation_data)
-        return simulation_id
-
-    def get_simulation_result(self, block=True):
+    def get_simulation_result(self, block=True) -> Optional[SimulationResult]:
         if block:
             result = self.redis.blpop(SIMULATION_RESULT_QUEUE)
         else:
@@ -37,27 +50,28 @@ class SimulationQueue:
         result = json.loads(result[1].decode("utf-8"))
         return result
 
-    def get_simulation_results(self):
-        while len(self.current_generation_simulation_results) < self.current_number_of_simulations:
-            simulation_result = self.get_simulation_result()
-            self.current_generation_simulation_results.append(
-                simulation_result)
+    def push_simulations_data_wait_results(self, simulations_data: List[SimulationData]) -> List[SimulationResult]:
+        """
+        Pushes simulations and waits for an equal amount of results to be present
+        """
+        for simulation_data in simulations_data:
+            self.push_simulation_data(simulation_data)
 
-        current_generation_simulation_results = deepcopy(
-            self.current_generation_simulation_results)
-        self.current_generation_simulation_results = []
-        self.current_number_of_simulations = 0
-        return current_generation_simulation_results
+        pushed_simulations_count = len(simulations_data)
+        current_results = []
+
+        while len(current_results) < pushed_simulations_count:
+            simulation_result = self.get_simulation_result()
+            current_results.append(simulation_result)
+
+        # copied_current_results = deepcopy(current_results)
+        return current_results
 
     def get_simulation_data(self):
         return self.redis.lpop(SIMULATION_DATA_QUEUE)
 
-    def __generate_simulation_data(self, character_configs):
-        # TODO: Specify metrics somewhere else
-        simulation_id = str(uuid.uuid1())
-        simulation_data = json.dumps({"simulationId": simulation_id,
-                                      "charactersConfigs": character_configs, "metrics": self.metrics})
-        return simulation_id, simulation_data
+    def create_simulation_id(self):
+        return str(uuid.uuid4())
 
     def push_population(self, population):
         self.redis.lpush("queue:population", json.dumps(population))
