@@ -4,6 +4,7 @@ from solai_evolutionary_algorithm.evolution.evolver import EvolverConfig, FixedG
 from solai_evolutionary_algorithm.evolution.generation_evolver import DefaultGenerationEvolver
 from solai_evolutionary_algorithm.initial_population_producers.random_bounded_producer import RandomBoundedProducer
 
+
 test_config = EvolverConfig(
     initial_population_producer=RandomBoundedProducer(RandomBoundedProducer.Config(
         population_size=10,
@@ -11,9 +12,10 @@ test_config = EvolverConfig(
         melee_ability_ranges={},
         projectile_ability_ranges={}
     )),
+    # fitness_evaluator=RandomFitnessEvaluation(),
     fitness_evaluator=SimulationFitnessEvaluation(
-        metrics=["game_length"],
-        population_size=0
+        metrics=["gameLength"],
+        queue_host="localhost"
     ),
     population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.PassThroughConfig),
     # population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.Config(
