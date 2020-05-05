@@ -83,6 +83,12 @@ class SimulationFitnessEvaluation(FitnessEvaluation):
             for individual in population
         ]
 
+        fitness_by_character_id = {
+            evaluated_individual['individual']['characterId']: evaluated_individual['fitness']
+            for evaluated_individual in evaluated_population
+        }
+        print(f"Population fitness: {fitness_by_character_id}")
+
         return evaluated_population
 
     def simulate_population(
@@ -94,7 +100,6 @@ class SimulationFitnessEvaluation(FitnessEvaluation):
         Simulate combinations of characters and return simulation results
         """
         character_pairs: List[Tuple[CharacterConfig, CharacterConfig]] = combinations(population, 2)
-
         current_simulations_data = [
             SimulationData(
                 simulationId=simulation_queue.create_simulation_id(),

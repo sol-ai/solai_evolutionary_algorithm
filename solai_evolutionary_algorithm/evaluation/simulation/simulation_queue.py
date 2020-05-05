@@ -1,4 +1,5 @@
-from typing import Tuple, Any, List, TypedDict, Dict, Optional
+from time import time
+from typing import Tuple, Any, List, TypedDict, Dict, Optional, Union
 
 import redis
 import uuid
@@ -10,12 +11,26 @@ from copy import deepcopy
 SIMULATION_DATA_QUEUE = "queue:simulation-data"
 SIMULATION_RESULT_QUEUE = 'queue:simulation-result'
 
-
-AbilityConfig = Dict[str, Any]
+AbilityConfig = TypedDict("AbilityConfig", {
+    "name": str,
+    "type": str,  # "MELEE" | "PROJECTILE"
+    "radius": float,
+    "distanceFromChar": float,
+    "speed": float,
+    "startupTime": int,
+    "activeTime": int,
+    "executionTime": int,
+    "endlagTime": int,
+    "rechargeTime": int,
+    "damage": float,
+    "baseKnockback": float,
+    "knockbackRatio": float,
+    "knockbackPoint": float,
+    "knockbackTowardPoint": bool
+})
 
 CharacterConfig = TypedDict('CharacterConfig', {
     'characterId': str,
-    'name': Optional[str],
     'radius': float,
     'moveVelocity': float,
     'abilities': List[AbilityConfig]
@@ -59,10 +74,18 @@ class SimulationQueue:
 
         pushed_simulations_count = len(simulations_data)
         current_results = []
-
+        start_time = time()
+        prev_time = start_time
         while len(current_results) < pushed_simulations_count:
             simulation_result = self.get_simulation_result()
             current_results.append(simulation_result)
+
+            new_time = time()
+            if new_time-prev_time > 20:
+                print(f"waited for simulation results for {new_time - start_time:.2f}s, "
+                      f"got {len(current_results)} of {pushed_simulations_count}")
+                prev_time = new_time
+        print(f"Simulated {pushed_simulations_count} simulations in {time() - start_time:.2f}s")
 
         # copied_current_results = deepcopy(current_results)
         return current_results

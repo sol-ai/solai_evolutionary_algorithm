@@ -1,23 +1,46 @@
 import random
 import uuid
 from copy import deepcopy
+from typing import cast, List
 
+from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import CharacterConfig
 from solai_evolutionary_algorithm.evolution.evolution_types import Individual, SubPopulation
+from solai_evolutionary_algorithm.utils.character_id import create_character_id
 
 
-def ability_swap_crossover(self, individuals: SubPopulation):
+class AbilitySwapCrossover:
     """
-    Swaps a single ability from each parent
-    TODO: crossovers should yield two children
+    Swaps a single ability from each parent to produce two children
     """
-    [genome1, genome2] = individuals
-    new_character = deepcopy(genome1)
-    ability_swap_number = (random.randint(0, len(genome1['abilities'])-1))
 
-    genome2_ability = genome2['abilities'][ability_swap_number]
-    new_character['abilities'][ability_swap_number] = genome2_ability
-    new_character['characterId'] = str(uuid.uuid4())
+    def __call__(self, individuals: SubPopulation) -> SubPopulation:
+        parents = cast(List[CharacterConfig], individuals)
 
-    new_character2 = deepcopy(new_character)
+        # print(f"parent abilities: {parents[0]}")
+        abilities_count: int = len(parents[0]['abilities'])
+        ability_swap_index: int = (random.randint(0, abilities_count - 1))
 
-    return [new_character, new_character2]
+        def create_child(my_parent: CharacterConfig, other_parent: CharacterConfig):
+            my_parent_abilities = my_parent['abilities']
+            other_parent_abilities = other_parent['abilities']
+
+            child_abilities = my_parent_abilities[0: ability_swap_index] \
+                              + other_parent_abilities[ability_swap_index: ability_swap_index+1] \
+                              + my_parent_abilities[ability_swap_index+1:]
+
+            return CharacterConfig(
+                characterId=create_character_id(),
+                radius=my_parent['radius'],
+                moveVelocity=my_parent['moveVelocity'],
+                abilities=child_abilities
+            )
+
+        children = [
+            create_child(my_parent, other_parent)
+            for my_parent, other_parent in [(parents[0], parents[1]), (parents[1], parents[0])]
+        ]
+
+        if type(children[0]['abilities']) == str:
+            print(f"Children invalid {children}")
+
+        return children
