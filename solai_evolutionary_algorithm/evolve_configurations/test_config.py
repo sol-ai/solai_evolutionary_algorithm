@@ -18,7 +18,14 @@ test_config = EvolverConfig(
     fitness_evaluator=SimulationFitnessEvaluation(
         metrics=["leadChange", "characterWon",
                  "stageCoverage", "nearDeathFrames", "gameLength"],
-        queue_host="localhost"
+        queue_host="localhost",
+        desired_values={
+            "leadChange": 50,
+            "characterWon": 0.8,
+            "stageCoverage": 0.7,
+            "nearDeathFrames": 700,
+            "gameLength": 7200
+        }
     ),
     # population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.PassThroughConfig),
     population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.Config(

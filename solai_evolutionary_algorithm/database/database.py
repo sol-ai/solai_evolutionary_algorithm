@@ -18,9 +18,10 @@ class Database:
         self.collection = self.client.solai
         self.evolution_instances = self.collection.evolution_instances
 
-    def create_evolution_instance(self):
-        current_time = str(datetime.now())
-        evolution = {"evolutionStart": current_time, "generations": []}
+    def init_evolution_instance(self):
+        self.start_time = str(datetime.now())
+        evolution = {
+            "evolutionStart": self.start_time, "generations": []}
         self.evolution_instance_id = self.evolution_instances.insert_one(
             evolution).inserted_id
 
@@ -29,5 +30,9 @@ class Database:
             '$push': {'generations': generation}
         })
 
-    def close_connection(self):
+    def end_evolution_instance(self):
+        finish_time = datetime.now()
+        total_time_taken = str(finish_time - self.start_time)
+        self.evolution_instances.update_one({'_id': self.evolution_instance_id}, {
+                                            'Total time taken': total_time_taken})
         self.client.close()

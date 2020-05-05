@@ -30,7 +30,7 @@ class Evolver:
 
     def evolve(self, config: EvolverConfig):
 
-        config.database.create_evolution_instance()
+        config.database.init_evolution_instance()
         initial_population: Population = config.initial_population_producer()
 
         curr_population = initial_population
@@ -49,3 +49,5 @@ class Evolver:
             generation += 1
 
             curr_population = new_population
+
+        config.database.end_evolution_instance()
