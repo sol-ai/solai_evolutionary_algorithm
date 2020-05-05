@@ -8,8 +8,8 @@ class Evaluation:
     fitness = None
     novelty = None
 
-    desired_values = {"leadChange": 50,
-                      "characterWon": 0.8, "stageCoverage": 0.7, "nearDeathFrames": 700, "gameLength": 7200}
+    desired_values = {"leadChange": 50, "characterWon": 0.8,
+                      "stageCoverage": 0.7, "nearDeathFrames": 700, "gameLength": 7200}
 
     current_population_fitness = {}
     novel_archive = []

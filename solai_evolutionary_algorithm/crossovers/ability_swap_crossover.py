@@ -16,7 +16,6 @@ class AbilitySwapCrossover:
     def __call__(self, individuals: SubPopulation) -> SubPopulation:
         parents = cast(List[CharacterConfig], individuals)
 
-        # print(f"parent abilities: {parents[0]}")
         abilities_count: int = len(parents[0]['abilities'])
         ability_swap_index: int = (random.randint(0, abilities_count - 1))
 
@@ -25,8 +24,8 @@ class AbilitySwapCrossover:
             other_parent_abilities = other_parent['abilities']
 
             child_abilities = my_parent_abilities[0: ability_swap_index] \
-                              + other_parent_abilities[ability_swap_index: ability_swap_index+1] \
-                              + my_parent_abilities[ability_swap_index+1:]
+                + other_parent_abilities[ability_swap_index: ability_swap_index+1] \
+                + my_parent_abilities[ability_swap_index+1:]
 
             return CharacterConfig(
                 characterId=create_character_id(),

@@ -14,11 +14,9 @@ CLUSTER_URL = "mongodb+srv://" + USERNAME + ":" + PASSWORD + \
 class Database:
 
     def __init__(self):
-        #TODO: WIP
         self.client = pymongo.MongoClient(CLUSTER_URL)
         self.collection = self.client.solai
         self.evolution_instances = self.collection.evolution_instances
-        self.create_evolution_instance()
 
     def create_evolution_instance(self):
         current_time = str(datetime.now())
@@ -26,10 +24,10 @@ class Database:
         self.evolution_instance_id = self.evolution_instances.insert_one(
             evolution).inserted_id
 
-    def close_connection(self):
-        self.client.close()
-
     def add_character_generation(self, generation):
         self.evolution_instances.update_one({'_id': self.evolution_instance_id}, {
             '$push': {'generations': generation}
         })
+
+    def close_connection(self):
+        self.client.close()

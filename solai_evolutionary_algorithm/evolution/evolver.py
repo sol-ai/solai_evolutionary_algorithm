@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, FitnessEvaluation, \
     PopulationEvolver, EndCriteria, Population, EvaluatedPopulation
+from solai_evolutionary_algorithm.database.database import Database
 
 
 class FixedGenerationsEndCriteria:
@@ -20,6 +21,7 @@ class EvolverConfig:
     fitness_evaluator: FitnessEvaluation
     population_evolver: PopulationEvolver
     end_criteria: EndCriteria
+    database: Database
 
 
 class Evolver:
@@ -27,14 +29,20 @@ class Evolver:
         pass
 
     def evolve(self, config: EvolverConfig):
+
+        config.database.create_evolution_instance()
         initial_population: Population = config.initial_population_producer()
 
         curr_population = initial_population
         generation = 0
         while True:
             print(f"Starting generation {generation}")
-            evaluated_population: EvaluatedPopulation = config.fitness_evaluator(curr_population)
-            new_population: Population = config.population_evolver(evaluated_population)
+            evaluated_population: EvaluatedPopulation = config.fitness_evaluator(
+                curr_population)
+            new_population: Population = config.population_evolver(
+                evaluated_population)
+
+            config.database.add_character_generation(new_population)
             if config.end_criteria():
                 break
 
