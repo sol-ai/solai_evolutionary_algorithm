@@ -5,6 +5,9 @@ import os
 import uuid
 import json
 from dataclasses import asdict
+from solai_evolutionary_algorithm.evolution.evolver import EvolutionListener
+from solai_evolutionary_algorithm.evolution.evolver import EvolverConfig
+from typing import Dict
 
 
 USERNAME = "haraldvinje"
@@ -40,7 +43,11 @@ class Database:
                                                                                   {'totalTimeTaken': total_time_taken}})
         self.client.close()
 
-    def post_config(self, config):
+    def post_config(self, config: EvolverConfig) -> None:
+        self.evolution_instances.update_one({'_id': self.evolution_instance_id}, {
+                                            '$set': {'evolutionConfig': self.__serialize_evolution_config(config)}})
+
+    def __serialize_evolution_config(self, config: EvolverConfig) -> Dict[str, any]:
         config_dict = config.__dict__
         serialized_dict = {}
         for key in config_dict:
@@ -48,4 +55,6 @@ class Database:
                 serialized_dict[key] = config_dict[key].serialize()
             else:
                 serialized_dict[key] = config_dict[key]
-        print(serialized_dict)
+
+        del serialized_dict['evolution_listeners']
+        return serialized_dict

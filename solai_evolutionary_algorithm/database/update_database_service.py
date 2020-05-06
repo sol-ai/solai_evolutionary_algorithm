@@ -9,7 +9,7 @@ class UpdateDatabaseService(EvolutionListener):
         self.database = Database()
         self.database.init_evolution_instance(config)
 
-    def on_new_generation(self, evaluated_generation):
+    def on_new_generation(self, evaluated_generation, is_last_generation):
         self.database.add_character_generation(evaluated_generation)
 
     def on_end(self):
