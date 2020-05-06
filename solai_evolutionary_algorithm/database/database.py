@@ -18,7 +18,6 @@ class Database:
         self.client = pymongo.MongoClient(CLUSTER_URL)
         self.collection = self.client.solai
         self.evolution_instances = self.collection.evolution_instances
-        self.create_evolution_instance()
 
     def create_evolution_instance(self):
         current_time = str(datetime.now())
