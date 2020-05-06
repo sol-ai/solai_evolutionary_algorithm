@@ -14,6 +14,9 @@ class FixedGenerationsEndCriteria:
         self.curr_generation += 1
         return self.curr_generation >= self.generations
 
+    def serialize(self):
+        return {'description': 'Ends after a fixed number of generations are produced'}
+
 
 GenerationsListener = Callable[[Population, EvaluatedPopulation, bool], None]
 
