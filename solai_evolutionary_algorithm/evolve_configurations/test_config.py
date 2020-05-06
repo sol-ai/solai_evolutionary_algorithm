@@ -5,6 +5,7 @@ from solai_evolutionary_algorithm.evolution.evolver import EvolverConfig, FixedG
 from solai_evolutionary_algorithm.evolution.generation_evolver import DefaultGenerationEvolver
 from solai_evolutionary_algorithm.evolution_services.plot_generations_service import PlotGenerationsLocalService
 from solai_evolutionary_algorithm.initial_population_producers.random_bounded_producer import RandomBoundedProducer
+from solai_evolutionary_algorithm.database.update_database_service import UpdateDatabaseService
 
 
 test_config = EvolverConfig(
@@ -35,5 +36,6 @@ test_config = EvolverConfig(
         new_individuals_producer=None
     )),
     end_criteria=FixedGenerationsEndCriteria(generations=100),
-    generation_listeners=[PlotGenerationsLocalService()]
+    evolution_listeners=[
+        PlotGenerationsLocalService(), UpdateDatabaseService()]
 )

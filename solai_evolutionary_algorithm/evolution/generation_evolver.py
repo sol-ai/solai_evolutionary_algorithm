@@ -13,7 +13,6 @@ Mutation = Callable[[Individual], Individual]
 IndividualProducer = Callable[[], Individual]
 
 
-
 class DefaultGenerationEvolver:
     """
     This generation evolver first orders individuals given an EvaluatedPopulationOrderer.
@@ -44,7 +43,8 @@ class DefaultGenerationEvolver:
             raise ValueError("No crossover provided and crossover_share not 0")
 
         if self.config.new_individuals_share != 0 and not config.new_individuals_producer:
-            raise ValueError("No new_individual_producer provided and new_individuals_share not 0")
+            raise ValueError(
+                "No new_individual_producer provided and new_individuals_share not 0")
 
     def __call__(self, evaluated_population: EvaluatedPopulation) -> Population:
         def fitness_retriever(evaluated_individual: EvaluatedIndividual):
@@ -52,7 +52,8 @@ class DefaultGenerationEvolver:
             if type(fitness) == list and len(fitness) > 0 and isinstance(fitness[0], numbers.Number):
                 return sum(fitness)
             else:
-                raise ValueError("fitness must be a list of at least one float")
+                raise ValueError(
+                    "fitness must be a list of at least one float")
 
         ordered_evaluated_population = sorted(
             evaluated_population,
@@ -68,15 +69,18 @@ class DefaultGenerationEvolver:
 
         individuals_amount = self._share2amount(
             population_count,
-            [self.config.crossover_share, self.config.elitism_share, self.config.new_individuals_share]
+            [self.config.crossover_share, self.config.elitism_share,
+                self.config.new_individuals_share]
         )
         if sum(individuals_amount) != population_count:
-            raise ValueError("Percentages does not add up to produce an equal sized population")
+            raise ValueError(
+                "Percentages does not add up to produce an equal sized population")
 
         crossover_count, elitism_count, new_individuals_count = individuals_amount
 
         if crossover_count % 2 != 0:
-            raise ValueError("Crossover amount does not add up to an even number given the population size")
+            raise ValueError(
+                "Crossover amount does not add up to an even number given the population size")
 
         individuals_to_be_crossed = ordered_population[:crossover_count]
         individual_pairs_to_be_crossed = [
@@ -89,13 +93,15 @@ class DefaultGenerationEvolver:
         ))
 
         elitism_individuals = ordered_population[:elitism_count]
-        new_individuals = [self.config.new_individuals_producer() for _ in range(new_individuals_count)]
+        new_individuals = [self.config.new_individuals_producer()
+                           for _ in range(new_individuals_count)]
 
         new_population = crossover_children + elitism_individuals + new_individuals
 
         def mutate(individual: Individual) -> Individual:
             mutated_individual = reduce(
-                lambda prev_individual, new_mutation: new_mutation(prev_individual),
+                lambda prev_individual, new_mutation: new_mutation(
+                    prev_individual),
                 self.config.mutations,
                 individual
             )
@@ -114,3 +120,13 @@ class DefaultGenerationEvolver:
             round(total * x)
             for x in shares
         ]
+
+    def serialize(self):
+        config = {'crossoverShare': self.config.crossover_share,
+                  'newIndividualsShare': self.config.new_individuals_share}
+        if self.config.crossover:
+            config['crossover'] = self.config.crossover.serialize()
+        if self.config.mutations:
+            config['mutations'] = [mutation.serialize()
+                                   for mutation in self.config.mutations]
+        return config

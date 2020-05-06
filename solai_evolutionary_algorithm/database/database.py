@@ -3,6 +3,8 @@ from copy import deepcopy
 from datetime import datetime
 import os
 import uuid
+import json
+from dataclasses import asdict
 
 
 USERNAME = "haraldvinje"
@@ -14,21 +16,36 @@ CLUSTER_URL = "mongodb+srv://" + USERNAME + ":" + PASSWORD + \
 class Database:
 
     def __init__(self):
-        #TODO: WIP
         self.client = pymongo.MongoClient(CLUSTER_URL)
-        self.collection = self.client.solai
-        self.evolution_instances = self.collection.evolution_instances
+        self.database = self.client.solai
+        self.evolution_instances = self.database.evolution_instances
 
-    def create_evolution_instance(self):
-        current_time = str(datetime.now())
-        evolution = {"evolutionStart": current_time, "generations": []}
+    def init_evolution_instance(self, config):
+        self.start_time = datetime.now()
+        evolution = {
+            "evolutionStart": str(self.start_time), "generations": []}
         self.evolution_instance_id = self.evolution_instances.insert_one(
             evolution).inserted_id
-
-    def close_connection(self):
-        self.client.close()
+        self.post_config(config)
 
     def add_character_generation(self, generation):
         self.evolution_instances.update_one({'_id': self.evolution_instance_id}, {
             '$push': {'generations': generation}
         })
+
+    def end_evolution_instance(self):
+        finish_time = datetime.now()
+        total_time_taken = str(finish_time - self.start_time)
+        self.evolution_instances.update_one({'_id': self.evolution_instance_id}, {'$set':
+                                                                                  {'totalTimeTaken': total_time_taken}})
+        self.client.close()
+
+    def post_config(self, config):
+        config_dict = config.__dict__
+        serialized_dict = {}
+        for key in config_dict:
+            if hasattr(config_dict[key], 'serialize'):
+                serialized_dict[key] = config_dict[key].serialize()
+            else:
+                serialized_dict[key] = config_dict[key]
+        print(serialized_dict)

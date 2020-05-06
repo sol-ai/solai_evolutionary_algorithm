@@ -18,13 +18,25 @@ class FixedGenerationsEndCriteria:
 GenerationsListener = Callable[[Population, EvaluatedPopulation, bool], None]
 
 
+class EvolutionListener:
+
+    def on_start(self, config):
+        pass
+
+    def on_new_generation(self, new_popoulation):
+        pass
+
+    def on_end(self):
+        pass
+
+
 @dataclass(frozen=True)
 class EvolverConfig:
     initial_population_producer: InitialPopulationProducer
     fitness_evaluator: FitnessEvaluation
     population_evolver: PopulationEvolver
     end_criteria: EndCriteria
-    generation_listeners: Optional[List[GenerationsListener]] = None
+    evolution_listeners: Optional[List[EvolutionListener]] = None
 
 
 class Evolver:
@@ -38,20 +50,26 @@ class Evolver:
         curr_population: Population = initial_population
         evaluated_population: EvaluatedPopulation
 
+        if config.evolution_listeners is not None:
+            for listener in config.evolution_listeners:
+                listener.on_start(config)
+
         while True:
             print(f"Starting generation {generation}")
             evaluated_population = config.fitness_evaluator(curr_population)
 
             is_last_generation = config.end_criteria()
 
-            if config.generation_listeners is not None:
-                for listener in config.generation_listeners:
-                    listener(curr_population, evaluated_population, is_last_generation)
+            if config.evolution_listeners is not None:
+                for listener in config.evolution_listeners:
+                    listener.on_new_generation(
+                        evaluated_population, is_last_generation)
 
             if is_last_generation:
                 break
 
-            new_population: Population = config.population_evolver(evaluated_population)
+            new_population: Population = config.population_evolver(
+                evaluated_population)
 
             generation += 1
 

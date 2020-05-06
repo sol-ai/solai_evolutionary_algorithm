@@ -2,10 +2,9 @@ import json
 import random
 import uuid
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from pkg_resources import resource_stream
 from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, EvaluatedIndividual
-
 
 
 class RandomBoundedProducer(InitialPopulationProducer):
@@ -37,13 +36,8 @@ class RandomBoundedProducer(InitialPopulationProducer):
     def __call__(self):
         return self.generate_init_population(n=self.config.population_size)
 
-
     def generate_init_population(self, n=10):
-        init_population = []
-        for _ in range(n):
-            individual = self.generate_random_character()
-            init_population.append(individual)
-        return init_population
+        return [self.generate_random_character() for _ in range(n)]
 
     def generate_random_character(self):
         no_of_abilites = self.no_of_abilities
@@ -97,3 +91,6 @@ class RandomBoundedProducer(InitialPopulationProducer):
                         0, no_values-1)]
 
         return ability
+
+    def serialize(self):
+        return asdict(self.config)
