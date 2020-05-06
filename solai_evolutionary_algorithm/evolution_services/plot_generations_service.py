@@ -22,7 +22,7 @@ class PlotGenerationsLocalService(GenerationsListener):
             sum(evaluated_individual['fitness'])
             for evaluated_individual in evaluated_population
         ])
-        print(f"populations fitnesses: {self.populations_fitness}")
+
         plt.figure(1)
         plt.gcf().clear()
         plt.boxplot(self.populations_fitness)
