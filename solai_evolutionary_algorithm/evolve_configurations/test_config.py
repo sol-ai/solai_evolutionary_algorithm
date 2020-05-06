@@ -3,6 +3,7 @@ from solai_evolutionary_algorithm.evaluation.random_fitness_evaluation import Ra
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evaluation import SimulationFitnessEvaluation
 from solai_evolutionary_algorithm.evolution.evolver import EvolverConfig, FixedGenerationsEndCriteria
 from solai_evolutionary_algorithm.evolution.generation_evolver import DefaultGenerationEvolver
+from solai_evolutionary_algorithm.evolution_services.plot_generations_service import PlotGenerationsLocalService
 from solai_evolutionary_algorithm.initial_population_producers.random_bounded_producer import RandomBoundedProducer
 
 
@@ -15,7 +16,13 @@ test_config = EvolverConfig(
     )),
     # fitness_evaluator=RandomFitnessEvaluation(),
     fitness_evaluator=SimulationFitnessEvaluation(
-        metrics=["gameLength"],
+        metrics=[
+            "leadChange",
+            "characterWon",
+            "stageCoverage",
+            "nearDeathFrames",
+            "gameLength"
+        ],
         queue_host="localhost"
     ),
     # population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.PassThroughConfig),
@@ -27,5 +34,6 @@ test_config = EvolverConfig(
         mutations=[],
         new_individuals_producer=None
     )),
-    end_criteria=FixedGenerationsEndCriteria(generations=10)
+    end_criteria=FixedGenerationsEndCriteria(generations=100),
+    generation_listeners=[PlotGenerationsLocalService()]
 )
