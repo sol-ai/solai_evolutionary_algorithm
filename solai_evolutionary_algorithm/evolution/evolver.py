@@ -26,7 +26,7 @@ class Evolver:
         curr_population: Population = initial_population
         evaluated_population: EvaluatedPopulation
 
-        if config.evolver_listeners is not None:
+        if config.evolver_listeners:
             for listener in config.evolver_listeners:
                 listener.on_start(config)
 
@@ -36,7 +36,7 @@ class Evolver:
 
             is_last_generation = config.end_criteria()
 
-            if config.evolver_listeners is not None:
+            if config.evolver_listeners:
                 for listener in config.evolver_listeners:
                     listener.on_new_generation(
                         evaluated_population, is_last_generation)
