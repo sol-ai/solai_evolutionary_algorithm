@@ -11,7 +11,7 @@ from typing import Dict
 
 
 USERNAME = "haraldvinje"
-PASSWORD = os.environ["DB_PASSWORD"]
+PASSWORD = os.environ["SOLAI_DB_PASSWORD"]
 CLUSTER_URL = "mongodb+srv://" + USERNAME + ":" + PASSWORD + \
     "@cluster0-dzimv.mongodb.net/test?retryWrites=true&w=majority"
 
