@@ -2,11 +2,11 @@ from functools import reduce
 
 from matplotlib.figure import Figure
 
-from solai_evolutionary_algorithm.evolution.evolver import EvolutionListener
+from solai_evolutionary_algorithm.evolution.evolver_listener import EvolverListener
 import matplotlib.pyplot as plt
 
 
-class PlotGenerationsLocalService(EvolutionListener):
+class PlotGenerationsLocalService(EvolverListener):
 
     def __init__(self):
         self.populations_fitness = []

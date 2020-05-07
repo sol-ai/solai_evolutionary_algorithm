@@ -1,9 +1,9 @@
 
-from solai_evolutionary_algorithm.evolution.evolver import EvolutionListener
+from solai_evolutionary_algorithm.evolution.evolver_listener import EvolverListener
 from solai_evolutionary_algorithm.database.database import Database
 
 
-class UpdateDatabaseService(EvolutionListener):
+class UpdateDatabaseService(EvolverListener):
 
     def on_start(self, config):
         self.database = Database()

@@ -5,8 +5,8 @@ import os
 import uuid
 import json
 from dataclasses import asdict
-from solai_evolutionary_algorithm.evolution.evolver import EvolutionListener
-from solai_evolutionary_algorithm.evolution.evolver import EvolverConfig
+from solai_evolutionary_algorithm.evolution.evolver_listener import EvolverListener
+from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig
 from typing import Dict
 
 
@@ -56,5 +56,6 @@ class Database:
             else:
                 serialized_dict[key] = config_dict[key]
 
-        del serialized_dict['evolution_listeners']
+        if serialized_dict['evolver_listeners']:
+            del serialized_dict['evolver_listeners']
         return serialized_dict

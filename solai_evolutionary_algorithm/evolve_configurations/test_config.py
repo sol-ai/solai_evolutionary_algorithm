@@ -1,7 +1,8 @@
 from solai_evolutionary_algorithm.crossovers.ability_swap_crossover import AbilitySwapCrossover
 from solai_evolutionary_algorithm.evaluation.random_fitness_evaluation import RandomFitnessEvaluation
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evaluation import SimulationFitnessEvaluation
-from solai_evolutionary_algorithm.evolution.evolver import EvolverConfig, FixedGenerationsEndCriteria
+from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig
+from solai_evolutionary_algorithm.evolution_end_criteria.fixed_generation_end_criteria import FixedGenerationsEndCriteria
 from solai_evolutionary_algorithm.evolution.generation_evolver import DefaultGenerationEvolver
 from solai_evolutionary_algorithm.initial_population_producers.random_bounded_producer import RandomBoundedProducer
 from solai_evolutionary_algorithm.database.update_database_service import UpdateDatabaseService
@@ -38,6 +39,6 @@ test_config = EvolverConfig(
         new_individuals_producer=None
     )),
     end_criteria=FixedGenerationsEndCriteria(generations=3),
-    evolution_listeners=[
+    evolver_listeners=[
         UpdateDatabaseService()]
 )

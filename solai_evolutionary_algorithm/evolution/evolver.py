@@ -3,34 +3,7 @@ from typing import List, Optional, Tuple, Callable
 
 from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, FitnessEvaluation, \
     PopulationEvolver, EndCriteria, Population, EvaluatedPopulation
-
-
-class FixedGenerationsEndCriteria:
-    def __init__(self, generations: int):
-        self.generations = generations
-        self.curr_generation = 0
-
-    def __call__(self) -> bool:
-        self.curr_generation += 1
-        return self.curr_generation >= self.generations
-
-    def serialize(self):
-        return {'description': f'Ends after {self.generations} generations are produced'}
-
-
-GenerationsListener = Callable[[Population, EvaluatedPopulation, bool], None]
-
-
-class EvolutionListener:
-
-    def on_start(self, config):
-        pass
-
-    def on_new_generation(self, new_popoulation, is_last_generation):
-        pass
-
-    def on_end(self):
-        pass
+from solai_evolutionary_algorithm.evolution.evolver_listener import EvolverListener
 
 
 @dataclass(frozen=True)
@@ -39,7 +12,7 @@ class EvolverConfig:
     fitness_evaluator: FitnessEvaluation
     population_evolver: PopulationEvolver
     end_criteria: EndCriteria
-    evolution_listeners: Optional[List[EvolutionListener]] = None
+    evolution_listeners: Optional[List[EvolverListener]] = None
 
 
 class Evolver:
@@ -53,8 +26,8 @@ class Evolver:
         curr_population: Population = initial_population
         evaluated_population: EvaluatedPopulation
 
-        if config.evolution_listeners is not None:
-            for listener in config.evolution_listeners:
+        if config.evolver_listeners is not None:
+            for listener in config.evolver_listeners:
                 listener.on_start(config)
 
         while True:
@@ -63,8 +36,8 @@ class Evolver:
 
             is_last_generation = config.end_criteria()
 
-            if config.evolution_listeners is not None:
-                for listener in config.evolution_listeners:
+            if config.evolver_listeners is not None:
+                for listener in config.evolver_listeners:
                     listener.on_new_generation(
                         evaluated_population, is_last_generation)
 
