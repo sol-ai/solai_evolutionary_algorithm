@@ -1,14 +1,10 @@
-import pymongo
-from copy import deepcopy
-from datetime import datetime
 import os
-import uuid
-import json
-from dataclasses import asdict
-from solai_evolutionary_algorithm.evolution.evolver_listener import EvolverListener
-from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig
+from datetime import datetime
 from typing import Dict
 
+import pymongo
+
+from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig
 
 USERNAME = "haraldvinje"
 PASSWORD = os.environ["SOLAI_DB_PASSWORD"]
@@ -20,7 +16,7 @@ class Database:
 
     def __init__(self):
         self.client = pymongo.MongoClient(CLUSTER_URL)
-        self.database = self.client.solai
+        self.database = self.client.solaigit
         self.evolution_instances = self.database.evolution_instances
 
     def init_evolution_instance(self, config):
