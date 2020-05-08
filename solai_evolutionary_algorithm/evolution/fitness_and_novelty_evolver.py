@@ -3,8 +3,9 @@ import math
 import numbers
 from dataclasses import dataclass
 from functools import reduce
-from itertools import chain
+from itertools import chain, combinations
 from typing import Callable, List, Optional, Tuple, Dict, Any
+from solai_evolutionary_algorithm.utils.character_distance_utils import normalized_euclidean_distance
 
 from solai_evolutionary_algorithm.evolution.evolution_types import EvaluatedPopulation, Population, SubPopulation, \
     Individual, EvaluatedIndividual
@@ -47,6 +48,17 @@ class FitnessAndNoveltyEvolver:
             raise ValueError(
                 "No new_individual_producer provided and new_individuals_share not 0")
 
+    def evaluate_novelty(self, evaluated_population):
+        config = self.config
+        population = list(
+            map(lambda individual: individual['individual'], evaluated_population))
+        individual_pairs = combinations(population, 2)
+        generation_novelty = 0
+        for pair in individual_pairs:
+            generation_novelty += normalized_euclidean_distance(pair[0], pair[1], config.character_properties_ranges,
+                                                                config.melee_ability_ranges, config.projectile_ability_ranges)
+        # TODO: figure out what to do with novelty
+
     def __call__(self, evaluated_population: EvaluatedPopulation) -> Population:
         def fitness_retriever(evaluated_individual: EvaluatedIndividual):
             fitness = evaluated_individual['fitness']
@@ -61,6 +73,8 @@ class FitnessAndNoveltyEvolver:
             key=fitness_retriever,
             reverse=True
         )
+
+        self.evaluate_novelty(ordered_evaluated_population)
 
         ordered_population = [
             evaluated_individual['individual']
