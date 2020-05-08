@@ -9,37 +9,41 @@ from solai_evolutionary_algorithm.mutations.default_properties_mutation import d
 from solai_evolutionary_algorithm.mutations.properties_mutation import PropertiesMutation, PropertyMutationData
 
 
-
+initial_population_producer = RandomBoundedProducer(RandomBoundedProducer.Config(
+    population_size=20,
+    character_properties_ranges={},
+    melee_ability_ranges={},
+    projectile_ability_ranges={}
+))
 
 test_config = EvolverConfig(
-    initial_population_producer=RandomBoundedProducer(RandomBoundedProducer.Config(
-        population_size=100,
-        character_properties_ranges={},
-        melee_ability_ranges={},
-        projectile_ability_ranges={}
-    )),
-    fitness_evaluator=RandomFitnessEvaluation(),
-    # fitness_evaluator=SimulationFitnessEvaluation(
-    #     metrics=[
-    #         "leadChange",
-    #         "characterWon",
-    #         "stageCoverage",
-    #         "nearDeathFrames",
-    #         "gameLength"
-    #     ],
-    #     queue_host="localhost"
-    # ),
+    initial_population_producer=initial_population_producer,
+    # fitness_evaluator=RandomFitnessEvaluation(),
+    fitness_evaluator=SimulationFitnessEvaluation(
+        metrics=[
+            "leadChange",
+            "characterWon",
+            "stageCoverage",
+            "nearDeathFrames",
+            "gameLength"
+        ],
+        queue_host="localhost"
+    ),
     # population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.PassThroughConfig),
     population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.Config(
-        crossover_share=0.6,
-        elitism_share=0.4,
+        crossover_share=0.1,
+        mutate_only_share=0.73,
         new_individuals_share=0,
+        elitism_share=0.1,
         crossover=AbilitySwapCrossover(),
         mutations=[
-            default_properties_mutation()
+            default_properties_mutation(
+                probability_per_number_property=0.1,
+                probability_per_bool_property=0.05,
+            )
         ],
-        new_individuals_producer=None
+        new_individuals_producer=initial_population_producer.generate_random_character
     )),
-    end_criteria=FixedGenerationsEndCriteria(generations=10),
+    end_criteria=FixedGenerationsEndCriteria(generations=30),
     generation_listeners=[PlotGenerationsLocalService()]
 )
