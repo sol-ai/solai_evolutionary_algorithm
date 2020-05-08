@@ -1,18 +1,7 @@
-from dataclasses import dataclass
-from typing import List, Optional, Tuple, Callable
+from typing import Tuple
 
-from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, FitnessEvaluation, \
-    PopulationEvolver, EndCriteria, Population, EvaluatedPopulation
-from solai_evolutionary_algorithm.evolution.evolver_listener import EvolverListener
-
-
-@dataclass(frozen=True)
-class EvolverConfig:
-    initial_population_producer: InitialPopulationProducer
-    fitness_evaluator: FitnessEvaluation
-    population_evolver: PopulationEvolver
-    end_criteria: EndCriteria
-    evolution_listeners: Optional[List[EvolverListener]] = None
+from solai_evolutionary_algorithm.evolution.evolution_types import Population, EvaluatedPopulation
+from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig
 
 
 class Evolver:
