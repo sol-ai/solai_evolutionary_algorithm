@@ -4,17 +4,59 @@ from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evalu
 from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig
 from solai_evolutionary_algorithm.evolution_end_criteria.fixed_generation_end_criteria import FixedGenerationsEndCriteria
 from solai_evolutionary_algorithm.evolution.generation_evolver import DefaultGenerationEvolver
+from solai_evolutionary_algorithm.evolution.fitness_and_novelty_evolver import FitnessAndNoveltyEvolver
 from solai_evolutionary_algorithm.initial_population_producers.random_bounded_producer import RandomBoundedProducer
 from solai_evolutionary_algorithm.database.update_database_service import UpdateDatabaseService
 from solai_evolutionary_algorithm.evolution_services.plot_generations_service import PlotGenerationsLocalService
+from pkg_resources import resource_stream
+import json
 
+
+character_properties_ranges = {"radius": [28.0, 50.0],
+                               "moveVelocity": [200.0, 2000.0]}
+
+melee_ability_ranges = {
+    "name": "abilityName",
+    "type": "MELEE",
+    "radius": [16, 200],
+    "distanceFromChar": [0, 200],
+    "speed": [0, 0],
+    "startupTime": [10, 500],
+    "activeTime": [10, 60],
+    "executionTime": [0, 60],
+    "endlagTime": [10, 60],
+    "rechargeTime": [0, 60],
+    "damage": [100, 1000],
+    "baseKnockback": [10, 1000],
+    "knockbackRatio": [0.1, 1.0],
+    "knockbackPoint": [-500, 500],
+    "knockbackTowardPoint": [False, True]
+}
+
+projectile_ability_ranges = {
+    "name": "abilityName",
+    "type": "PROJECTILE",
+    "radius": [5, 50],
+    "distanceFromChar": [0, 200],
+    "speed": [100, 800],
+    "startupTime": [1, 60],
+    "activeTime": [20, 1000],
+    "executionTime": [0, 60],
+    "endlagTime": [6, 60],
+    "rechargeTime": [13, 80],
+    "damage": [15, 500],
+    "baseKnockback": [50, 1000],
+    "knockbackRatio": [0.1, 1.0],
+    "knockbackPoint": [-500, 500],
+    "knockbackTowardPoint": [False, True]
+}
 
 test_config = EvolverConfig(
     initial_population_producer=RandomBoundedProducer(RandomBoundedProducer.Config(
         population_size=3,
-        character_properties_ranges={},
-        melee_ability_ranges={},
-        projectile_ability_ranges={}
+        character_properties_ranges=character_properties_ranges,
+        melee_ability_ranges=melee_ability_ranges,
+        projectile_ability_ranges=projectile_ability_ranges
     )),
     # fitness_evaluator=RandomFitnessEvaluation(),
     fitness_evaluator=SimulationFitnessEvaluation(
@@ -30,10 +72,14 @@ test_config = EvolverConfig(
         }
     ),
     # population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.PassThroughConfig),
-    population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.Config(
+    population_evolver=FitnessAndNoveltyEvolver(FitnessAndNoveltyEvolver.Config(
         crossover_share=0.6,
         elitism_share=0.4,
         new_individuals_share=0,
+        novel_archive_size=10,
+        character_properties_ranges=character_properties_ranges,
+        melee_ability_ranges=melee_ability_ranges,
+        projectile_ability_ranges=projectile_ability_ranges,
         crossover=AbilitySwapCrossover(),
         mutations=[],
         new_individuals_producer=None
