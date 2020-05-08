@@ -2,11 +2,12 @@ from functools import reduce
 
 from matplotlib.figure import Figure
 
-from solai_evolutionary_algorithm.evolution.evolver import GenerationsListener
 import matplotlib.pyplot as plt
 
+from solai_evolutionary_algorithm.evolution.evolver_config import EvolverListener
 
-class PlotGenerationsLocalService(GenerationsListener):
+
+class PlotGenerationsLocalService(EvolverListener):
 
     def __init__(self):
         self.populations_fitness = []
@@ -17,7 +18,13 @@ class PlotGenerationsLocalService(GenerationsListener):
         plt.ylabel("fitness")
         plt.show()
 
-    def __call__(self, population, evaluated_population, is_last_generation) -> None:
+    def on_start(self, config):
+        pass
+
+    def on_end(self):
+        pass
+
+    def on_new_generation(self, evaluated_population, is_last_generation) -> None:
         self.populations_fitness.append([
             sum(evaluated_individual['fitness'])
             for evaluated_individual in evaluated_population

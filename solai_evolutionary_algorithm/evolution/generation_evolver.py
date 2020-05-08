@@ -13,7 +13,6 @@ Mutation = Callable[[Individual], Individual]
 IndividualProducer = Callable[[], Individual]
 
 
-
 class DefaultGenerationEvolver:
     """
     A generation evolver that first orders individuals by the sum of their fitnesses.
@@ -132,3 +131,13 @@ class DefaultGenerationEvolver:
     @staticmethod
     def _share2amount(total: int, share: float) -> int:
         return round(total * share)
+
+    def serialize(self):
+        config = {'crossoverShare': self.config.crossover_share,
+                  'newIndividualsShare': self.config.new_individuals_share}
+        if self.config.crossover:
+            config['crossover'] = self.config.crossover.serialize()
+        if self.config.mutations:
+            config['mutations'] = [mutation.serialize()
+                                   for mutation in self.config.mutations]
+        return config
