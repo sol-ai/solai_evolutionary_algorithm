@@ -84,7 +84,6 @@ test_config = EvolverConfig(
         mutations=[],
         new_individuals_producer=None
     )),
-    end_criteria=FixedGenerationsEndCriteria(generations=3),
-    evolver_listeners=[
-        UpdateDatabaseService()]
+    end_criteria=FixedGenerationsEndCriteria(generations=8),
+    evolver_listeners=[]
 )

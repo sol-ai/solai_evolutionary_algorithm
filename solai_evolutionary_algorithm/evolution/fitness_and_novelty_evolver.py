@@ -8,7 +8,7 @@ from typing import Callable, List, Optional, Tuple, Dict, Any
 from solai_evolutionary_algorithm.utils.character_distance_utils import normalized_euclidean_distance
 
 from solai_evolutionary_algorithm.evolution.evolution_types import EvaluatedPopulation, Population, SubPopulation, \
-    Individual, EvaluatedIndividual
+    Individual, EvaluatedIndividual, NoveltyAndFitnessEvaluatedPopulation, NoveltyAndFitnessEvaluatedIndividual
 
 Crossover = Callable[[SubPopulation], SubPopulation]
 Mutation = Callable[[Individual], Individual]
@@ -48,17 +48,6 @@ class FitnessAndNoveltyEvolver:
             raise ValueError(
                 "No new_individual_producer provided and new_individuals_share not 0")
 
-    def evaluate_novelty(self, evaluated_population):
-        config = self.config
-        population = list(
-            map(lambda individual: individual['individual'], evaluated_population))
-        individual_pairs = combinations(population, 2)
-        generation_novelty = 0
-        for pair in individual_pairs:
-            generation_novelty += normalized_euclidean_distance(pair[0], pair[1], config.character_properties_ranges,
-                                                                config.melee_ability_ranges, config.projectile_ability_ranges)
-        # TODO: figure out what to do with novelty
-
     def __call__(self, evaluated_population: EvaluatedPopulation) -> Population:
         def fitness_retriever(evaluated_individual: EvaluatedIndividual):
             fitness = evaluated_individual['fitness']
@@ -68,18 +57,28 @@ class FitnessAndNoveltyEvolver:
                 raise ValueError(
                     "fitness must be a list of at least one float")
 
+        novelty_evaluated_population = self.evaluate_novelty(
+            evaluated_population)
+
+        self.consider_for_novel_archive(novelty_evaluated_population)
+
         ordered_evaluated_population = sorted(
             evaluated_population,
             key=fitness_retriever,
             reverse=True
         )
 
-        self.evaluate_novelty(ordered_evaluated_population)
+        fitness_threshold = int(len(ordered_evaluated_population)/2)
 
+        novelty_evaluated_population = self.evaluate_novelty(
+            ordered_evaluated_population[:fitness_threshold])
+
+        self.consider_for_novel_archive(novelty_evaluated_population)
         ordered_population = [
             evaluated_individual['individual']
             for evaluated_individual in ordered_evaluated_population
         ]
+
         population_count = len(ordered_evaluated_population)
 
         individuals_amount = self._share2amount(
@@ -131,6 +130,77 @@ class FitnessAndNoveltyEvolver:
 
     def __euclidean_distance(self, individual1, individual2):
         return
+
+    def evaluate_novelty(self, evaluated_population: EvaluatedPopulation) -> NoveltyAndFitnessEvaluatedPopulation:
+        config = self.config
+        novelty_and_fitness_evaluated_population = evaluated_population
+        individual_pairs = combinations(
+            novelty_and_fitness_evaluated_population, 2)
+        for pair in individual_pairs:
+            if 'populationNovelty' not in pair[0]:
+                pair[0]['populationNovelty'] = 0
+            if 'populationNovelty' not in pair[1]:
+                pair[1]['populationNovelty'] = 0
+            character_distance = normalized_euclidean_distance(pair[0]['individual'], pair[1]['individual'], config.character_properties_ranges,
+                                                               config.melee_ability_ranges, config.projectile_ability_ranges)
+            pair[0]['populationNovelty'] += character_distance
+            pair[1]['populationNovelty'] += character_distance
+
+        return novelty_and_fitness_evaluated_population
+
+    def consider_for_novel_archive(self, novelty_and_fitness_evaluated_population: NoveltyAndFitnessEvaluatedPopulation) -> None:
+        ordered_novelty_and_fitness_evaluated_population = sorted(
+            novelty_and_fitness_evaluated_population, key=lambda individual: individual['populationNovelty'], reverse=True)
+        if not self.novel_archive:
+            self.novel_archive.extend(
+                ordered_novelty_and_fitness_evaluated_population[:self.config.novel_archive_size])
+        elif len(self.novel_archive) < self.config.novel_archive_size:
+            remaining = self.config.novel_archive_size - \
+                len(self.novel_archive)
+            self.novel_archive.extend(
+                ordered_novelty_and_fitness_evaluated_population[:remaining]
+            )
+        else:
+            for individual in ordered_novelty_and_fitness_evaluated_population:
+                self.consider_individual_for_novel_archive(individual)
+
+        self.update_novelty_in_archive()
+
+    def consider_individual_for_novel_archive(self, individual) -> None:
+        if self.is_more_novel_than_least_novel_in_archive(individual):
+            self.novel_archive = sorted(
+                self.novel_archive, key=lambda individual: individual['archiveNovelty'])
+            self.novel_archive[-1] = individual
+
+    def is_more_novel_than_least_novel_in_archive(self, individual) -> bool:
+        ordered_novel_archive = sorted(
+            self.novel_archive, key=lambda individual: individual['archiveNovelty'])
+        individual['archiveNovelty'] = 0
+        for other_individual in ordered_novel_archive[:-1]:
+            individual['archiveNovelty'] += normalized_euclidean_distance(
+                individual['individual'], other_individual['individual'], self.config.character_properties_ranges, self.config.melee_ability_ranges, self.config.projectile_ability_ranges)
+        return individual['archiveNovelty'] > ordered_novel_archive[-1]['archiveNovelty']
+
+    def update_novelty_in_archive(self) -> None:
+        config = self.config
+
+        def reset_novelty(individual):
+            individual['archiveNovelty'] = 0
+            return individual
+
+        self.novel_archive = list(
+            map(lambda individual: reset_novelty(individual), self.novel_archive))
+        novel_archive_pairs = combinations(
+            self.novel_archive, 2)
+        for pair in novel_archive_pairs:
+            if 'archiveNovelty' not in pair[0]:
+                pair[0]['archiveNovelty'] = 0
+            if 'archiveNovelty' not in pair[1]:
+                pair[1]['archiveNovelty'] = 0
+            character_distance = normalized_euclidean_distance(pair[0]['individual'], pair[1]['individual'], config.character_properties_ranges,
+                                                               config.melee_ability_ranges, config.projectile_ability_ranges)
+            pair[0]['archiveNovelty'] += character_distance
+            pair[1]['archiveNovelty'] += character_distance
 
     @staticmethod
     def _share2amount(total: int, shares: List[float]) -> List[int]:
