@@ -1,0 +1,58 @@
+{
+  "name": "Brail",
+  "radius": 44,
+  "moveVelocity": 600,
+  "abilities": [
+    {
+      "name": "Chagger",
+      "type": "MELEE",
+      "radius": 70,
+      "distanceFromChar": 64,
+      "speed": 0,
+      "activeTime": 6,
+      "startupTime": 6,
+      "executionTime": 6,
+      "endlagTime": 6,
+      "rechargeTime": 30,
+      "damage": 150,
+      "baseKnockback": 600,
+      "knockbackRatio": 1.2,
+      "knockbackPoint": 400,
+      "knockbackTowardPoint": true
+    },
+    {
+      "name": "Light Force",
+      "type": "PROJECTILE",
+      "radius": 64,
+      "distanceFromChar": 44,
+      "speed": 650,
+      "startupTime": 10,
+      "activeTime": 40,
+      "executionTime": 0,
+      "endlagTime": 6,
+      "rechargeTime": 120,
+      "damage": 300,
+      "baseKnockback": 400,
+      "knockbackRatio": 0.8,
+      "knockbackPoint": 64,
+      "knockbackTowardPoint": false
+    },
+    {
+      "name": "Merge",
+      "type": "MELEE",
+      "radius": 160,
+      "distanceFromChar": 128,
+      "speed": 0,
+      "activeTime": 2,
+      "startupTime": 10,
+      "executionTime": 2,
+      "endlagTime": 8,
+      "rechargeTime": 60,
+      "damage": 20,
+      "baseKnockback": 800,
+      "knockbackRatio": 0.4,
+      "knockbackPoint": 0,
+      "knockbackTowardPoint": true
+    }
+  ]
+}
