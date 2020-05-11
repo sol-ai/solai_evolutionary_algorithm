@@ -5,6 +5,8 @@ from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import 
 from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, Population
 from pkg_resources import resource_stream
 
+from solai_evolutionary_algorithm.utils.character_id import create_character_id
+
 
 class FromExistingProducer(InitialPopulationProducer):
     """
@@ -32,10 +34,17 @@ class FromExistingProducer(InitialPopulationProducer):
             char_file.close()
             return char_config
 
-        existing_chars = cast(List[CharacterConfig], [
+        existing_chars_without_id = cast(List[CharacterConfig], [
             load_char(char_filename)
             for char_filename in self.chars_filename
         ])
 
-        population = self.__duplicate_chars_to_size(existing_chars, self.population_size)
+        population_without_id = self.__duplicate_chars_to_size(existing_chars_without_id, self.population_size)
+        population = [
+            {
+                **char_without_id,
+                'characterId': create_character_id()
+            }
+            for char_without_id in population_without_id
+        ]
         return population
