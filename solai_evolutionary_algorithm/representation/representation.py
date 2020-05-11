@@ -9,7 +9,7 @@ from copy import deepcopy
 
 class Representation:
 
-    ability_types = ["melee", "projectile"]
+    ability_types = ["MELEE", "PROJECTILE"]
     no_of_abilities = 3
     character_config = json.load(resource_stream(
         'solai_evolutionary_algorithm', 'resources/character_config.json'))['character_config']
@@ -18,7 +18,7 @@ class Representation:
     projectile_config = json.load(resource_stream(
         'solai_evolutionary_algorithm', 'resources/projectile.json'))
 
-    ability_configs = {'melee': melee_config, 'projectile': projectile_config}
+    ability_configs = {'MELEE': melee_config, 'PROJECTILE': projectile_config}
     useful_functions = UsefulFunctions()
 
     def generate_initial_population(self, n):

@@ -34,8 +34,7 @@ class Evolution:
         self.init_population = self.generate_init_population(
             init_population_size)
 
-        if self.with_database:
-            self.database = Database()
+        self.database = Database()
 
         queue_host = self.endpoints['redis_host']
         queue_port = self.endpoints['redis_port']
@@ -94,6 +93,7 @@ class Evolution:
                 current_population.append(child_clone_mutated)
 
             fitnesses = self.evaluate_one_generation(current_population)
+            self.database.add_character_generation(current_population)
             sorted_fitnesses = sorted((value, key)
                                       for (key, value) in fitnesses.items())
 
@@ -180,7 +180,7 @@ class Evolution:
             self.__mutate_ability(ability)
 
     def __mutate_ability(self, ability):
-        if ability['type'] == 'melee':
+        if ability['type'] == 'MELEE':
             ranges = self.melee_ranges
         else:
             ranges = self.projectile_ranges

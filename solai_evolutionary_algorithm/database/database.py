@@ -1,37 +1,35 @@
 import pymongo
 from copy import deepcopy
 from datetime import datetime
+import os
+import uuid
 
-HOST = "mongodb://127.0.0.1:27017"
-DATABASE_NAME = "solai_characters"
-DUMMY_COLLECTION = "simulations"
-GENERATIONS = "generations"
+
+USERNAME = "haraldvinje"
+PASSWORD = os.environ["DB_PASSWORD"]
+CLUSTER_URL = "mongodb+srv://" + USERNAME + ":" + PASSWORD + \
+    "@cluster0-dzimv.mongodb.net/test?retryWrites=true&w=majority"
 
 
 class Database:
 
     def __init__(self):
         #TODO: WIP
-        self.client = pymongo.MongoClient(HOST)
-        self.db = self.client[DATABASE_NAME]
-        self.evolutions = self.db[GENERATIONS]
-        self.simulations = self.db[DUMMY_COLLECTION]
-        self.simulations.delete_many({})
+        self.client = pymongo.MongoClient(CLUSTER_URL)
+        self.collection = self.client.solai
+        self.evolution_instances = self.collection.evolution_instances
+        self.create_evolution_instance()
 
-    def create_evolution_collection(self):
+    def create_evolution_instance(self):
         current_time = str(datetime.now())
-        self.evolution = self.db["evolution"]
         evolution = {"evolutionStart": current_time, "generations": []}
-        self.evolution.insert_one(evolution)
-
-    def add_dummy_generation(self, generation, generation_number):
-        characters_generation = self.simulations
-        generation_entry = {
-            'generationNumber': generation_number, 'characters': generation}
-        characters_generation.insert_one(generation_entry)
+        self.evolution_instance_id = self.evolution_instances.insert_one(
+            evolution).inserted_id
 
     def close_connection(self):
         self.client.close()
 
-    def get_generation(self, generation_number):
-        return self.simulations.find_one({'generationNumber': generation_number})
+    def add_character_generation(self, generation):
+        self.evolution_instances.update_one({'_id': self.evolution_instance_id}, {
+            '$push': {'generations': generation}
+        })
