@@ -11,9 +11,15 @@ from solai_evolutionary_algorithm.database.update_database_service import Update
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evaluation import SimulationFitnessEvaluation
 from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig
 from solai_evolutionary_algorithm.evolution.generation_evolver import DefaultGenerationEvolver
+from solai_evolutionary_algorithm.evolution_end_criteria.fixed_generation_end_criteria import \
+    FixedGenerationsEndCriteria
+from solai_evolutionary_algorithm.initial_population_producers.from_existing_producers import FromExistingProducer
+from solai_evolutionary_algorithm.initial_population_producers.random_bounded_producer import RandomBoundedProducer
+from solai_evolutionary_algorithm.mutations.default_properties_mutation import default_properties_mutation
+from solai_evolutionary_algorithm.plot_services.plot_generations_service import PlotGenerationsLocalService
 
-initial_population_producer = RandomBoundedProducer(RandomBoundedProducer.Config(
-    population_size=5,
+random_population_producer = RandomBoundedProducer(RandomBoundedProducer.Config(
+    population_size=20,
     character_properties_ranges={},
     melee_ability_ranges={},
     projectile_ability_ranges={}
@@ -58,13 +64,18 @@ projectile_ability_ranges = {
     "knockbackTowardPoint": [False, True]
 }
 
+from_existing_population_producer = FromExistingProducer(
+    population_size=12,
+    chars_filename=[
+        "shrankConfig.json",
+        "schmathiasConfig.json",
+        "brailConfig.json",
+        "magnetConfig.json"
+    ]
+)
+
 test_config = EvolverConfig(
-    initial_population_producer=RandomBoundedProducer(RandomBoundedProducer.Config(
-        population_size=4,
-        character_properties_ranges=character_properties_ranges,
-        melee_ability_ranges=melee_ability_ranges,
-        projectile_ability_ranges=projectile_ability_ranges
-    )),
+    initial_population_producer=from_existing_population_producer,
     # fitness_evaluator=RandomFitnessEvaluation(),
     fitness_evaluator=SimulationFitnessEvaluation(
         metrics=["leadChange", "characterWon",
@@ -94,10 +105,9 @@ test_config = EvolverConfig(
                 probability_per_number_property=0.1,
                 probability_per_bool_property=0.05,
             )
-        ],
-        new_individuals_producer=initial_population_producer.generate_random_character
+        ]
     )),
-    end_criteria=FixedGenerationsEndCriteria(generations=4),
+    end_criteria=FixedGenerationsEndCriteria(generations=10),
     evolver_listeners=[
         UpdateDatabaseService(),
         # PlotGenerationsLocalService()

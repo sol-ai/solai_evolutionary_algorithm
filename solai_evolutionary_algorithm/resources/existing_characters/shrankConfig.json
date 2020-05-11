@@ -1,0 +1,58 @@
+{
+  "name": "Shrank",
+  "radius": 32,
+  "moveVelocity": 500,
+  "abilities": [
+    {
+      "name": "rapid shot",
+      "type": "PROJECTILE",
+      "radius": 8,
+      "distanceFromChar": 32,
+      "speed": 1200,
+      "activeTime": 30,
+      "startupTime": 2,
+      "executionTime": 0,
+      "endlagTime": 2,
+      "rechargeTime": 30,
+      "damage": 100,
+      "baseKnockback": 180,
+      "knockbackRatio": 0.5,
+      "knockbackPoint": -128,
+      "knockbackTowardPoint": false
+    },
+    {
+      "name": "hyper beam",
+      "type": "PROJECTILE",
+      "radius": 20,
+      "distanceFromChar": 32,
+      "speed": 1500,
+      "startupTime": 15,
+      "activeTime": 120,
+      "executionTime": 1,
+      "endlagTime": 10,
+      "rechargeTime": 120,
+      "damage": 350,
+      "baseKnockback": 900,
+      "knockbackRatio": 1.1,
+      "knockbackPoint": -256,
+      "knockbackTowardPoint": false
+    },
+    {
+      "name": "puffer",
+      "type": "MELEE",
+      "radius": 98,
+      "distanceFromChar": 0,
+      "speed": 0,
+      "activeTime": 2,
+      "startupTime": 8,
+      "executionTime": 2,
+      "endlagTime": 8,
+      "rechargeTime": 180,
+      "damage": 20,
+      "baseKnockback": 1200,
+      "knockbackRatio": 0.1,
+      "knockbackPoint": 0,
+      "knockbackTowardPoint": false
+    }
+  ]
+}

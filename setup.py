@@ -6,5 +6,5 @@ setup(
     packages=find_packages(
         include=['solai_evolutionary_algorithm', 'solai_evolutionary_algorithm.*']),
     package_data={'solai_evolutionary_algorithm': [
-        'resources/*.json', 'resources/sample_characters/*.json']}
+        'resources/*.json', 'resources/sample_characters/*.json', 'resources/existing_characters/*.json']}
 )
