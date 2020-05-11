@@ -91,12 +91,12 @@ test_config = EvolverConfig(
     ),
     # population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.PassThroughConfig),
     population_evolver=FitnessAndNoveltyEvolver(FitnessAndNoveltyEvolver.Config(
-        crossover_share=0.2,
-        mutate_only_share=0.7,
+        crossover_share=0.4,
+        mutate_only_share=0.5,
         new_individuals_share=0,
         elitism_share=0.1,
         novel_archive_size=10,
-        nearest_neighbour_number=4,
+        nearest_neighbour_number=2,
         character_properties_ranges=character_properties_ranges,
         melee_ability_ranges=melee_ability_ranges,
         projectile_ability_ranges=projectile_ability_ranges,
@@ -106,7 +106,8 @@ test_config = EvolverConfig(
                 probability_per_number_property=0.1,
                 probability_per_bool_property=0.05,
             )
-        ]
+        ],
+        new_individuals_producer=[]
     )),
     end_criteria=FixedGenerationsEndCriteria(generations=10),
     evolver_listeners=[
