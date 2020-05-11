@@ -18,10 +18,7 @@ class PlotGenerationsLocalService(EvolverListener):
         plt.ylabel("fitness")
         plt.show()
 
-    def on_start(self, config):
-        pass
-
-    def on_end(self):
+    def on_start(self, *args):
         pass
 
     def on_new_generation(self, evaluated_population, is_last_generation) -> None:
@@ -40,3 +37,6 @@ class PlotGenerationsLocalService(EvolverListener):
         else:
             plt.ioff()
             plt.show()
+
+    def on_end(self, *args):
+        pass

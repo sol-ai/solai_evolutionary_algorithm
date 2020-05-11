@@ -9,6 +9,13 @@ EvaluatedIndividual = TypedDict("EvaluatedIndividual", {
     'fitness': List[float]
 })
 
+NoveltyAndFitnessEvaluatedIndividual = TypedDict("EvaluatedIndividual", {
+    'individual': Individual,
+    'fitness': List[float],
+    'populationNovelty': float
+})
+
+NoveltyAndFitnessEvaluatedPopulation = List[EvaluatedIndividual]
 EvaluatedPopulation = List[EvaluatedIndividual]
 SubPopulation = List[Individual]
 
@@ -24,4 +31,3 @@ MutationStrategy = Callable[[Population], Population]
 
 # determine if evolution should stop
 EndCriteria = Callable[[], bool]
-

@@ -1,7 +1,8 @@
 from typing import Tuple
 
-from solai_evolutionary_algorithm.evolution.evolution_types import Population, EvaluatedPopulation
-from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig
+from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, FitnessEvaluation, \
+    PopulationEvolver, EndCriteria, Population, EvaluatedPopulation
+from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig, EvolverListener
 
 
 class Evolver:
@@ -15,9 +16,8 @@ class Evolver:
         curr_population: Population = initial_population
         evaluated_population: EvaluatedPopulation
 
-        if config.evolver_listeners is not None:
-            for listener in config.evolver_listeners:
-                listener.on_start(config)
+        for listener in config.evolver_listeners:
+            listener.on_start(config)
 
         while True:
             print(f"Starting generation {generation}")
@@ -25,10 +25,9 @@ class Evolver:
 
             is_last_generation = config.end_criteria()
 
-            if config.evolver_listeners is not None:
-                for listener in config.evolver_listeners:
-                    listener.on_new_generation(
-                        evaluated_population, is_last_generation)
+            for listener in config.evolver_listeners:
+                listener.on_new_generation(
+                    evaluated_population, is_last_generation)
 
             if is_last_generation:
                 break
@@ -39,5 +38,11 @@ class Evolver:
             generation += 1
 
             curr_population = new_population
+
+        for listener in config.evolver_listeners:
+            listener.on_end(
+                config.population_evolver.get_ordered_novel_archive())
+
+        print(config.population_evolver.novel_archive)
 
         return curr_population, evaluated_population

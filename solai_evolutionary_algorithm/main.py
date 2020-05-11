@@ -3,6 +3,5 @@ import solai_evolutionary_algorithm.evolve_configurations.test_config as test_co
 
 
 def main():
-
     evolver = Evolver()
     evolver.evolve(test_config.test_config)
