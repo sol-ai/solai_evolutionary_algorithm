@@ -16,7 +16,7 @@ class Database:
 
     def __init__(self):
         self.client = pymongo.MongoClient(CLUSTER_URL)
-        self.database = self.client.solaigit
+        self.database = self.client.solai
         self.evolution_instances = self.database.evolution_instances
 
     def init_evolution_instance(self, config):
