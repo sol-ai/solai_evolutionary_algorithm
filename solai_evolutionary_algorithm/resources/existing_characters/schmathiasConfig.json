@@ -1,0 +1,58 @@
+{
+  "name": "Schmathias",
+  "radius": 32,
+  "moveVelocity": 600,
+  "abilities": [
+    {
+      "name": "Frog Punch",
+      "type": "MELEE",
+      "radius": 64,
+      "distanceFromChar": 48,
+      "speed": 0,
+      "activeTime": 5,
+      "startupTime": 3,
+      "executionTime": 5,
+      "endlagTime": 3,
+      "rechargeTime": 20,
+      "damage": 150,
+      "baseKnockback": 700,
+      "knockbackRatio": 0.8,
+      "knockbackPoint": -48,
+      "knockbackTowardPoint": false
+    },
+    {
+      "name": "Hook",
+      "type": "PROJECTILE",
+      "radius": 24,
+      "distanceFromChar": 32,
+      "speed": 900,
+      "startupTime": 5,
+      "activeTime": 30,
+      "executionTime": 0,
+      "endlagTime": 18,
+      "rechargeTime": 50,
+      "damage": 200,
+      "baseKnockback": 1400,
+      "knockbackRatio": 0.2,
+      "knockbackPoint": -128,
+      "knockbackTowardPoint": true
+    },
+    {
+      "name": "Meteor Punch",
+      "type": "MELEE",
+      "radius": 32,
+      "distanceFromChar": 64,
+      "speed": 0,
+      "activeTime": 3,
+      "startupTime": 15,
+      "executionTime": 3,
+      "endlagTime": 4,
+      "rechargeTime": 60,
+      "damage": 500,
+      "baseKnockback": 1000,
+      "knockbackRatio": 1.5,
+      "knockbackPoint": -128,
+      "knockbackTowardPoint": false
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "name": "MagneT",
+  "radius": 36,
+  "moveVelocity": 600,
+  "abilities": [
+    {
+      "name": "Spear Poke",
+      "type": "MELEE",
+      "radius": 30,
+      "distanceFromChar": 100,
+      "speed": 0,
+      "activeTime": 6,
+      "startupTime": 8,
+      "executionTime": 3,
+      "endlagTime": 0,
+      "rechargeTime": 13,
+      "damage": 150,
+      "baseKnockback": 600,
+      "knockbackRatio": 0.7,
+      "knockbackPoint": -100,
+      "knockbackTowardPoint": false
+    },
+    {
+      "name": "Spear Throw",
+      "type": "PROJECTILE",
+      "radius": 32,
+      "distanceFromChar": 36,
+      "speed": 1500,
+      "startupTime": 30,
+      "activeTime": 40,
+      "executionTime": 0,
+      "endlagTime": 18,
+      "rechargeTime": 50,
+      "damage": 200,
+      "baseKnockback": 250,
+      "knockbackRatio": 2,
+      "knockbackPoint": -64,
+      "knockbackTowardPoint": false
+    },
+    {
+      "name": "Spirit of the Wild",
+      "type": "PROJECTILE",
+      "radius": 64,
+      "distanceFromChar": 0,
+      "speed": 200,
+      "activeTime": 240,
+      "startupTime": 30,
+      "executionTime": 0,
+      "endlagTime": 12,
+      "rechargeTime": 120,
+      "damage": 450,
+      "baseKnockback": 200,
+      "knockbackRatio": 0.5,
+      "knockbackPoint": 0,
+      "knockbackTowardPoint": false
+    }
+  ]
+}
