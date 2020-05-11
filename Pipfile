@@ -12,6 +12,7 @@ rope = "*"
 pymongo = "*"
 redis = "*"
 rq = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.8"
