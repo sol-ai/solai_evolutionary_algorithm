@@ -1,4 +1,3 @@
-
 import math
 import numbers
 from dataclasses import dataclass
@@ -29,6 +28,7 @@ class FitnessAndNoveltyEvolver:
         elitism_share: float
         new_individuals_share: float
         novel_archive_size: int
+        nearest_neighbour_number: int
         character_properties_ranges: Dict[str, Tuple[Any, Any]]
         melee_ability_ranges: Dict[str, Tuple[Any, Any]]
         projectile_ability_ranges: Dict[str, Tuple[Any, Any]]
@@ -57,23 +57,20 @@ class FitnessAndNoveltyEvolver:
                 raise ValueError(
                     "fitness must be a list of at least one float")
 
-        novelty_evaluated_population = self.evaluate_novelty(
-            evaluated_population)
-
-        self.consider_for_novel_archive(novelty_evaluated_population)
-
         ordered_evaluated_population = sorted(
             evaluated_population,
             key=fitness_retriever,
             reverse=True
         )
 
-        fitness_threshold = int(len(ordered_evaluated_population)/2)
+        fitness_threshold = max(
+            int(len(ordered_evaluated_population)/2), 2)
 
-        novelty_evaluated_population = self.evaluate_novelty(
+        # novelty_evaluated_population = self.evaluate_novelty(
+        #     ordered_evaluated_population[:fitness_threshold])
+        self.consider_for_novel_archive(
             ordered_evaluated_population[:fitness_threshold])
 
-        self.consider_for_novel_archive(novelty_evaluated_population)
         ordered_population = [
             evaluated_individual['individual']
             for evaluated_individual in ordered_evaluated_population
@@ -128,83 +125,124 @@ class FitnessAndNoveltyEvolver:
 
         return new_mutated_population
 
-    def __euclidean_distance(self, individual1, individual2):
-        return
+    def normalized_euclidean_distance(self, individual1, individual2):
+        return normalized_euclidean_distance(individual1, individual2, self.config.character_properties_ranges, self.config.melee_ability_ranges, self.config.projectile_ability_ranges)
 
-    def evaluate_novelty(self, evaluated_population: EvaluatedPopulation) -> NoveltyAndFitnessEvaluatedPopulation:
-        config = self.config
+    def evaluate_novelty_within_population(self, evaluated_population: EvaluatedPopulation) -> NoveltyAndFitnessEvaluatedPopulation:
         novelty_and_fitness_evaluated_population = evaluated_population
         individual_pairs = combinations(
             novelty_and_fitness_evaluated_population, 2)
         for pair in individual_pairs:
-            if 'populationNovelty' not in pair[0]:
-                pair[0]['populationNovelty'] = 0
-            if 'populationNovelty' not in pair[1]:
-                pair[1]['populationNovelty'] = 0
-            character_distance = normalized_euclidean_distance(pair[0]['individual'], pair[1]['individual'], config.character_properties_ranges,
-                                                               config.melee_ability_ranges, config.projectile_ability_ranges)
-            pair[0]['populationNovelty'] += character_distance / \
+            if 'novelty' not in pair[0]:
+                pair[0]['novelty'] = 0
+            if 'novelty' not in pair[1]:
+                pair[1]['novelty'] = 0
+            character_distance = self.normalized_euclidean_distance(
+                pair[0]['individual'], pair[1]['individual'])
+            pair[0]['novelty'] += character_distance / \
                 len(evaluated_population)
-            pair[1]['populationNovelty'] += character_distance / \
+            pair[1]['novelty'] += character_distance / \
                 len(evaluated_population)
 
         return novelty_and_fitness_evaluated_population
 
-    def consider_for_novel_archive(self, novelty_and_fitness_evaluated_population: NoveltyAndFitnessEvaluatedPopulation) -> None:
+    def consider_for_novel_archive(self, evaluated_population: EvaluatedPopulation) -> None:
         ordered_novelty_and_fitness_evaluated_population = sorted(
-            novelty_and_fitness_evaluated_population, key=lambda individual: individual['populationNovelty'], reverse=True)
+            self.evaluate_novelty_within_population(evaluated_population), key=lambda individual: individual['novelty'], reverse=True)
         if not self.novel_archive:
             self.novel_archive.extend(
                 ordered_novelty_and_fitness_evaluated_population[:self.config.novel_archive_size])
-        elif len(self.novel_archive) < self.config.novel_archive_size:
-            remaining = self.config.novel_archive_size - \
-                len(self.novel_archive)
-            self.novel_archive.extend(
-                ordered_novelty_and_fitness_evaluated_population[:remaining]
-            )
+        # elif len(self.novel_archive) < self.config.novel_archive_size:
+        #     remaining = self.config.novel_archive_size - \
+        #         len(self.novel_archive)
+        #     self.novel_archive.extend(
+        #         ordered_novelty_and_fitness_evaluated_population[:remaining]
+        #     )
         else:
             for individual in ordered_novelty_and_fitness_evaluated_population:
                 self.consider_individual_for_novel_archive(individual)
 
         self.update_novelty_in_archive()
 
-    def consider_individual_for_novel_archive(self, individual) -> None:
+    def consider_individual_for_novel_archive(self, individual: NoveltyAndFitnessEvaluatedIndividual) -> None:
+        if len(self.novel_archive) < self.config.novel_archive_size:
+            self.novel_archive.append(individual)
+            return
+
         if self.is_more_novel_than_least_novel_in_archive(individual):
+
             self.novel_archive = sorted(
-                self.novel_archive, key=lambda individual: individual['archiveNovelty'])
+                self.novel_archive, key=lambda individual: individual['novelty'], reverse=True)
+
+            individual['novelty'] = self.calculate_novelty_compared_to_archive(
+                individual)
             self.novel_archive[-1] = individual
 
-    def is_more_novel_than_least_novel_in_archive(self, individual) -> bool:
+    def is_more_novel_than_least_novel_in_archive(self, individual: NoveltyAndFitnessEvaluatedIndividual) -> bool:
         ordered_novel_archive = sorted(
-            self.novel_archive, key=lambda individual: individual['archiveNovelty'])
-        individual['archiveNovelty'] = 0
-        for other_individual in ordered_novel_archive[:-1]:
-            individual['archiveNovelty'] += normalized_euclidean_distance(
-                individual['individual'], other_individual['individual'], self.config.character_properties_ranges, self.config.melee_ability_ranges, self.config.projectile_ability_ranges)
-        return individual['archiveNovelty'] > ordered_novel_archive[-1]['archiveNovelty']
+            self.novel_archive, key=lambda individual: individual['novelty'], reverse=True)
+        self.calculate_novelty_compared_to_archive(individual)
+        # for other_individual in ordered_novel_archive[1:]:
+        #     character_distance = self.normalized_euclidean_distance(
+        #         individual['individual'], other_individual['individual'])
+        #     individual['novelty'] = character_distance / \
+        #         len(self.novel_archive)
+        return self.calculate_novelty_compared_to_archive(individual) > ordered_novel_archive[-1]['novelty']
 
     def update_novelty_in_archive(self) -> None:
-        config = self.config
 
         def reset_novelty(individual):
-            individual['archiveNovelty'] = 0
+            individual['novelty'] = 0
             return individual
 
         self.novel_archive = list(
             map(lambda individual: reset_novelty(individual), self.novel_archive))
-        novel_archive_pairs = combinations(
-            self.novel_archive, 2)
-        for pair in novel_archive_pairs:
-            if 'archiveNovelty' not in pair[0]:
-                pair[0]['archiveNovelty'] = 0
-            if 'archiveNovelty' not in pair[1]:
-                pair[1]['archiveNovelty'] = 0
-            character_distance = normalized_euclidean_distance(pair[0]['individual'], pair[1]['individual'], config.character_properties_ranges,
-                                                               config.melee_ability_ranges, config.projectile_ability_ranges)
-            pair[0]['archiveNovelty'] += character_distance / \
-                len(self.novel_archive)
-            pair[1]['archiveNovelty'] += character_distance / \
-                len(self.novel_archive)
+
+        for individual in self.novel_archive:
+            individual['novelty'] = self.calculate_novelty_compared_to_archive(
+                individual)
+
+        # self.novel_archive_distance_matrix = {
+        #     key['individual']['characterId']: {} for key in self.novel_archive}
+
+        # novel_archive_pairs = combinations(
+        #     self.novel_archive, 2)
+        # for pair in novel_archive_pairs:
+        #     if 'novelty' not in pair[0]:
+        #         pair[0]['novelty'] = 0
+        #     if 'novelty' not in pair[1]:
+        #         pair[1]['novelty'] = 0
+
+        #     character_distance = self.normalized_euclidean_distance(
+        #         pair[0]['individual'], pair[1]['individual'])
+
+        #     pair[0]['novelty'] += character_distance / \
+        #         len(self.novel_archive)
+        #     pair[1]['novelty'] += character_distance / \
+        #         len(self.novel_archive)
+
+        #     char1_id = pair[0]['individual']['characterId']
+        #     char2_id = pair[1]['individual']['characterId']
+        #     self.novel_archive_distance_matrix[char1_id][char2_id] = character_distance
+        #     self.novel_archive_distance_matrix[char2_id][char1_id] = character_distance
+
+    def calculate_novelty_compared_to_archive(self, individual: EvaluatedIndividual) -> float:
+        distances_to_individuals = {}
+        for archive_individual in self.novel_archive:
+            arch_ind_id = archive_individual['individual']['characterId']
+            distances_to_individuals[arch_ind_id] = self.normalized_euclidean_distance(
+                individual['individual'], archive_individual['individual'])
+
+        individual_character_id = individual['individual']['characterId']
+        if individual_character_id in distances_to_individuals:
+            del distances_to_individuals[individual_character_id]
+
+        ordered_distances = sorted(
+            distances_to_individuals.values(), reverse=True)
+
+        novelty = sum(
+            ordered_distances[:self.config.nearest_neighbour_number])/self.config.nearest_neighbour_number
+        return novelty
 
     @staticmethod
     def _share2amount(total: int, shares: List[float]) -> List[int]:
@@ -214,10 +252,10 @@ class FitnessAndNoveltyEvolver:
         ]
 
     def get_ordered_novel_archive(self):
-        return sorted(self.novel_archive, key=lambda individual: individual['archiveNovelty'], reverse=True)
+        return sorted(self.novel_archive, key=lambda individual: individual['novelty'], reverse=True)
 
     def get_novel_archive_values(self):
-        return list(map(lambda individual: individual['archiveNovelty'], self.novel_archive))
+        return list(map(lambda individual: individual['novelty'], self.novel_archive))
 
     def serialize(self) -> Config:
         config = {'crossoverShare': self.config.crossover_share,

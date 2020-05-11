@@ -45,4 +45,6 @@ class Evolver:
             listener.on_end(
                 config.population_evolver.get_ordered_novel_archive())
 
+        print(config.population_evolver.novel_archive)
+
         return curr_population, evaluated_population

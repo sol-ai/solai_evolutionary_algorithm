@@ -53,7 +53,7 @@ projectile_ability_ranges = {
 
 test_config = EvolverConfig(
     initial_population_producer=RandomBoundedProducer(RandomBoundedProducer.Config(
-        population_size=3,
+        population_size=10,
         character_properties_ranges=character_properties_ranges,
         melee_ability_ranges=melee_ability_ranges,
         projectile_ability_ranges=projectile_ability_ranges
@@ -77,6 +77,7 @@ test_config = EvolverConfig(
         elitism_share=0.4,
         new_individuals_share=0,
         novel_archive_size=10,
+        nearest_neighbour_number=4,
         character_properties_ranges=character_properties_ranges,
         melee_ability_ranges=melee_ability_ranges,
         projectile_ability_ranges=projectile_ability_ranges,
@@ -84,6 +85,6 @@ test_config = EvolverConfig(
         mutations=[],
         new_individuals_producer=None
     )),
-    end_criteria=FixedGenerationsEndCriteria(generations=8),
+    end_criteria=FixedGenerationsEndCriteria(generations=10),
     evolver_listeners=[UpdateDatabaseService()]
 )
