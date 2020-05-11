@@ -1,6 +1,6 @@
 import random
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from numbers import Number
 from typing import Dict, Any, List, cast, Tuple, Callable, Optional, TypeVar, Type
 
@@ -61,7 +61,8 @@ def mutate_float_property(
     mutation_factor_range: Tuple[float, float],
     value_range: Tuple[float, float]
 ) -> float:
-    mutation_factor = random.uniform(mutation_factor_range[0], mutation_factor_range[1])
+    mutation_factor = random.uniform(
+        mutation_factor_range[0], mutation_factor_range[1])
     new_radius = mutation_factor * value
     new_radius_bound = __clamp(new_radius, value_range)
     return cast(float, new_radius_bound)
@@ -87,7 +88,8 @@ def mutate_bool_property(
     return not value
 
 
-PropertyType = Any  # TypeVar("PropertyType", Type[float], Type[int], Type[bool])
+# TypeVar("PropertyType", Type[float], Type[int], Type[bool])
+PropertyType = Any
 
 
 @dataclass(frozen=True)
@@ -106,7 +108,8 @@ def mutate_property(value: PropertyType, mutation_data: PropertyMutationData) ->
     elif mutation_data.property_type == bool:
         return mutate_bool_property(value, mutation_data.mutation_factor_range, mutation_data.value_range)
     else:
-        raise ValueError(f"Mutation property of type {mutation_data.property_type} is not supported")
+        raise ValueError(
+            f"Mutation property of type {mutation_data.property_type} is not supported")
 
 
 def mutate_property_with_probability(value: PropertyType, mutation_data: PropertyMutationData):
@@ -145,7 +148,8 @@ def mutate_ability(
         bool: mutate_bool_property
     }
 
-    use_property_ranges: Dict[str, Tuple[Any, Any]] = projectile_property_ranges if ability['type'] == 'PROJECTILE' else melee_property_ranges
+    use_property_ranges: Dict[str, Tuple[Any, Any]
+                              ] = projectile_property_ranges if ability['type'] == 'PROJECTILE' else melee_property_ranges
 
     def mutate_ability_property(prop_name: str) -> Any:
         probability = properties_probability[prop_name]
@@ -231,6 +235,10 @@ class PropertiesMutation(Mutation):
 
         return mutated_char_config
 
+    def serialize(self) -> Dict:
+        dic = str(asdict(self))
+        return dic
+
 
 def print_mutations(
         char_config,
@@ -246,12 +254,14 @@ def print_mutations(
             print(f"{begin_with}{prop_name}: {orig_value} -> {new_value}")
 
     for char_prop in character_property_data:
-        print_change(char_prop, char_config[char_prop], mutated_char_config[char_prop])
+        print_change(
+            char_prop, char_config[char_prop], mutated_char_config[char_prop])
 
     for i, (mutated_ability, orig_ability) in enumerate(zip(mutated_char_config['abilities'], char_config['abilities'])):
         print(f"ability{i}: {mutated_ability['name']}")
         for ability_prop in melee_property_data:
-            print_change(ability_prop, orig_ability[ability_prop], mutated_ability[ability_prop], begin_with="\t")
+            print_change(
+                ability_prop, orig_ability[ability_prop], mutated_ability[ability_prop], begin_with="\t")
 
 # def radius_mutation(self, original_genome):
 #     """

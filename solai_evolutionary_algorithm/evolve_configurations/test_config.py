@@ -13,7 +13,7 @@ from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig
 from solai_evolutionary_algorithm.evolution.generation_evolver import DefaultGenerationEvolver
 
 initial_population_producer = RandomBoundedProducer(RandomBoundedProducer.Config(
-    population_size=20,
+    population_size=5,
     character_properties_ranges={},
     melee_ability_ranges={},
     projectile_ability_ranges={}
@@ -60,7 +60,7 @@ projectile_ability_ranges = {
 
 test_config = EvolverConfig(
     initial_population_producer=RandomBoundedProducer(RandomBoundedProducer.Config(
-        population_size=10,
+        population_size=4,
         character_properties_ranges=character_properties_ranges,
         melee_ability_ranges=melee_ability_ranges,
         projectile_ability_ranges=projectile_ability_ranges
@@ -97,9 +97,9 @@ test_config = EvolverConfig(
         ],
         new_individuals_producer=initial_population_producer.generate_random_character
     )),
-    end_criteria=FixedGenerationsEndCriteria(generations=30),
+    end_criteria=FixedGenerationsEndCriteria(generations=4),
     evolver_listeners=[
-        # UpdateDatabaseService(),
+        UpdateDatabaseService(),
         # PlotGenerationsLocalService()
     ],
 )
