@@ -26,7 +26,7 @@ class Database:
     def init_evolution_instance(self, config):
         self.start_time = datetime.now()
         evolution = {
-            "evolutionStart": str(self.start_time), "generations": []}
+            "evolutionStart": str(self.start_time), "generations": [], "evolutionBy": "Harald:)"}
         self.evolution_instance_id = self.evolution_instances.insert_one(
             evolution).inserted_id
         self.post_config(config)
@@ -34,6 +34,11 @@ class Database:
     def add_character_generation(self, generation):
         self.evolution_instances.update_one({'_id': self.evolution_instance_id}, {
             '$push': {'generations': generation}
+        })
+
+    def add_novel_archive(self, novel_archive):
+        self.evolution_instances.update_one({'_id': self.evolution_instance_id}, {
+            '$set': {'novelArchive': novel_archive}
         })
 
     def end_evolution_instance(self):

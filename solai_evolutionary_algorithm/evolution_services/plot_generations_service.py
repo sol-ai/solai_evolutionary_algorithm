@@ -34,6 +34,9 @@ class PlotGenerationsLocalService(EvolverListener):
             plt.ioff()
             plt.show()
 
+    def on_start(self, *args):
+        pass
+
     def on_new_generation(self, evaluated_population, is_last_generation):
 
         self.populations_fitness.append([
@@ -51,3 +54,6 @@ class PlotGenerationsLocalService(EvolverListener):
         else:
             plt.ioff()
             plt.show()
+
+    def on_end(self, *args):
+        pass

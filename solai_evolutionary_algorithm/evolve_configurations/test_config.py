@@ -85,5 +85,5 @@ test_config = EvolverConfig(
         new_individuals_producer=None
     )),
     end_criteria=FixedGenerationsEndCriteria(generations=8),
-    evolver_listeners=[]
+    evolver_listeners=[UpdateDatabaseService()]
 )

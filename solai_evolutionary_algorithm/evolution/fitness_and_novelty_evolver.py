@@ -143,8 +143,10 @@ class FitnessAndNoveltyEvolver:
                 pair[1]['populationNovelty'] = 0
             character_distance = normalized_euclidean_distance(pair[0]['individual'], pair[1]['individual'], config.character_properties_ranges,
                                                                config.melee_ability_ranges, config.projectile_ability_ranges)
-            pair[0]['populationNovelty'] += character_distance
-            pair[1]['populationNovelty'] += character_distance
+            pair[0]['populationNovelty'] += character_distance / \
+                len(evaluated_population)
+            pair[1]['populationNovelty'] += character_distance / \
+                len(evaluated_population)
 
         return novelty_and_fitness_evaluated_population
 
@@ -199,8 +201,10 @@ class FitnessAndNoveltyEvolver:
                 pair[1]['archiveNovelty'] = 0
             character_distance = normalized_euclidean_distance(pair[0]['individual'], pair[1]['individual'], config.character_properties_ranges,
                                                                config.melee_ability_ranges, config.projectile_ability_ranges)
-            pair[0]['archiveNovelty'] += character_distance
-            pair[1]['archiveNovelty'] += character_distance
+            pair[0]['archiveNovelty'] += character_distance / \
+                len(self.novel_archive)
+            pair[1]['archiveNovelty'] += character_distance / \
+                len(self.novel_archive)
 
     @staticmethod
     def _share2amount(total: int, shares: List[float]) -> List[int]:
@@ -209,9 +213,15 @@ class FitnessAndNoveltyEvolver:
             for x in shares
         ]
 
+    def get_ordered_novel_archive(self):
+        return sorted(self.novel_archive, key=lambda individual: individual['archiveNovelty'], reverse=True)
+
+    def get_novel_archive_values(self):
+        return list(map(lambda individual: individual['archiveNovelty'], self.novel_archive))
+
     def serialize(self) -> Config:
         config = {'crossoverShare': self.config.crossover_share,
-                  'newIndividualsShare': self.config.new_individuals_share}
+                  'newIndividualsShare': self.config.new_individuals_share, 'novelArchiveSize': self.config.novel_archive_size}
         if self.config.crossover:
             config['crossover'] = self.config.crossover.serialize()
         if self.config.mutations:
