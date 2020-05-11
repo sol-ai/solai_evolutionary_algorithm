@@ -24,14 +24,29 @@ class FitnessAndNoveltyEvolver:
 
     @dataclass(frozen=True)
     class Config:
+        # Percent in the range [0, 1] of the best individuals that will be crossed to form children,
+        # based on the crossover function.
+        # Must be a percent that yields an even number of individuals
         crossover_share: float
-        elitism_share: float
+
+        # Percent in the range [0, 1] of the best individuals that will be mutated and carried to the next generation
+        mutate_only_share: float
+
+        # Percent in the range [0, 1] of the worst individuals that will be replaced by new individuals
+        # given by the new_individuals_producer
         new_individuals_share: float
+
+        # Percent in the range [0, 1] of the best individuals that will be carried to the next generation
+        # without mutation
+        elitism_share: float
+
         novel_archive_size: int
         nearest_neighbour_number: int
+
         character_properties_ranges: Dict[str, Tuple[Any, Any]]
         melee_ability_ranges: Dict[str, Tuple[Any, Any]]
         projectile_ability_ranges: Dict[str, Tuple[Any, Any]]
+
         crossover: Optional[Crossover] = None
         mutations: Optional[List[Mutation]] = None
         new_individuals_producer: Optional[IndividualProducer] = None
@@ -66,8 +81,6 @@ class FitnessAndNoveltyEvolver:
         fitness_threshold = max(
             int(len(ordered_evaluated_population)/2), 2)
 
-        # novelty_evaluated_population = self.evaluate_novelty(
-        #     ordered_evaluated_population[:fitness_threshold])
         self.consider_for_novel_archive(
             ordered_evaluated_population[:fitness_threshold])
 
@@ -78,20 +91,21 @@ class FitnessAndNoveltyEvolver:
 
         population_count = len(ordered_evaluated_population)
 
-        individuals_amount = self._share2amount(
-            population_count,
-            [self.config.crossover_share, self.config.elitism_share,
-                self.config.new_individuals_share]
-        )
-        if sum(individuals_amount) != population_count:
-            raise ValueError(
-                "Percentages does not add up to produce an equal sized population")
+        raw_crossover_count = self._share2amount(
+            population_count, self.config.crossover_share)
+        if raw_crossover_count % 2 != 0:
+            print(
+                f"Crossover count rounded down to be even, from: {raw_crossover_count}")
+            crossover_count = raw_crossover_count - 1
+        else:
+            crossover_count = raw_crossover_count
 
-        crossover_count, elitism_count, new_individuals_count = individuals_amount
-
-        if crossover_count % 2 != 0:
-            raise ValueError(
-                "Crossover amount does not add up to an even number given the population size")
+        mutate_only_count = self._share2amount(
+            population_count, self.config.mutate_only_share)
+        new_individuals_count = self._share2amount(
+            population_count, self.config.new_individuals_share)
+        elitism_count = self._share2amount(
+            population_count, self.config.elitism_share)
 
         individuals_to_be_crossed = ordered_population[:crossover_count]
         individual_pairs_to_be_crossed = [
@@ -103,11 +117,13 @@ class FitnessAndNoveltyEvolver:
             for individual_pair in individual_pairs_to_be_crossed
         ))
 
-        elitism_individuals = ordered_population[:elitism_count]
+        mutate_only_individuals = ordered_population[:mutate_only_count]
         new_individuals = [self.config.new_individuals_producer()
                            for _ in range(new_individuals_count)]
+        elitism_individuals = ordered_population[:elitism_count]
 
-        new_population = crossover_children + elitism_individuals + new_individuals
+        individuals_to_be_mutated = crossover_children + \
+            mutate_only_individuals + new_individuals
 
         def mutate(individual: Individual) -> Individual:
             mutated_individual = reduce(
@@ -118,12 +134,19 @@ class FitnessAndNoveltyEvolver:
             )
             return mutated_individual
 
-        new_mutated_population = [
+        mutated_individuals = [
             mutate(individual)
-            for individual in new_population
-        ] if (self.config.mutations is not None) else new_population
+            for individual in individuals_to_be_mutated
+        ] if (self.config.mutations is not None) else individuals_to_be_mutated
 
-        return new_mutated_population
+        new_population = mutated_individuals + elitism_individuals
+
+        print(f"Produced a new generation of size: {len(new_population)}. "
+              f"Crossed: {len(crossover_children)}, new: {len(new_individuals)}, "
+              f"elited: {len(elitism_individuals)}, only mutated: {len(mutate_only_individuals)}, "
+              f"total mutated: {len(mutated_individuals)}")
+
+        return new_population
 
     def normalized_euclidean_distance(self, individual1, individual2):
         return normalized_euclidean_distance(individual1, individual2, self.config.character_properties_ranges, self.config.melee_ability_ranges, self.config.projectile_ability_ranges)
@@ -245,11 +268,8 @@ class FitnessAndNoveltyEvolver:
         return novelty
 
     @staticmethod
-    def _share2amount(total: int, shares: List[float]) -> List[int]:
-        return [
-            round(total * x)
-            for x in shares
-        ]
+    def _share2amount(total: int, share: float) -> int:
+        return round(total * share)
 
     def get_ordered_novel_archive(self):
         return sorted(self.novel_archive, key=lambda individual: individual['novelty'], reverse=True)

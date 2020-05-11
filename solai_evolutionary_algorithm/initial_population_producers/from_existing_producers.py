@@ -1,5 +1,5 @@
 import json
-from typing import List, cast
+from typing import List, cast, Dict
 
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import CharacterConfig
 from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, Population
@@ -29,7 +29,8 @@ class FromExistingProducer(InitialPopulationProducer):
 
     def __call__(self) -> Population:
         def load_char(filename: str) -> CharacterConfig:
-            char_file = resource_stream('solai_evolutionary_algorithm', f"resources/existing_characters/{filename}")
+            char_file = resource_stream(
+                'solai_evolutionary_algorithm', f"resources/existing_characters/{filename}")
             char_config = json.load(char_file)
             char_file.close()
             return char_config
@@ -39,7 +40,8 @@ class FromExistingProducer(InitialPopulationProducer):
             for char_filename in self.chars_filename
         ])
 
-        population_without_id = self.__duplicate_chars_to_size(existing_chars_without_id, self.population_size)
+        population_without_id = self.__duplicate_chars_to_size(
+            existing_chars_without_id, self.population_size)
         population = [
             {
                 **char_without_id,
@@ -48,3 +50,6 @@ class FromExistingProducer(InitialPopulationProducer):
             for char_without_id in population_without_id
         ]
         return population
+
+    def serialize(self) -> Dict:
+        return {'populationSize': self.population_size, 'characterFileName': self.chars_filename}

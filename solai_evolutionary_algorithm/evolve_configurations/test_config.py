@@ -91,9 +91,10 @@ test_config = EvolverConfig(
     ),
     # population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.PassThroughConfig),
     population_evolver=FitnessAndNoveltyEvolver(FitnessAndNoveltyEvolver.Config(
-        crossover_share=0.6,
-        elitism_share=0.4,
+        crossover_share=0.2,
+        mutate_only_share=0.7,
         new_individuals_share=0,
+        elitism_share=0.1,
         novel_archive_size=10,
         nearest_neighbour_number=4,
         character_properties_ranges=character_properties_ranges,
