@@ -1,6 +1,6 @@
 
-from solai_evolutionary_algorithm.evolution.evolver_listener import EvolverListener
 from solai_evolutionary_algorithm.database.database import Database
+from solai_evolutionary_algorithm.evolution.evolver_config import EvolverListener
 
 
 class UpdateDatabaseService(EvolverListener):

@@ -40,9 +40,6 @@ class AbilitySwapCrossover:
             for my_parent, other_parent in [(parents[0], parents[1]), (parents[1], parents[0])]
         ]
 
-        if type(children[0]['abilities']) == str:
-            print(f"Children invalid {children}")
-
         return children
 
     def serialize(self):

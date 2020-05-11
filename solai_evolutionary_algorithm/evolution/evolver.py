@@ -1,10 +1,8 @@
-from dataclasses import dataclass
-from typing import List, Optional, Tuple, Callable
+from typing import Tuple
 
 from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, FitnessEvaluation, \
     PopulationEvolver, EndCriteria, Population, EvaluatedPopulation
-from solai_evolutionary_algorithm.evolution.evolver_listener import EvolverListener
-from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig
+from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig, EvolverListener
 
 
 class Evolver:

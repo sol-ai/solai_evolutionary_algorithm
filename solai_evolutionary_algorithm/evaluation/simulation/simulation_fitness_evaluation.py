@@ -30,7 +30,6 @@ CharactersAllMeasurements = Dict[str, CharacterAllMeasurements]
 # Each metric accumulated for each character
 MetricsByCharacter = Dict[str, Dict[str, float]]
 
-
 class SimulationFitnessEvaluation(FitnessEvaluation):
 
     def __init__(
@@ -121,9 +120,9 @@ class SimulationFitnessEvaluation(FitnessEvaluation):
         characters_metrics_score = self.__evaluate_characters_metrics_score(
             characters_all_measurements)
 
-        # combine metrics scores for each character by accumulation
+        # combine metrics scores for each character by average
         def metrics_score_to_fitness(metrics_score: Dict[str, float]) -> float:
-            return sum(metrics_score.values())
+            return mean(metrics_score.values())
 
         fitness_by_character: Dict[str, float] = {
             char_id: metrics_score_to_fitness(char_metrics_score)

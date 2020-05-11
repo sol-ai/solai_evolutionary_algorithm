@@ -4,8 +4,8 @@ import uuid
 from copy import deepcopy
 from dataclasses import dataclass, asdict
 from pkg_resources import resource_stream
-from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, EvaluatedIndividual
-
+from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, EvaluatedIndividual, \
+    Individual
 
 class RandomBoundedProducer(InitialPopulationProducer):
     """
@@ -39,7 +39,7 @@ class RandomBoundedProducer(InitialPopulationProducer):
     def generate_init_population(self, n=10):
         return [self.generate_random_character() for _ in range(n)]
 
-    def generate_random_character(self):
+    def generate_random_character(self) -> Individual:
         no_of_abilites = self.no_of_abilities
         new_character = {}
         new_character["characterId"] = str(uuid.uuid4())
