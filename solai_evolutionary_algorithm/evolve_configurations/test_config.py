@@ -6,9 +6,12 @@ import json
 from pkg_resources import resource_stream
 from solai_evolutionary_algorithm.initial_population_producers.random_bounded_producer import RandomBoundedProducer
 from solai_evolutionary_algorithm.evolution.fitness_and_novelty_evolver import FitnessAndNoveltyEvolver
+from solai_evolutionary_algorithm.evolution.novelty_and_fitness_evolver import NoveltyAndFitnessEvolver
 from solai_evolutionary_algorithm.crossovers.ability_swap_crossover import AbilitySwapCrossover
 from solai_evolutionary_algorithm.database.update_database_service import UpdateDatabaseService
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evaluation import SimulationFitnessEvaluation
+from solai_evolutionary_algorithm.evaluation.simulation.novelty_simulation_fitness_evaluation import NoveltySimulationFitnessEvaluation
+from solai_evolutionary_algorithm.evaluation.novel_archive import NovelArchive
 from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig
 from solai_evolutionary_algorithm.evolution.generation_evolver import DefaultGenerationEvolver
 from solai_evolutionary_algorithm.evolution_end_criteria.fixed_generation_end_criteria import \
@@ -74,10 +77,19 @@ from_existing_population_producer = FromExistingProducer(
     ]
 )
 
+novel_archive = NovelArchive(NovelArchive.Config(
+    novel_archive_size=10,
+    nearest_neighbour_number=4,
+    character_properties_ranges=character_properties_ranges,
+    melee_ability_ranges=melee_ability_ranges,
+    projectile_ability_ranges=projectile_ability_ranges,
+))
+
 test_config = EvolverConfig(
     initial_population_producer=from_existing_population_producer,
     # fitness_evaluator=RandomFitnessEvaluation(),
-    fitness_evaluator=SimulationFitnessEvaluation(
+    fitness_evaluator=NoveltySimulationFitnessEvaluation(
+        novel_archive=novel_archive,
         metrics=["leadChange", "characterWon",
                  "stageCoverage", "nearDeathFrames", "gameLength"],
         queue_host="localhost",
@@ -90,13 +102,12 @@ test_config = EvolverConfig(
         }
     ),
     # population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.PassThroughConfig),
-    population_evolver=FitnessAndNoveltyEvolver(FitnessAndNoveltyEvolver.Config(
+    population_evolver=NoveltyAndFitnessEvolver(NoveltyAndFitnessEvolver.Config(
         crossover_share=0.4,
         mutate_only_share=0.5,
         new_individuals_share=0,
         elitism_share=0.1,
-        novel_archive_size=10,
-        nearest_neighbour_number=2,
+        novel_archive=novel_archive,
         character_properties_ranges=character_properties_ranges,
         melee_ability_ranges=melee_ability_ranges,
         projectile_ability_ranges=projectile_ability_ranges,
@@ -109,7 +120,7 @@ test_config = EvolverConfig(
         ],
         new_individuals_producer=[]
     )),
-    end_criteria=FixedGenerationsEndCriteria(generations=10),
+    end_criteria=FixedGenerationsEndCriteria(generations=4),
     evolver_listeners=[
         UpdateDatabaseService(),
         # PlotGenerationsLocalService()

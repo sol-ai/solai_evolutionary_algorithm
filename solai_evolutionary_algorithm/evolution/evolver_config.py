@@ -2,12 +2,13 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, FitnessEvaluation, \
-    PopulationEvolver, EndCriteria, EvaluatedPopulation
+    PopulationEvolver, EndCriteria, EvaluatedPopulation, NovelArchive
 
 
 @dataclass(frozen=True)
 class EvolverConfig:
     initial_population_producer: InitialPopulationProducer
+    # novel_archive: NovelArchive
     fitness_evaluator: FitnessEvaluation
     population_evolver: PopulationEvolver
     end_criteria: EndCriteria
