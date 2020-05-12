@@ -15,6 +15,7 @@ class Evolver:
         generation = 0
         curr_population: Population = initial_population
         evaluated_population: EvaluatedPopulation
+        novel_archive: NovelArchive
 
         for listener in config.evolver_listeners:
             listener.on_start(config)

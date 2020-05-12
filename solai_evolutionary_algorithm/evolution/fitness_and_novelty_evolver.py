@@ -15,12 +15,6 @@ IndividualProducer = Callable[[], Individual]
 
 
 class FitnessAndNoveltyEvolver:
-    """
-    This generation evolver first orders individuals given an EvaluatedPopulationOrderer.
-    Then the
-    Assuming bi-crossovers that take two individuals and produces two individuals
-    Then applies the given Mutators to all children
-    """
 
     @dataclass(frozen=True)
     class Config:
