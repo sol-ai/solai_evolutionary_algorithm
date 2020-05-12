@@ -91,14 +91,15 @@ test_config = EvolverConfig(
     fitness_evaluator=NoveltySimulationFitnessEvaluation(
         novel_archive=novel_archive,
         metrics=["leadChange", "characterWon",
-                 "stageCoverage", "nearDeathFrames", "gameLength"],
+                 "stageCoverage", "nearDeathFrames", "gameLength", "hitInteractions"],
         queue_host="localhost",
         desired_values={
             "leadChange": 50,
             "characterWon": 0.8,
             "stageCoverage": 0.7,
             "nearDeathFrames": 700,
-            "gameLength": 7200
+            "gameLength": 7200,
+            "hitInteractions": 20
         }
     ),
     # population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.PassThroughConfig),
@@ -120,9 +121,9 @@ test_config = EvolverConfig(
         ],
         new_individuals_producer=[]
     )),
-    end_criteria=FixedGenerationsEndCriteria(generations=4),
+    end_criteria=FixedGenerationsEndCriteria(generations=40),
     evolver_listeners=[
         UpdateDatabaseService(),
-        # PlotGenerationsLocalService()
+        PlotGenerationsLocalService()
     ],
 )
