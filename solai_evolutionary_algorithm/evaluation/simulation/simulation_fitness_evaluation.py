@@ -48,8 +48,17 @@ class SimulationFitnessEvaluation(FitnessEvaluation):
         self.metrics = metrics
         self.desired_values = desired_values
 
+        self.__prev_simulation_results: List[SimulationResult] = []
+        self.__prev_measures_by_character_id: CharactersAllMeasurements = {}
+
     def __call__(self, population: Population) -> EvaluatedPopulation:
         return self.evaluate_one_population(population)
+
+    def get_prev_simulation_results(self) -> List[SimulationResult]:
+        return self.__prev_simulation_results
+
+    def get_prev_measures_by_character_id(self) -> CharactersAllMeasurements:
+        return self.__prev_measures_by_character_id
 
     def evaluate_one_population(self, population: Population) -> EvaluatedPopulation:
 
@@ -58,6 +67,7 @@ class SimulationFitnessEvaluation(FitnessEvaluation):
 
         simulations_results = self.simulate_population(
             population, self.simulation_queue)  # blocks until all finished
+        self.__prev_simulation_results = simulations_results
 
         # a simpler representation of results
         simulations_measurements = self.__simulation_results_to_simulation_measurements(
@@ -66,6 +76,7 @@ class SimulationFitnessEvaluation(FitnessEvaluation):
         # a list of all measurements for each metric for each character
         all_measurements_by_character: CharactersAllMeasurements =\
             self.__group_all_measures_by_character(simulations_measurements)
+        self.__prev_measures_by_character_id = all_measurements_by_character
 
         metric_fitness_by_character = self.evaluate_fitness_all_characters(
             all_measurements_by_character)
