@@ -149,36 +149,26 @@ class SimulationFitnessEvaluation(FitnessEvaluation):
             self,
             characters_all_measurements: CharactersAllMeasurements
     ) -> Dict[str, Dict[str, float]]:
-        # average all measurements for each character
-        characters_averaged_measurements: Dict[str, Dict[str, float]] = {
-            char_id: {
-                metric: mean(measurements)
-                for metric, measurements in char_metrics.items()
-            }
-            for char_id, char_metrics in characters_all_measurements.items()
-        }
 
         # give a score to each metric for each character
         characters_metrics_score: Dict[str, Dict[str, float]] = {
             char_id: {
-                metric: self.__evaluate_metric_score(
-                    metric, averaged_measurements)
-                for metric, averaged_measurements in char_metrics.items()
+                metric: self.evaluate_metric_score(
+                    metric, measurements)
+                for metric, measurements in char_measurements_by_metric.items()
             }
-            for char_id, char_metrics in characters_averaged_measurements.items()
+            for char_id, char_measurements_by_metric in characters_all_measurements.items()
         }
 
         return characters_metrics_score
 
-    def __evaluate_metric_score(self, metric, average_metric_score):
+    def evaluate_metric_score(self, metric, measurements: List[float]) -> float:
         if metric not in self.desired_values:
             raise ValueError("Evaluating a metric with no desired value")
 
-        if average_metric_score == 0:
-            avg_score = 0.001
-        else:
-            avg_score = average_metric_score
-        return 1 - min(abs(self.desired_values[metric] - avg_score) / self.desired_values[metric], 1)
+        average_measurement = mean(measurements)
+
+        return 1 - min(abs(self.desired_values[metric] - average_measurement) / self.desired_values[metric], 1)
 
     def __simulation_results_to_simulation_measurements(
             self,
