@@ -52,4 +52,4 @@ class FromExistingProducer(InitialPopulationProducer):
         return population
 
     def serialize(self) -> Dict:
-        return {'populationSize': self.population_size, 'characterFileName': self.chars_filename}
+        return {'description': "From existing characters producer", 'populationSize': self.population_size, 'characterFileName': self.chars_filename}
