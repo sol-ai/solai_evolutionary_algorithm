@@ -254,7 +254,7 @@ class FitnessAndNoveltyEvolver:
             del distances_to_individuals[individual_character_id]
 
         ordered_distances = sorted(
-            distances_to_individuals.values(), reverse=True)
+            distances_to_individuals.values())
 
         novelty = sum(
             ordered_distances[:self.config.nearest_neighbour_number])/self.config.nearest_neighbour_number

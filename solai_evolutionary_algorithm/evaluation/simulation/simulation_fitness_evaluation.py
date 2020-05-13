@@ -48,8 +48,17 @@ class SimulationFitnessEvaluation(FitnessEvaluation):
         self.metrics = metrics
         self.desired_values = desired_values
 
+        self.__prev_simulation_results: List[SimulationResult] = []
+        self.__prev_measures_by_character_id: CharactersAllMeasurements = {}
+
     def __call__(self, population: Population) -> EvaluatedPopulation:
         return self.evaluate_one_population(population)
+
+    def get_prev_simulation_results(self) -> List[SimulationResult]:
+        return self.__prev_simulation_results
+
+    def get_prev_measures_by_character_id(self) -> CharactersAllMeasurements:
+        return self.__prev_measures_by_character_id
 
     def evaluate_one_population(self, population: Population) -> EvaluatedPopulation:
 
@@ -58,6 +67,7 @@ class SimulationFitnessEvaluation(FitnessEvaluation):
 
         simulations_results = self.simulate_population(
             population, self.simulation_queue)  # blocks until all finished
+        self.__prev_simulation_results = simulations_results
 
         # a simpler representation of results
         simulations_measurements = self.__simulation_results_to_simulation_measurements(
@@ -66,6 +76,7 @@ class SimulationFitnessEvaluation(FitnessEvaluation):
         # a list of all measurements for each metric for each character
         all_measurements_by_character: CharactersAllMeasurements =\
             self.__group_all_measures_by_character(simulations_measurements)
+        self.__prev_measures_by_character_id = all_measurements_by_character
 
         metric_fitness_by_character = self.evaluate_fitness_all_characters(
             all_measurements_by_character)
@@ -138,36 +149,26 @@ class SimulationFitnessEvaluation(FitnessEvaluation):
             self,
             characters_all_measurements: CharactersAllMeasurements
     ) -> Dict[str, Dict[str, float]]:
-        # average all measurements for each character
-        characters_averaged_measurements: Dict[str, Dict[str, float]] = {
-            char_id: {
-                metric: mean(measurements)
-                for metric, measurements in char_metrics.items()
-            }
-            for char_id, char_metrics in characters_all_measurements.items()
-        }
 
         # give a score to each metric for each character
         characters_metrics_score: Dict[str, Dict[str, float]] = {
             char_id: {
-                metric: self.__evaluate_metric_score(
-                    metric, averaged_measurements)
-                for metric, averaged_measurements in char_metrics.items()
+                metric: self.evaluate_metric_score(
+                    metric, measurements)
+                for metric, measurements in char_measurements_by_metric.items()
             }
-            for char_id, char_metrics in characters_averaged_measurements.items()
+            for char_id, char_measurements_by_metric in characters_all_measurements.items()
         }
 
         return characters_metrics_score
 
-    def __evaluate_metric_score(self, metric, average_metric_score):
+    def evaluate_metric_score(self, metric, measurements: List[float]) -> float:
         if metric not in self.desired_values:
             raise ValueError("Evaluating a metric with no desired value")
 
-        if average_metric_score == 0:
-            avg_score = 0.001
-        else:
-            avg_score = average_metric_score
-        return 1 - min(abs(self.desired_values[metric] - avg_score) / self.desired_values[metric], 1)
+        average_measurement = mean(measurements)
+
+        return 1 - min(abs(self.desired_values[metric] - average_measurement) / self.desired_values[metric], 1)
 
     def __simulation_results_to_simulation_measurements(
             self,
