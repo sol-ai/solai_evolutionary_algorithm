@@ -22,7 +22,7 @@ class Database:
     def init_evolution_instance(self, config):
         self.start_time = datetime.now()
         evolution = {
-            "evolutionStart": str(self.start_time), "generations": [], "evolutionBy": "Harald:)"}
+            "evolutionStart": str(self.start_time), "generations": []}
         self.evolution_instance_id = self.evolution_instances.insert_one(
             evolution).inserted_id
         self.post_config(config)
