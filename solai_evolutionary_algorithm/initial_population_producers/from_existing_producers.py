@@ -8,6 +8,14 @@ from pkg_resources import resource_stream
 from solai_evolutionary_algorithm.utils.character_id import create_character_id
 
 
+def load_char_from_file(filename: str) -> CharacterConfig:
+    char_file = resource_stream(
+        'solai_evolutionary_algorithm', f"resources/{filename}")
+    char_config = json.load(char_file)
+    char_file.close()
+    return char_config
+
+
 class FromExistingProducer(InitialPopulationProducer):
     """
     Generates a population from existing characters, applying mutations / crossovers
@@ -28,15 +36,8 @@ class FromExistingProducer(InitialPopulationProducer):
         return chars + duplicated_chars
 
     def __call__(self) -> Population:
-        def load_char(filename: str) -> CharacterConfig:
-            char_file = resource_stream(
-                'solai_evolutionary_algorithm', f"resources/existing_characters/{filename}")
-            char_config = json.load(char_file)
-            char_file.close()
-            return char_config
-
         existing_chars_without_id = cast(List[CharacterConfig], [
-            load_char(char_filename)
+            load_char_from_file(f"existing_characters/{char_filename}")
             for char_filename in self.chars_filename
         ])
 
