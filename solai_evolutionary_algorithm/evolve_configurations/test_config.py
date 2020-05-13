@@ -11,6 +11,7 @@ from solai_evolutionary_algorithm.crossovers.ability_swap_crossover import Abili
 from solai_evolutionary_algorithm.database.update_database_service import UpdateDatabaseService
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evaluation import SimulationFitnessEvaluation
 from solai_evolutionary_algorithm.evaluation.simulation.novelty_simulation_fitness_evaluation import NoveltySimulationFitnessEvaluation
+from solai_evolutionary_algorithm.evaluation.simulation.from_existing_simulation_fitness_evaluation import FromExistingSimulationFitnessEvaluation
 from solai_evolutionary_algorithm.evaluation.novel_archive import NovelArchive
 from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig
 from solai_evolutionary_algorithm.evolution.generation_evolver import DefaultGenerationEvolver
@@ -88,8 +89,8 @@ novel_archive = NovelArchive(NovelArchive.Config(
 test_config = EvolverConfig(
     initial_population_producer=from_existing_population_producer,
     # fitness_evaluator=RandomFitnessEvaluation(),
-    fitness_evaluator=NoveltySimulationFitnessEvaluation(
-        novel_archive=novel_archive,
+    fitness_evaluator=FromExistingSimulationFitnessEvaluation(
+        simulation_characters=from_existing_population_producer()[:4],
         metrics=["leadChange", "characterWon",
                  "stageCoverage", "nearDeathFrames", "gameLength", "hitInteractions"],
         queue_host="localhost",
@@ -121,7 +122,7 @@ test_config = EvolverConfig(
         ],
         new_individuals_producer=[]
     )),
-    end_criteria=FixedGenerationsEndCriteria(generations=40),
+    end_criteria=FixedGenerationsEndCriteria(generations=150),
     evolver_listeners=[
         UpdateDatabaseService(),
         PlotGenerationsLocalService()
