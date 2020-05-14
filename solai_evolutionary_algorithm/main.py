@@ -5,4 +5,4 @@ import solai_evolutionary_algorithm.evolve_configurations.fitness_evaluation_on_
 
 def main():
     evolver = Evolver()
-    evolver.evolve(fitness_evaluation_on_existing_character_config.config)
+    evolver.evolve(test_config.test_config)

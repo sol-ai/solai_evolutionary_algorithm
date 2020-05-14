@@ -4,8 +4,6 @@ from functools import reduce
 from itertools import combinations, chain
 from statistics import mean
 from typing import List, Optional, Any, Dict, TypedDict, Iterable, cast, Tuple, OrderedDict
-from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import SimulationQueue, SimulationData, \
-    CharacterConfig, SimulationResult
 
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import SimulationQueue, SimulationData, \
     CharacterConfig, SimulationResult

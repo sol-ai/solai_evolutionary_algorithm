@@ -6,8 +6,6 @@ from typing import List, Optional, Any, Dict, TypedDict, Iterable, cast, Tuple, 
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import SimulationQueue, SimulationData, \
     CharacterConfig, SimulationResult
 
-from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import SimulationQueue, SimulationData, \
-    CharacterConfig, SimulationResult
 from solai_evolutionary_algorithm.evolution.evolution_types import Population, FitnessEvaluation, EvaluatedPopulation, \
     EvaluatedIndividual, NovelArchive
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evaluation import SimulationFitnessEvaluation, \
