@@ -108,6 +108,7 @@ test_config = EvolverConfig(
             "gameLength": 7200,
             "hitInteractions": 20
         },
+        simulation_population_count=1,
         queue_host="localhost",
     ),
     # population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.PassThroughConfig),

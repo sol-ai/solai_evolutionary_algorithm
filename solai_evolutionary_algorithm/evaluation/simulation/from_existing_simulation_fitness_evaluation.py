@@ -23,13 +23,15 @@ class FromExistingSimulationFitnessEvaluation(SimulationFitnessEvaluation):
             metrics: List[str],
             desired_values: Dict[str, float],
             metrics_weights: Dict[str, float],
+            simulation_population_count: int,
             queue_host: Optional[str] = None,
             queue_port: Optional[int] = None,
     ):
         super(FromExistingSimulationFitnessEvaluation, self).__init__(
             metrics=metrics,
-            metrics_weights=metrics_weights,
             desired_values=desired_values,
+            metrics_weights=metrics_weights,
+            simulation_population_count=simulation_population_count,
             queue_host=queue_host,
             queue_port=queue_port
         )
@@ -73,11 +75,14 @@ class FromExistingSimulationFitnessEvaluation(SimulationFitnessEvaluation):
         return evaluated_population
 
     def simulate_population(self, population: Population, simulation_queue: SimulationQueue) -> List[SimulationResult]:
+
         character_pairs: List[Tuple[CharacterConfig, CharacterConfig]] = [
             (individual, opponent)
             for opponent in self.simulation_characters
             for individual in population
         ]
+
+        all_simulation_pairs = self.simulation_population_count*character_pairs
 
         current_simulations_data = [
             SimulationData(
@@ -85,7 +90,7 @@ class FromExistingSimulationFitnessEvaluation(SimulationFitnessEvaluation):
                 charactersConfigs=char_pair,
                 metrics=self.metrics
             )
-            for char_pair in character_pairs
+            for char_pair in all_simulation_pairs
         ]
 
         print(

@@ -39,6 +39,7 @@ class SimulationFitnessEvaluation(FitnessEvaluation, ABC):
             metrics: List[str],
             desired_values: Dict[str, float],
             metrics_weights: Dict[str, float],
+            simulation_population_count: int,
             queue_host: Optional[str] = None,
             queue_port: Optional[int] = None,
     ):
@@ -56,6 +57,7 @@ class SimulationFitnessEvaluation(FitnessEvaluation, ABC):
         self.metrics = metrics
         self.metrics_weights = metrics_weights
         self.desired_values = desired_values
+        self.simulation_population_count = simulation_population_count
 
     def __call__(self, population: Population) -> EvaluatedPopulation:
         return self.evaluate_one_population(population)

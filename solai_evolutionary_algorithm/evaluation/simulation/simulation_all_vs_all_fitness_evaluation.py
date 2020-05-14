@@ -20,6 +20,7 @@ class SimulationAllVsAllFitnessEvaluation(SimulationFitnessEvaluation):
             metrics: List[str],
             desired_values: Dict[str, float],
             metrics_weights: Dict[str, float],
+            simulation_population_count: int,
             queue_host: Optional[str] = None,
             queue_port: Optional[int] = None,
     ):
@@ -27,6 +28,7 @@ class SimulationAllVsAllFitnessEvaluation(SimulationFitnessEvaluation):
             metrics=metrics,
             metrics_weights=metrics_weights,
             desired_values=desired_values,
+            simulation_population_count=simulation_population_count,
             queue_host=queue_host,
             queue_port=queue_port
         )
@@ -90,13 +92,16 @@ class SimulationAllVsAllFitnessEvaluation(SimulationFitnessEvaluation):
         """
         character_pairs: List[Tuple[CharacterConfig,
                                     CharacterConfig]] = combinations(population, 2)
+
+        all_simulation_pairs = self.simulation_population_count*character_pairs
+
         current_simulations_data = [
             SimulationData(
                 simulationId=simulation_queue.create_simulation_id(),
                 charactersConfigs=char_pair,
                 metrics=self.metrics
             )
-            for char_pair in character_pairs
+            for char_pair in all_simulation_pairs
         ]
 
         print(
