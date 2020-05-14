@@ -12,12 +12,14 @@ EvaluatedIndividual = TypedDict("EvaluatedIndividual", {
 NoveltyAndFitnessEvaluatedIndividual = TypedDict("EvaluatedIndividual", {
     'individual': Individual,
     'fitness': List[float],
-    'populationNovelty': float
+    'novelty': float
 })
 
 NoveltyAndFitnessEvaluatedPopulation = List[EvaluatedIndividual]
 EvaluatedPopulation = List[EvaluatedIndividual]
 SubPopulation = List[Individual]
+
+NovelArchive = Callable[[Individual], None]
 
 FitnessEvaluation = Callable[[Population], EvaluatedPopulation]
 

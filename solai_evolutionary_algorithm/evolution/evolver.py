@@ -3,6 +3,7 @@ from typing import Tuple
 from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, FitnessEvaluation, \
     PopulationEvolver, EndCriteria, Population, EvaluatedPopulation
 from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig, EvolverListener
+from solai_evolutionary_algorithm.evaluation.novel_archive import NovelArchive
 
 
 class Evolver:
@@ -42,7 +43,5 @@ class Evolver:
         for listener in config.evolver_listeners:
             listener.on_end(
                 config.population_evolver.get_ordered_novel_archive())
-
-        print(config.population_evolver.novel_archive)
 
         return curr_population, evaluated_population
