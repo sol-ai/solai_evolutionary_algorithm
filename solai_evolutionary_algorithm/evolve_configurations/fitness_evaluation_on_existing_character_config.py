@@ -86,22 +86,30 @@ novel_archive = NovelArchive(NovelArchive.Config(
     projectile_ability_ranges=projectile_ability_ranges,
 ))
 
-test_config = EvolverConfig(
+config = EvolverConfig(
     initial_population_producer=from_existing_population_producer,
     # fitness_evaluator=RandomFitnessEvaluation(),
     fitness_evaluator=FromExistingSimulationFitnessEvaluation(
         simulation_characters=from_existing_population_producer()[:4],
         metrics=["leadChange", "characterWon",
                  "stageCoverage", "nearDeathFrames", "gameLength", "hitInteractions"],
-        queue_host="localhost",
+        metrics_weights={
+            "leadChange": 0.4,
+            "characterWon": 0.5,
+            "stageCoverage": 0.5,
+            "nearDeathFrames": 0.5,
+            "gameLength": 1.0,
+            "hitInteractions": 0.8
+        },
         desired_values={
             "leadChange": 50,
-            "characterWon": 0.8,
+            "characterWon": 0.6,
             "stageCoverage": 0.7,
             "nearDeathFrames": 700,
             "gameLength": 7200,
             "hitInteractions": 20
-        }
+        },
+        queue_host="localhost",
     ),
     # population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.PassThroughConfig),
     population_evolver=NoveltyAndFitnessEvolver(NoveltyAndFitnessEvolver.Config(

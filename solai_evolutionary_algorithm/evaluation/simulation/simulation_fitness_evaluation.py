@@ -30,14 +30,16 @@ CharactersAllMeasurements = Dict[str, CharacterAllMeasurements]
 # Each metric accumulated for each character
 MetricsByCharacter = Dict[str, Dict[str, float]]
 
+
 class SimulationFitnessEvaluation(FitnessEvaluation):
 
     def __init__(
             self,
             metrics: List[str],
             desired_values: Dict[str, float],
+            metrics_weights: Dict[str, float],
             queue_host: Optional[str] = None,
-            queue_port: Optional[int] = None
+            queue_port: Optional[int] = None,
     ):
         self.simulation_queue = SimulationQueue(
             **filter_not_none_values({

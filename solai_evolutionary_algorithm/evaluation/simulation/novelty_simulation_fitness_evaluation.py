@@ -32,9 +32,10 @@ class NoveltySimulationFitnessEvaluation(FitnessEvaluation):
             self,
             novel_archive: NovelArchive,
             metrics: List[str],
+            metrics_weights: Dict[str, float],
             desired_values: Dict[str, float],
             queue_host: Optional[str] = None,
-            queue_port: Optional[int] = None
+            queue_port: Optional[int] = None,
     ):
         self.novel_archive = novel_archive
         self.simulation_queue = SimulationQueue(

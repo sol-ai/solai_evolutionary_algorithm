@@ -33,12 +33,17 @@ class FromExistingSimulationFitnessEvaluation(FitnessEvaluation):
             simulation_characters: List,
             metrics: List[str],
             desired_values: Dict[str, float],
+            metrics_weights: Dict[str, float],
             queue_host: Optional[str] = None,
-            queue_port: Optional[int] = None
+            queue_port: Optional[int] = None,
     ):
         if not simulation_characters:
             raise ValueError(
                 "Need existing characters to evaluate fitness based on")
+
+        if not set(metrics_weights.keys()) == set(desired_values.keys()) or not set(metrics) == set(metrics_weights.keys()):
+            raise ValueError(
+                "Not consistent metrics in metrics, metric weights and/or desired values")
 
         self.simulation_characters = simulation_characters
         self.simulation_queue = SimulationQueue(
@@ -49,6 +54,7 @@ class FromExistingSimulationFitnessEvaluation(FitnessEvaluation):
         )
         self.metrics = metrics
         self.desired_values = desired_values
+        self.metrics_weights = metrics_weights
 
     def __call__(self, population: Population) -> EvaluatedPopulation:
         return self.evaluate_one_population(population)
@@ -114,9 +120,9 @@ class FromExistingSimulationFitnessEvaluation(FitnessEvaluation):
         characters_metrics_score = self.__evaluate_characters_metrics_score(
             characters_all_measurements)
 
-        # combine metrics scores for each character by average
+        # combine metrics scores for each character by average and weight accordingly
         def metrics_score_to_fitness(metrics_score: Dict[str, float]) -> float:
-            return mean(metrics_score.values())
+            return mean([metrics_score[key]*self.metrics_weights[key] for key in metrics_score])/mean(self.metrics_weights.values())
 
         fitness_by_character: Dict[str, float] = {
             char_id: metrics_score_to_fitness(char_metrics_score)
