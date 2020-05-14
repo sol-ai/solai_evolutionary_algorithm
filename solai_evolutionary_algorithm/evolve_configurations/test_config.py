@@ -9,6 +9,7 @@ from solai_evolutionary_algorithm.evolution_end_criteria.fixed_generation_end_cr
 from solai_evolutionary_algorithm.initial_population_producers.from_existing_producers import FromExistingProducer
 from solai_evolutionary_algorithm.initial_population_producers.random_bounded_producer import RandomBoundedProducer
 from solai_evolutionary_algorithm.mutations.default_properties_mutation import default_properties_mutation
+from solai_evolutionary_algorithm.plot_services.plot_generations_service import PlotGenerationsLocalService
 
 random_population_producer = RandomBoundedProducer(RandomBoundedProducer.Config(
     population_size=20,
@@ -57,7 +58,7 @@ projectile_ability_ranges = {
 }
 
 from_existing_population_producer = FromExistingProducer(
-    population_size=12,
+    population_size=20,
     chars_filename=[
         "shrankConfig.json",
         "schmathiasConfig.json",
@@ -75,7 +76,7 @@ test_config = EvolverConfig(
         queue_host="localhost",
         desired_values={
             "leadChange": 50,
-            "characterWon": 0.8,
+            "characterWon": 0.5,
             "stageCoverage": 0.7,
             "nearDeathFrames": 700,
             "gameLength": 7200
@@ -101,9 +102,9 @@ test_config = EvolverConfig(
         ],
         new_individuals_producer=None
     )),
-    end_criteria=FixedGenerationsEndCriteria(generations=10),
+    end_criteria=FixedGenerationsEndCriteria(generations=100),
     evolver_listeners=[
         UpdateDatabaseService(),
-        # PlotGenerationsLocalService()
+        PlotGenerationsLocalService()
     ],
 )
