@@ -92,7 +92,14 @@ test_config = EvolverConfig(
         novel_archive=novel_archive,
         metrics=["leadChange", "characterWon",
                  "stageCoverage", "nearDeathFrames", "gameLength", "hitInteractions"],
-        queue_host="localhost",
+        metrics_weights={
+            "leadChange": 0.4,
+            "characterWon": 0.5,
+            "stageCoverage": 0.5,
+            "nearDeathFrames": 0.5,
+            "gameLength": 1.0,
+            "hitInteractions": 0.8
+        },
         desired_values={
             "leadChange": 50,
             "characterWon": 0.8,
@@ -100,7 +107,8 @@ test_config = EvolverConfig(
             "nearDeathFrames": 700,
             "gameLength": 7200,
             "hitInteractions": 20
-        }
+        },
+        queue_host="localhost",
     ),
     # population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.PassThroughConfig),
     population_evolver=NoveltyAndFitnessEvolver(NoveltyAndFitnessEvolver.Config(

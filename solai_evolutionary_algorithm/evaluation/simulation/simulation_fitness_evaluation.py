@@ -3,6 +3,7 @@ from functools import reduce
 from itertools import combinations, chain
 from statistics import mean
 from typing import List, Optional, Any, Dict, TypedDict, Iterable, cast, Tuple, OrderedDict
+from abc import ABC
 
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import SimulationQueue, SimulationData, \
     CharacterConfig, SimulationResult
@@ -30,15 +31,22 @@ CharactersAllMeasurements = Dict[str, CharacterAllMeasurements]
 # Each metric accumulated for each character
 MetricsByCharacter = Dict[str, Dict[str, float]]
 
-class SimulationFitnessEvaluation(FitnessEvaluation):
+
+class SimulationFitnessEvaluation(FitnessEvaluation, ABC):
 
     def __init__(
             self,
             metrics: List[str],
             desired_values: Dict[str, float],
+            metrics_weights: Dict[str, float],
             queue_host: Optional[str] = None,
-            queue_port: Optional[int] = None
+            queue_port: Optional[int] = None,
     ):
+
+        if not set(metrics_weights.keys()) == set(desired_values.keys()) or not set(metrics) == set(metrics_weights.keys()):
+            raise ValueError(
+                "Not consistent metrics in metrics, metric weights and/or desired values")
+
         self.simulation_queue = SimulationQueue(
             **filter_not_none_values({
                 'host': queue_host,
@@ -46,56 +54,14 @@ class SimulationFitnessEvaluation(FitnessEvaluation):
             })
         )
         self.metrics = metrics
+        self.metrics_weights = metrics_weights
         self.desired_values = desired_values
-
-        self.__prev_simulation_results: List[SimulationResult] = []
-        self.__prev_measures_by_character_id: CharactersAllMeasurements = {}
 
     def __call__(self, population: Population) -> EvaluatedPopulation:
         return self.evaluate_one_population(population)
 
-    def get_prev_simulation_results(self) -> List[SimulationResult]:
-        return self.__prev_simulation_results
-
-    def get_prev_measures_by_character_id(self) -> CharactersAllMeasurements:
-        return self.__prev_measures_by_character_id
-
     def evaluate_one_population(self, population: Population) -> EvaluatedPopulation:
-
-        # assuming all pairs of characters are simulated
-        character_simulations_count = len(population)-1
-
-        simulations_results = self.simulate_population(
-            population, self.simulation_queue)  # blocks until all finished
-        self.__prev_simulation_results = simulations_results
-
-        # a simpler representation of results
-        simulations_measurements = self.__simulation_results_to_simulation_measurements(
-            simulations_results)
-
-        # a list of all measurements for each metric for each character
-        all_measurements_by_character: CharactersAllMeasurements =\
-            self.__group_all_measures_by_character(simulations_measurements)
-        self.__prev_measures_by_character_id = all_measurements_by_character
-
-        metric_fitness_by_character = self.evaluate_fitness_all_characters(
-            all_measurements_by_character)
-
-        evaluated_population: EvaluatedPopulation = [
-            EvaluatedIndividual(
-                individual=individual,
-                fitness=[metric_fitness_by_character[individual['characterId']]]
-            )
-            for individual in population
-        ]
-
-        fitness_by_character_id = {
-            evaluated_individual['individual']['characterId']: evaluated_individual['fitness']
-            for evaluated_individual in evaluated_population
-        }
-        print(f"Population fitness: {fitness_by_character_id}")
-
-        return evaluated_population
+        pass
 
     def simulate_population(
             self,
@@ -103,37 +69,21 @@ class SimulationFitnessEvaluation(FitnessEvaluation):
             simulation_queue: SimulationQueue
     ) -> List[SimulationResult]:
         """
-        Simulate combinations of characters and return simulation results
+        Simulate characters in a way you choose and return simulation results
         """
-        character_pairs: List[Tuple[CharacterConfig,
-                                    CharacterConfig]] = combinations(population, 2)
-        current_simulations_data = [
-            SimulationData(
-                simulationId=simulation_queue.create_simulation_id(),
-                charactersConfigs=char_pair,
-                metrics=self.metrics
-            )
-            for char_pair in character_pairs
-        ]
-
-        print(
-            f"Pushing {len(current_simulations_data)} simulations, waiting for simulation results...\n\n")
-        simulations_result = simulation_queue.push_simulations_data_wait_results(
-            current_simulations_data)
-
-        return simulations_result
+        pass
 
     def evaluate_fitness_all_characters(
             self,
             characters_all_measurements: CharactersAllMeasurements
     ) -> Dict[str, float]:
 
-        characters_metrics_score = self.__evaluate_characters_metrics_score(
+        characters_metrics_score = self.evaluate_characters_metrics_score(
             characters_all_measurements)
 
-        # combine metrics scores for each character by average
+        # combine metrics scores for each character by average and weight accordingly
         def metrics_score_to_fitness(metrics_score: Dict[str, float]) -> float:
-            return mean(metrics_score.values())
+            return mean([metrics_score[key]*self.metrics_weights[key] for key in metrics_score])/mean(self.metrics_weights.values())
 
         fitness_by_character: Dict[str, float] = {
             char_id: metrics_score_to_fitness(char_metrics_score)
@@ -142,10 +92,10 @@ class SimulationFitnessEvaluation(FitnessEvaluation):
 
         return fitness_by_character
 
-    def __init_metric_values(self):
+    def init_metric_values(self):
         return dict.fromkeys(self.desired_values, 0)
 
-    def __evaluate_characters_metrics_score(
+    def evaluate_characters_metrics_score(
             self,
             characters_all_measurements: CharactersAllMeasurements
     ) -> Dict[str, Dict[str, float]]:
@@ -170,7 +120,7 @@ class SimulationFitnessEvaluation(FitnessEvaluation):
 
         return 1 - min(abs(self.desired_values[metric] - average_measurement) / self.desired_values[metric], 1)
 
-    def __simulation_results_to_simulation_measurements(
+    def simulation_results_to_simulation_measurements(
             self,
             simulations_result: List[SimulationResult]
     ) -> List[SimulationMeasurements]:
@@ -190,7 +140,7 @@ class SimulationFitnessEvaluation(FitnessEvaluation):
         ])
         return simulations_measurements
 
-    def __group_all_measures_by_character(
+    def group_all_measures_by_character(
             self,
             simulations_measurements: List[SimulationMeasurements]
     ) -> CharactersAllMeasurements:
@@ -234,5 +184,5 @@ class SimulationFitnessEvaluation(FitnessEvaluation):
 
     def serialize(self):
         config = {'metrics': self.metrics,
-                  'desiredValues': self.desired_values}
+                  'desiredValues': self.desired_values, 'metricsWeights': self.metrics_weights}
         return config
