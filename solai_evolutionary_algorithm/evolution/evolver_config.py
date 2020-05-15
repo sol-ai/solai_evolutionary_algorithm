@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, FitnessEvaluation, \
-    PopulationEvolver, EndCriteria, EvaluatedPopulation, NovelArchive
+    PopulationEvolver, EndCriteria, EvaluatedPopulation
 
 
 @dataclass(frozen=True)

@@ -19,8 +19,6 @@ NoveltyAndFitnessEvaluatedPopulation = List[EvaluatedIndividual]
 EvaluatedPopulation = List[EvaluatedIndividual]
 SubPopulation = List[Individual]
 
-NovelArchive = Callable[[Individual], None]
-
 FitnessEvaluation = Callable[[Population], EvaluatedPopulation]
 
 InitialPopulationProducer = Callable[[], Population]

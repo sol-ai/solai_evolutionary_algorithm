@@ -7,7 +7,7 @@ from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import 
     CharacterConfig, SimulationResult
 
 from solai_evolutionary_algorithm.evolution.evolution_types import Population, FitnessEvaluation, EvaluatedPopulation, \
-    EvaluatedIndividual, NovelArchive
+    EvaluatedIndividual
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evaluation import SimulationFitnessEvaluation, \
     EvaluatedMetrics, SimulationMeasurements, CharacterAllMeasurements, CharactersAllMeasurements, MetricsByCharacter
 from solai_evolutionary_algorithm.utils.kwargs_utils import filter_not_none_values
@@ -25,7 +25,7 @@ class FromExistingSimulationFitnessEvaluation(SimulationFitnessEvaluation):
             queue_host: Optional[str] = None,
             queue_port: Optional[int] = None,
     ):
-        super(FromExistingSimulationFitnessEvaluation, self).__init__(
+        super().__init__(
             metrics=metrics,
             desired_values=desired_values,
             metrics_weights=metrics_weights,

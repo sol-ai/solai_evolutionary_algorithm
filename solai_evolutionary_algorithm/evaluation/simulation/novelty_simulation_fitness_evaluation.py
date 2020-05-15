@@ -1,3 +1,4 @@
+from solai_evolutionary_algorithm.evaluation.novel_archive import NovelArchive
 from solai_evolutionary_algorithm.utils.kwargs_utils import filter_not_none_values
 from copy import deepcopy
 from functools import reduce
@@ -8,7 +9,7 @@ from typing import List, Optional, Any, Dict, TypedDict, Iterable, cast, Tuple, 
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import SimulationQueue, SimulationData, \
     CharacterConfig, SimulationResult
 from solai_evolutionary_algorithm.evolution.evolution_types import Population, FitnessEvaluation, EvaluatedPopulation, \
-    EvaluatedIndividual, NovelArchive
+    EvaluatedIndividual
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evaluation import SimulationFitnessEvaluation, \
     EvaluatedMetrics, SimulationMeasurements, CharacterAllMeasurements, CharactersAllMeasurements, MetricsByCharacter
 
@@ -33,7 +34,7 @@ class NoveltySimulationFitnessEvaluation(SimulationFitnessEvaluation):
             queue_host=queue_host,
             queue_port=queue_port
         )
-        self.novel_archive = novel_archive
+        self.novel_archive: NovelArchive = novel_archive
 
     def evaluate_one_population(self, population: Population) -> EvaluatedPopulation:
 
@@ -83,7 +84,7 @@ class NoveltySimulationFitnessEvaluation(SimulationFitnessEvaluation):
             for individual in population
         ]
 
-        all_simulation_pairs = self.simulation_population_count*character_pairs
+        all_simulation_pairs = character_pairs * self.simulation_population_count
 
         current_simulations_data = [
             SimulationData(

@@ -3,7 +3,7 @@ from functools import reduce
 from itertools import combinations, chain
 from statistics import mean
 from typing import List, Optional, Any, Dict, TypedDict, Iterable, cast, Tuple, OrderedDict
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import SimulationQueue, SimulationData, \
     CharacterConfig, SimulationResult
@@ -62,9 +62,11 @@ class SimulationFitnessEvaluation(FitnessEvaluation, ABC):
     def __call__(self, population: Population) -> EvaluatedPopulation:
         return self.evaluate_one_population(population)
 
+    @abstractmethod
     def evaluate_one_population(self, population: Population) -> EvaluatedPopulation:
         pass
 
+    @abstractmethod
     def simulate_population(
             self,
             population: Population,
