@@ -68,7 +68,7 @@ projectile_ability_ranges = {
 }
 
 from_existing_population_producer = FromExistingProducer(
-    population_size=12,
+    population_size=4,
     chars_filename=[
         "shrankConfig.json",
         "schmathiasConfig.json",
@@ -85,12 +85,11 @@ novel_archive = NovelArchive(NovelArchive.Config(
     projectile_ability_ranges=projectile_ability_ranges,
 ))
 
-
 fitness_archive = FitnessArchive(FitnessArchive.Config(
     fitness_archive_size=50,
 ))
 
-test_config = EvolverConfig(
+fitness_archive_config = EvolverConfig(
     initial_population_producer=from_existing_population_producer,
     # fitness_evaluator=RandomFitnessEvaluation(),
     fitness_evaluator=NoveltySimulationFitnessEvaluation(
@@ -136,7 +135,7 @@ test_config = EvolverConfig(
         ],
         new_individuals_producer=[]
     )),
-    end_criteria=FixedGenerationsEndCriteria(generations=40),
+    end_criteria=FixedGenerationsEndCriteria(generations=10),
     evolver_listeners=[
         UpdateDatabaseService(),
         PlotGenerationsLocalService()

@@ -6,6 +6,7 @@ from itertools import chain, combinations
 from typing import Callable, List, Optional, Tuple, Dict, Any
 from solai_evolutionary_algorithm.utils.character_distance_utils import normalized_euclidean_distance
 from solai_evolutionary_algorithm.evaluation.novel_archive import NovelArchive
+from solai_evolutionary_algorithm.evaluation.fitness_archive import FitnessArchive
 from solai_evolutionary_algorithm.evolution.evolution_types import EvaluatedPopulation, Population, SubPopulation, \
     Individual, EvaluatedIndividual, NoveltyAndFitnessEvaluatedPopulation, NoveltyAndFitnessEvaluatedIndividual
 
@@ -35,6 +36,7 @@ class NoveltyAndFitnessEvolver:
         elitism_share: float
 
         novel_archive: NovelArchive
+        fitness_archive: FitnessArchive
 
         character_properties_ranges: Dict[str, Tuple[Any, Any]]
         melee_ability_ranges: Dict[str, Tuple[Any, Any]]
@@ -74,6 +76,8 @@ class NoveltyAndFitnessEvolver:
 
         self.consider_for_novel_archive(
             ordered_evaluated_population[:fitness_threshold])
+
+        self.consider_for_fitness_archive(ordered_evaluated_population)
 
         ordered_population = [
             evaluated_individual['individual']
@@ -165,6 +169,11 @@ class NoveltyAndFitnessEvolver:
             self.config.novel_archive.consider_individual_for_archive(
                 individual)
 
+    def consider_for_fitness_archive(self, evaluated_population: EvaluatedPopulation) -> None:
+        for individual in evaluated_population:
+            self.config.fitness_archive.consider_individual_for_archive(
+                individual)
+
     @staticmethod
     def _share2amount(total: int, share: float) -> int:
         return round(total * share)
@@ -174,6 +183,12 @@ class NoveltyAndFitnessEvolver:
 
     def get_novel_archive_values(self) -> List:
         return list(map(lambda individual: individual['novelty'], self.config.novel_archive.get_all_individuals()))
+
+    def get_ordered_fitness_archive(self):
+        return sorted(self.config.fitness_archive.get_all_individuals(), key=lambda individual: individual['fitness'], reverse=True)
+
+    def get_fitness_archive_values(self) -> List:
+        return list(map(lambda individual: individual['fitness'], self.config.fitness_archive.get_all_individuals()))
 
     def serialize(self) -> Config:
         config = {'crossoverShare': self.config.crossover_share,
