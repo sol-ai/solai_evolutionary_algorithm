@@ -46,12 +46,14 @@ class FromExistingSimulationFitnessEvaluation(SimulationFitnessEvaluation):
 
         simulations_results = self.simulate_population(
             population, self.simulation_queue)
+        self.__prev_simulation_results = simulations_results
 
         simulations_measurements = self.simulation_results_to_simulation_measurements(
             simulations_results)
 
         all_measurements_by_character: CharactersAllMeasurements =\
             self.group_all_measures_by_character(simulations_measurements)
+        self.__prev_measures_by_character_id = all_measurements_by_character
 
         metric_fitness_by_character = self.evaluate_fitness_all_characters(
             all_measurements_by_character)
@@ -68,6 +70,7 @@ class FromExistingSimulationFitnessEvaluation(SimulationFitnessEvaluation):
             evaluated_individual['individual']['characterId']: evaluated_individual['fitness']
             for evaluated_individual in evaluated_population
         }
+
         print(f"Population fitness: {fitness_by_character_id}")
 
         return evaluated_population

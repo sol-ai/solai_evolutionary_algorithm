@@ -33,9 +33,6 @@ class SimulationAllVsAllFitnessEvaluation(SimulationFitnessEvaluation):
             queue_port=queue_port
         )
 
-        self.__prev_simulation_results: List[SimulationResult] = []
-        self.__prev_measures_by_character_id: CharactersAllMeasurements = {}
-
     def __call__(self, population: Population) -> EvaluatedPopulation:
         return self.evaluate_one_population(population)
 
@@ -91,7 +88,7 @@ class SimulationAllVsAllFitnessEvaluation(SimulationFitnessEvaluation):
         Simulate combinations of characters and return simulation results
         """
         character_pairs: List[Tuple[CharacterConfig,
-                                    CharacterConfig]] = combinations(population, 2)
+                                    CharacterConfig]] = [pair for pair in combinations(population, 2)]
 
         all_simulation_pairs = self.simulation_population_count*character_pairs
 

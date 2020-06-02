@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from statistics import mean
 from typing import Dict, List
 
-from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evaluation import SimulationFitnessEvaluation
+from solai_evolutionary_algorithm.evaluation.simulation.simulation_all_vs_all_fitness_evaluation import SimulationAllVsAllFitnessEvaluation
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import CharacterConfig
 from solai_evolutionary_algorithm.evolution.evolution_types import EvaluatedPopulation
 
@@ -18,12 +18,15 @@ class RepeatSimulationData:
 def repeat_simulate(
         chars: List[CharacterConfig],
         metrics_desired_values: Dict[str, float],
-        repeat: int
+        metrics_weights: Dict[str, float],
+        repeat: int,
 ) -> RepeatSimulationData:
 
     metrics = list(metrics_desired_values.keys())
 
-    simulation_evaluator = SimulationFitnessEvaluation(
+    simulation_evaluator = SimulationAllVsAllFitnessEvaluation(
+        metrics_weights=metrics_weights,
+        simulation_population_count=20,
         metrics=metrics,
         queue_host="localhost",
         desired_values=metrics_desired_values
@@ -53,7 +56,8 @@ def repeat_simulate(
     for i in range(repeat):
         population = chars
         print(f"Running population evaluation {i}")
-        evaluated_population: EvaluatedPopulation = simulation_evaluator(population)
+        evaluated_population: EvaluatedPopulation = simulation_evaluator(
+            population)
         simulation_results = simulation_evaluator.get_prev_simulation_results()
         measurements_by_char_id = simulation_evaluator.get_prev_measures_by_character_id()
 
@@ -72,7 +76,8 @@ def repeat_simulate(
             }
 
             metric_scores = {
-                metric: simulation_evaluator.evaluate_metric_score(metric, measurements)
+                metric: simulation_evaluator.evaluate_metric_score(
+                    metric, measurements)
                 for metric, measurements in measurements_by_metric.items()
             }
 

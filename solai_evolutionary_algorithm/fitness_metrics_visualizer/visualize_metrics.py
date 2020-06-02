@@ -39,7 +39,8 @@ def plot_metrics_values_by_char_individually(
     char_count = len(chars_name)
     metrics = list(chars_metrics_value_by_metric[0].keys())
     metrics_count = len(metrics)
-    fig, axis_grid = plt.subplots(metrics_count, char_count, constrained_layout=True)
+    fig, axis_grid = plt.subplots(
+        metrics_count, char_count, constrained_layout=True)
 
     for ax, char_name in zip(axis_grid[0], chars_name):
         ax.set_title(char_name, rotation=0, size='large')
@@ -54,8 +55,10 @@ def plot_metrics_values_by_char_individually(
     ):
         for plot_metric_axes, (metric, metric_values) in zip(plot_metrics_axis, metric_values_by_metric.items()):
             if baseline_metrics_value is not None:
-                plot_metric_axes.plot([1], [baseline_metrics_value[metric]], 'r_')
-            plot_metric_axes.boxplot([metric_values], showmeans=True, meanline=True)
+                plot_metric_axes.plot(
+                    [1], [baseline_metrics_value[metric]], 'r_')
+            plot_metric_axes.boxplot(
+                [metric_values], showmeans=True, meanline=True)
             plot_metric_axes.set_xticks([])
 
     fig.suptitle(title)
@@ -67,12 +70,23 @@ def visualize_metrics(chars: List[CharacterConfig]):
         "characterWon": 0.8,
         "stageCoverage": 0.7,
         "nearDeathFrames": 700,
-        "gameLength": 7200
+        "gameLength": 7200,
+        "hitInteractions": 20,
     }
+    metrics_weights = {
+        "leadChange": 1.0,
+        "characterWon": 1.0,
+        "stageCoverage": 1.0,
+        "nearDeathFrames": 1.0,
+        "gameLength": 1.0,
+        "hitInteractions": 1.0,
+    }
+
     repeat_sim_data = repeat_simulate(
         chars,
         metrics_desired_values=metrics_desired_values,
-        repeat=1000
+        metrics_weights=metrics_weights,
+        repeat=10
     )
 
     # Dicts are ordered by default in python 3.7+
@@ -109,7 +123,8 @@ if __name__ == '__main__':
         "existing_characters/magnetConfig.json"
     ]
     char_configs = [
-        {**load_char_from_file(char_filename), 'characterId': create_character_id()}
+        {**load_char_from_file(char_filename),
+         'characterId': create_character_id()}
         for char_filename in chars_filename
     ]
 
