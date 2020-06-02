@@ -1,4 +1,4 @@
-from typing import Callable, List, Tuple, TypedDict, Any
+from typing import Callable, List, Tuple, TypedDict, Any, Optional
 
 
 Individual = Any
@@ -6,7 +6,8 @@ Population = List[Individual]
 
 EvaluatedIndividual = TypedDict("EvaluatedIndividual", {
     'individual': Individual,
-    'fitness': List[float]
+    'fitness': List[float],
+    'feasible':  Optional[bool]
 })
 
 NoveltyAndFitnessEvaluatedIndividual = TypedDict("EvaluatedIndividual", {
