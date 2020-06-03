@@ -26,6 +26,7 @@ class ConstrainedNoveltyEvaluation(SimulationFitnessEvaluation):
                  metrics: List[str],
                  simulation_characters: List,
                  feasible_metric_ranges: Dict[str, Tuple],
+                 novel_archive: NovelArchive,
                  queue_host: Optional[str] = None,
                  queue_port: Optional[str] = None,
                  minimum_required_feasible_metric_percentage: Optional[float] = 1.0,
@@ -35,6 +36,7 @@ class ConstrainedNoveltyEvaluation(SimulationFitnessEvaluation):
         self.metrics = metrics
         self.simulation_characters = simulation_characters
         self.feasible_metric_ranges = feasible_metric_ranges
+        self.novel_archive = novel_archive
 
         self.simulation_queue = SimulationQueue(
             **filter_not_none_values({
@@ -65,10 +67,20 @@ class ConstrainedNoveltyEvaluation(SimulationFitnessEvaluation):
         evaluated_population: EvaluatedPopulation = [
             EvaluatedIndividual(
                 individual=individual,
-                feasible=feasibility_of_population[individual['characterId']]
+                feasible=feasibility_of_population[individual['characterId']],
+                fitness=[-1.0],
+                novelty=-1
             )
             for individual in population
         ]
+
+        self.novel_archive.calculate_novelty_of_population(
+            evaluated_population)
+
+        self.novel_archive.calculate_archive_novelty(evaluated_population)
+
+        self.novel_archive.consider_population_for_archive(
+            evaluated_population)
 
         return evaluated_population
 
@@ -112,3 +124,8 @@ class ConstrainedNoveltyEvaluation(SimulationFitnessEvaluation):
 
     def is_feasible_metric_result(self, metric, metric_result):
         return metric_result >= self.feasible_metric_ranges[metric][0] and metric_result <= self.feasible_metric_ranges[metric][1]
+
+    def serialize(self):
+        config = {'metrics': self.metrics,
+                  'feasibilityRanges': self.feasible_metric_ranges}
+        return config

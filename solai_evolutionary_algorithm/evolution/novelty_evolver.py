@@ -1,3 +1,4 @@
+
 import math
 import numbers
 from dataclasses import dataclass
@@ -15,7 +16,7 @@ Mutation = Callable[[Individual], Individual]
 IndividualProducer = Callable[[], Individual]
 
 
-class NoveltyAndFitnessEvolver:
+class NoveltyEvolver:
 
     @dataclass(frozen=True)
     class Config:
@@ -35,13 +36,6 @@ class NoveltyAndFitnessEvolver:
         # without mutation
         elitism_share: float
 
-        novel_archive: NovelArchive
-        fitness_archive: FitnessArchive
-
-        character_properties_ranges: Dict[str, Tuple[Any, Any]]
-        melee_ability_ranges: Dict[str, Tuple[Any, Any]]
-        projectile_ability_ranges: Dict[str, Tuple[Any, Any]]
-
         crossover: Optional[Crossover] = None
         mutations: Optional[List[Mutation]] = None
         new_individuals_producer: Optional[IndividualProducer] = None
@@ -57,27 +51,12 @@ class NoveltyAndFitnessEvolver:
                 "No new_individual_producer provided and new_individuals_share not 0")
 
     def __call__(self, evaluated_population: EvaluatedPopulation) -> Population:
-        def fitness_retriever(evaluated_individual: EvaluatedIndividual):
-            fitness = evaluated_individual['fitness']
-            if type(fitness) == list and len(fitness) > 0 and isinstance(fitness[0], numbers.Number):
-                return sum(fitness)
-            else:
-                raise ValueError(
-                    "fitness must be a list of at least one float")
 
         ordered_evaluated_population = sorted(
             evaluated_population,
-            key=fitness_retriever,
+            key=lambda individual: individual['archiveNovelty'],
             reverse=True
         )
-
-        fitness_threshold = max(
-            int(len(ordered_evaluated_population)/2), 2)
-
-        self.consider_for_novel_archive(
-            ordered_evaluated_population[:fitness_threshold])
-
-        self.consider_for_fitness_archive(ordered_evaluated_population)
 
         ordered_population = [
             evaluated_individual['individual']
@@ -143,55 +122,13 @@ class NoveltyAndFitnessEvolver:
 
         return new_population
 
-    def normalized_euclidean_distance(self, individual1, individual2):
-        return normalized_euclidean_distance(individual1, individual2, self.config.character_properties_ranges, self.config.melee_ability_ranges, self.config.projectile_ability_ranges)
-
-    # def evaluate_novelty_within_population(self, evaluated_population: EvaluatedPopulation) -> NoveltyAndFitnessEvaluatedPopulation:
-    #     novelty_and_fitness_evaluated_population = evaluated_population
-    #     individual_pairs = combinations(
-    #         novelty_and_fitness_evaluated_population, 2)
-    #     for pair in individual_pairs:
-    #         if 'novelty' not in pair[0]:
-    #             pair[0]['novelty'] = 0
-    #         if 'novelty' not in pair[1]:
-    #             pair[1]['novelty'] = 0
-    #         character_distance = self.normalized_euclidean_distance(
-    #             pair[0]['individual'], pair[1]['individual'])
-    #         pair[0]['novelty'] += character_distance / \
-    #             len(evaluated_population)
-    #         pair[1]['novelty'] += character_distance / \
-    #             len(evaluated_population)
-
-    #     return novelty_and_fitness_evaluated_population
-
-    def consider_for_novel_archive(self, evaluated_population: EvaluatedPopulation) -> None:
-        self.config.novel_archive.consider_population_for_archive(
-            evaluated_population)
-
-    def consider_for_fitness_archive(self, evaluated_population: EvaluatedPopulation) -> None:
-        for individual in evaluated_population:
-            self.config.fitness_archive.consider_individual_for_archive(
-                individual)
-
     @staticmethod
     def _share2amount(total: int, share: float) -> int:
         return round(total * share)
 
-    def get_ordered_novel_archive(self):
-        return sorted(self.config.novel_archive.get_all_individuals(), key=lambda individual: individual['novelty'], reverse=True)
-
-    def get_novel_archive_values(self) -> List:
-        return list(map(lambda individual: individual['novelty'], self.config.novel_archive.get_all_individuals()))
-
-    def get_ordered_fitness_archive(self):
-        return sorted(self.config.fitness_archive.get_all_individuals(), key=lambda individual: individual['fitness'], reverse=True)
-
-    def get_fitness_archive_values(self) -> List:
-        return list(map(lambda individual: individual['fitness'], self.config.fitness_archive.get_all_individuals()))
-
     def serialize(self) -> Config:
         config = {'crossoverShare': self.config.crossover_share,
-                  'newIndividualsShare': self.config.new_individuals_share, 'novelArchiveSize': len(self.config.novel_archive)}
+                  'newIndividualsShare': self.config.new_individuals_share}
         if self.config.crossover:
             config['crossover'] = self.config.crossover.serialize()
         if self.config.mutations:

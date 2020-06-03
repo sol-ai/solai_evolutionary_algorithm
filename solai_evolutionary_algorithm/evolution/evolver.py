@@ -41,7 +41,7 @@ class Evolver:
             curr_population = new_population
 
         for listener in config.evolver_listeners:
-            listener.on_end(config.population_evolver.get_ordered_fitness_archive(),
-                            config.population_evolver.get_ordered_novel_archive())
+            listener.on_end(
+                novel_archive=config.fitness_evaluator.novel_archive.novel_archive)
 
         return curr_population, evaluated_population

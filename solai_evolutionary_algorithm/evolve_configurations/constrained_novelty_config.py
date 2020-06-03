@@ -7,6 +7,7 @@ import json
 from pkg_resources import resource_stream
 from solai_evolutionary_algorithm.initial_population_producers.random_bounded_producer import RandomBoundedProducer
 from solai_evolutionary_algorithm.evolution.novelty_and_fitness_evolver import NoveltyAndFitnessEvolver
+from solai_evolutionary_algorithm.evolution.novelty_evolver import NoveltyEvolver
 from solai_evolutionary_algorithm.crossovers.ability_swap_crossover import AbilitySwapCrossover
 from solai_evolutionary_algorithm.database.update_database_service import UpdateDatabaseService
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evaluation import SimulationFitnessEvaluation
@@ -83,7 +84,7 @@ from_existing_population_producer = FromExistingProducer(
 
 feasibility_metric_ranges = {
     "leadChange": (1, 100),
-    "characterWon": (0.2, 0.7),
+    "characterWon": (0.2, 0.6),
     "stageCoverage": (0.1, 0.7),
     "nearDeathFrames": (100, 1000),
     "gameLength": (100, 10000),
@@ -92,7 +93,7 @@ feasibility_metric_ranges = {
 
 novel_archive = NovelArchive(NovelArchive.Config(
     novel_archive_size=10,
-    nearest_neighbour_number=4,
+    nearest_neighbour_number=8,
     character_properties_ranges=character_properties_ranges,
     melee_ability_ranges=melee_ability_ranges,
     projectile_ability_ranges=projectile_ability_ranges,
@@ -111,20 +112,16 @@ constrained_novelty_config = EvolverConfig(
         metrics=["leadChange", "characterWon",
                  "stageCoverage", "nearDeathFrames", "gameLength", "hitInteractions"],
         feasible_metric_ranges=feasibility_metric_ranges,
-        simulation_population_count=1,
+        novel_archive=novel_archive,
+        simulation_population_count=10,
         queue_host="localhost",
     ),
     # population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.PassThroughConfig),
-    population_evolver=NoveltyAndFitnessEvolver(NoveltyAndFitnessEvolver.Config(
+    population_evolver=NoveltyEvolver(NoveltyEvolver.Config(
         crossover_share=0.4,
         mutate_only_share=0.5,
         new_individuals_share=0,
         elitism_share=0.1,
-        novel_archive=novel_archive,
-        fitness_archive=fitness_archive,
-        character_properties_ranges=character_properties_ranges,
-        melee_ability_ranges=melee_ability_ranges,
-        projectile_ability_ranges=projectile_ability_ranges,
         crossover=AbilitySwapCrossover(),
         mutations=[
             default_properties_mutation(
@@ -137,9 +134,9 @@ constrained_novelty_config = EvolverConfig(
         ],
         new_individuals_producer=[]
     )),
-    end_criteria=FixedGenerationsEndCriteria(generations=40),
+    end_criteria=FixedGenerationsEndCriteria(generations=5),
     evolver_listeners=[
-        # UpdateDatabaseService(),
+        UpdateDatabaseService(),
         # PlotGenerationsLocalService()
     ],
 )
