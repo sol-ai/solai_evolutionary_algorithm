@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from statistics import mean
 from typing import Dict, List
 
+from solai_evolutionary_algorithm.evaluation.simulation.simulation_all_vs_all_fitness_evaluation import \
+    SimulationAllVsAllFitnessEvaluation
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evaluation import SimulationFitnessEvaluation
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import CharacterConfig
 from solai_evolutionary_algorithm.evolution.evolution_types import EvaluatedPopulation
@@ -18,15 +20,18 @@ class RepeatSimulationData:
 def repeat_simulate(
         chars: List[CharacterConfig],
         metrics_desired_values: Dict[str, float],
+        metrics_weights: Dict[str, float],
         repeat: int
 ) -> RepeatSimulationData:
 
     metrics = list(metrics_desired_values.keys())
 
-    simulation_evaluator = SimulationFitnessEvaluation(
+    simulation_evaluator = SimulationAllVsAllFitnessEvaluation(
         metrics=metrics,
         queue_host="localhost",
-        desired_values=metrics_desired_values
+        desired_values=metrics_desired_values,
+        metrics_weights=metrics_weights,
+        simulation_population_count=1
     )
 
     fitnesses_by_char_id: Dict[str, List[float]] = {

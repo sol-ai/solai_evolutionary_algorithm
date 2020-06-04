@@ -69,9 +69,17 @@ def visualize_metrics(chars: List[CharacterConfig]):
         "nearDeathFrames": 700,
         "gameLength": 7200
     }
+    metrics_weights = {
+        "leadChange": 0.2,
+        "characterWon": 0.2,
+        "stageCoverage": 0.2,
+        "nearDeathFrames": 0.2,
+        "gameLength": 0.2
+    }
     repeat_sim_data = repeat_simulate(
         chars,
         metrics_desired_values=metrics_desired_values,
+        metrics_weights=metrics_weights,
         repeat=1000
     )
 
@@ -105,8 +113,8 @@ if __name__ == '__main__':
     chars_filename = [
         "existing_characters/shrankConfig.json",
         "existing_characters/schmathiasConfig.json",
-        "existing_characters/brailConfig.json",
-        "existing_characters/magnetConfig.json"
+        # "existing_characters/brailConfig.json",
+        # "existing_characters/magnetConfig.json"
     ]
     char_configs = [
         {**load_char_from_file(char_filename), 'characterId': create_character_id()}

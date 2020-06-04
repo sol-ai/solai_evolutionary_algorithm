@@ -70,7 +70,7 @@ from_existing_population_producer = FromExistingProducer(
 )
 
 novel_archive = NovelArchive(NovelArchive.Config(
-    novel_archive_size=10,
+    novel_archive_size=2,
     nearest_neighbour_number=4,
     character_properties_ranges=character_properties_ranges,
     melee_ability_ranges=melee_ability_ranges,
@@ -101,7 +101,7 @@ test_config = EvolverConfig(
             "gameLength": 7200,
             "hitInteractions": 20
         },
-        simulation_population_count=200,
+        simulation_population_count=10,
         queue_host="localhost",
     ),
     # population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.PassThroughConfig),
@@ -125,7 +125,7 @@ test_config = EvolverConfig(
     )),
     end_criteria=FixedGenerationsEndCriteria(generations=20),
     evolver_listeners=[
-        UpdateDatabaseService(),
+        # UpdateDatabaseService(),
         PlotGenerationsLocalService()
     ],
 )
