@@ -17,42 +17,6 @@ def __clamp(value: Number, value_range: Tuple[Number, Number]):
     return max(value_range[0], min(value_range[1], value))
 
 
-def __mutate_ability(ability, melee_ranges, projectile_ranges):
-    if ability['type'] == 'melee':
-        ranges = melee_ranges
-    else:
-        ranges = projectile_ranges
-    for attribute in ability:
-        if isinstance(ability[attribute], str):
-            continue
-        attribute_value = ability[attribute]
-
-        if type(attribute_value) != bool:
-            min_value_attribute = ranges[attribute][0]
-            max_value_attribute = ranges[attribute][1]
-            mutation_factor = random.uniform(0.5, 1.5)
-            if mutation_factor > 1:
-                new_attribute_value = min(
-                    mutation_factor*attribute_value, max_value_attribute)
-            else:
-                new_attribute_value = max(
-                    mutation_factor*attribute_value, min_value_attribute)
-        else:
-            flip_probability = 0.2
-            if (random.random() > (1-flip_probability)):
-                new_attribute_value = not attribute_value
-            else:
-                new_attribute_value = attribute_value
-
-        ability[attribute] = new_attribute_value
-
-
-def __mutate_abilities(genome):
-    abilities = genome['abilities']
-    for ability in abilities:
-        __mutate_ability(ability)
-
-
 PropertyMutator = Callable[[Any, Tuple[float, float], Tuple[Any, Any]], Any]
 
 
@@ -262,31 +226,3 @@ def print_mutations(
         for ability_prop in melee_property_data:
             print_change(
                 ability_prop, orig_ability[ability_prop], mutated_ability[ability_prop], begin_with="\t")
-
-# def radius_mutation(self, original_genome):
-#     """
-#     This mutation scheme only affects the character's radius with a factor ranging from 0.5 to 1.5
-#     """
-#     char_config = cast(CharacterConfig, original_genome)
-#     return CharacterConfig(
-#         **char_config,
-#         radius=
-#     )
-#     genome = deepcopy(original_genome)
-#     self.__mutate_float_property(genome)
-
-# if __name__ == "__main__":
-#     char_config = CharacterConfig(
-#         characterId= "",
-#         radius= 32,
-#         moveVelocity= 600,
-#         abilities= List[AbilityConfig]
-#     )
-#
-#     property_mutation = PropertyMutator(
-#         character_property_ranges: Dict[str, Tuple[Any, Any]]
-#         melee_property_ranges: Dict[str, Tuple[Any, Any]]
-#         projectile_property_ranges: Dict[str, Tuple[Any, Any]]
-#         probability_per_property: float = 0.1
-#         mutation_factor_range: Tuple[float, float] = (0.5, 1.5)
-#     )

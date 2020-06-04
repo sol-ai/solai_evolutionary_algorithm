@@ -12,6 +12,7 @@ class UpdateDatabaseService(EvolverListener):
     def on_new_generation(self, evaluated_generation, is_last_generation):
         self.database.add_character_generation(evaluated_generation)
 
-    def on_end(self, novel_archive):
+    def on_end(self, fitness_archive, novel_archive):
+        self.database.add_fitness_archive(fitness_archive)
         self.database.add_novel_archive(novel_archive)
         self.database.end_evolution_instance()

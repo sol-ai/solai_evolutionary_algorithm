@@ -33,9 +33,6 @@ class SimulationAllVsAllFitnessEvaluation(SimulationFitnessEvaluation):
             queue_port=queue_port
         )
 
-        self.__prev_simulation_results: List[SimulationResult] = []
-        self.__prev_measures_by_character_id: CharactersAllMeasurements = {}
-
     def __call__(self, population: Population) -> EvaluatedPopulation:
         return self.evaluate_one_population(population)
 

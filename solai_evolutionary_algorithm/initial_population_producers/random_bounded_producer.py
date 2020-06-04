@@ -7,6 +7,7 @@ from pkg_resources import resource_stream
 from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, EvaluatedIndividual, \
     Individual
 
+
 class RandomBoundedProducer(InitialPopulationProducer):
     """
     Generates a random population with properties set randomly given ranges
@@ -18,29 +19,24 @@ class RandomBoundedProducer(InitialPopulationProducer):
         character_properties_ranges: any
         melee_ability_ranges: any
         projectile_ability_ranges: any
-
-    ability_types = ["melee", "projectile"]
-    no_of_abilities = 3
-    character_config = json.load(resource_stream(
-        'solai_evolutionary_algorithm', 'resources/character_config.json'))['character_config']
-    melee_config = json.load(resource_stream(
-        'solai_evolutionary_algorithm', 'resources/melee.json'))
-    projectile_config = json.load(resource_stream(
-        'solai_evolutionary_algorithm', 'resources/projectile.json'))
-
-    ability_configs = {'melee': melee_config, 'projectile': projectile_config}
+        no_of_abilities: int = 3
 
     def __init__(self, config: Config):
         self.config = config
+        self.character_config = config.character_properties_ranges
+        self.ability_configs = {'melee': config.melee_ability_ranges,
+                                'projectile': config.projectile_ability_ranges}
+        self.ability_types = list(self.ability_configs.keys())
+        self.no_of_abilites = config.no_of_abilities
 
     def __call__(self):
-        return self.generate_init_population(n=self.config.population_size)
+        return self.generate_random_character()
 
     def generate_init_population(self, n=10):
         return [self.generate_random_character() for _ in range(n)]
 
     def generate_random_character(self) -> Individual:
-        no_of_abilites = self.no_of_abilities
+        no_of_abilites = self.no_of_abilites
         new_character = {}
         new_character["characterId"] = str(uuid.uuid4())
         config = self.character_config
@@ -60,11 +56,6 @@ class RandomBoundedProducer(InitialPopulationProducer):
             new_character["abilities"].append(self.__generate_random_ability())
 
         return new_character
-
-    def clone_character(self, genome):
-        character_copy = deepcopy(genome)
-        character_copy['characterId'] = str(uuid.uuid1())
-        return character_copy
 
     def __generate_random_ability(self):
         ability_type = self.ability_types[random.randint(

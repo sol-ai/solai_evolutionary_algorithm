@@ -39,7 +39,8 @@ def plot_metrics_values_by_char_individually(
     char_count = len(chars_name)
     metrics = list(chars_metrics_value_by_metric[0].keys())
     metrics_count = len(metrics)
-    fig, axis_grid = plt.subplots(metrics_count, char_count, constrained_layout=True)
+    fig, axis_grid = plt.subplots(
+        metrics_count, char_count, constrained_layout=True)
 
     for ax, char_name in zip(axis_grid[0], chars_name):
         ax.set_title(char_name, rotation=0, size='large')
@@ -54,8 +55,10 @@ def plot_metrics_values_by_char_individually(
     ):
         for plot_metric_axes, (metric, metric_values) in zip(plot_metrics_axis, metric_values_by_metric.items()):
             if baseline_metrics_value is not None:
-                plot_metric_axes.plot([1], [baseline_metrics_value[metric]], 'r_')
-            plot_metric_axes.boxplot([metric_values], showmeans=True, meanline=True)
+                plot_metric_axes.plot(
+                    [1], [baseline_metrics_value[metric]], 'r_')
+            plot_metric_axes.boxplot(
+                [metric_values], showmeans=True, meanline=True)
             plot_metric_axes.set_xticks([])
 
     fig.suptitle(title)
@@ -113,11 +116,12 @@ if __name__ == '__main__':
     chars_filename = [
         "existing_characters/shrankConfig.json",
         "existing_characters/schmathiasConfig.json",
-        # "existing_characters/brailConfig.json",
-        # "existing_characters/magnetConfig.json"
+        "existing_characters/brailConfig.json",
+        "existing_characters/magnetConfig.json"
     ]
     char_configs = [
-        {**load_char_from_file(char_filename), 'characterId': create_character_id()}
+        {**load_char_from_file(char_filename),
+         'characterId': create_character_id()}
         for char_filename in chars_filename
     ]
 

@@ -1,127 +1,131 @@
 from solai_evolutionary_algorithm.mutations.properties_mutation import PropertiesMutation, PropertyMutationData
+from typing import Dict
 
 
 def default_properties_mutation(
+        character_properties_ranges: Dict[str, tuple],
+        melee_ability_ranges: Dict[str, tuple],
+        projectile_ability_ranges: Dict[str, tuple],
         probability_per_number_property: float = 0.1,
-        probability_per_bool_property: float = 0.05
+        probability_per_bool_property: float = 0.05,
+
 ) -> PropertiesMutation:
     return PropertiesMutation(
         character_property_data={
-            'radius': PropertyMutationData(
-                float, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(32, 64)
-            ),
-            'moveVelocity': PropertyMutationData(
-                float, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(100, 1200)
+            key: PropertyMutationData(
+                float,
+                probability=probability_per_number_property,
+                mutation_factor_range=(0.8, 1.2),
+                value_range=property_range
             )
+            for (key, property_range) in character_properties_ranges.items()
         },
         melee_property_data={
             "radius": PropertyMutationData(
                 property_type=float, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(5, 100)
+                mutation_factor_range=(0.5, 1.5), value_range=melee_ability_ranges['radius']
             ),
             "distanceFromChar": PropertyMutationData(
                 property_type=float, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(0, 200)
+                mutation_factor_range=(0.5, 1.5), value_range=melee_ability_ranges["distanceFromChar"]
             ),
             "speed": PropertyMutationData(
                 property_type=float, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(0, 0)
+                mutation_factor_range=(0.5, 1.5), value_range=melee_ability_ranges["speed"]
             ),
             "startupTime": PropertyMutationData(
                 property_type=int, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(1, 60)
+                mutation_factor_range=(0.5, 1.5), value_range=melee_ability_ranges["startupTime"]
             ),
             "activeTime": PropertyMutationData(
                 property_type=int, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(1, 60)
+                mutation_factor_range=(0.5, 1.5), value_range=melee_ability_ranges["activeTime"]
             ),
             "executionTime": PropertyMutationData(
                 property_type=int, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(1, 60)
+                mutation_factor_range=(0.5, 1.5), value_range=melee_ability_ranges["executionTime"]
             ),
             "endlagTime": PropertyMutationData(
                 property_type=int, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(1, 60)
+                mutation_factor_range=(0.5, 1.5), value_range=melee_ability_ranges["endlagTime"]
             ),
             "rechargeTime": PropertyMutationData(
                 property_type=int, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(0, 60)
+                mutation_factor_range=(0.5, 1.5), value_range=melee_ability_ranges["rechargeTime"]
             ),
             "damage": PropertyMutationData(
                 property_type=float, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(10, 1000)
+                mutation_factor_range=(0.5, 1.5), value_range=melee_ability_ranges["damage"]
             ),
             "baseKnockback": PropertyMutationData(
                 property_type=float, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(10, 1000)
+                mutation_factor_range=(0.5, 1.5), value_range=melee_ability_ranges["baseKnockback"]
             ),
             "knockbackRatio": PropertyMutationData(
                 property_type=float, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(0.1, 1.0)
+                mutation_factor_range=(0.5, 1.5), value_range=melee_ability_ranges["knockbackRatio"]
             ),
             "knockbackPoint": PropertyMutationData(
                 property_type=float, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(-500, 500)
+                mutation_factor_range=(0.5, 1.5), value_range=melee_ability_ranges["knockbackPoint"]
             ),
             "knockbackTowardPoint": PropertyMutationData(
                 property_type=bool, probability=probability_per_bool_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(False, True)
+                mutation_factor_range=(0.5, 1.5), value_range=melee_ability_ranges["knockbackTowardPoint"]
             )
         },
         projectile_property_data={
             "radius": PropertyMutationData(
                 property_type=float, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(5, 100)
+                mutation_factor_range=(0.5, 1.5), value_range=projectile_ability_ranges["radius"]
             ),
             "distanceFromChar": PropertyMutationData(
                 property_type=float, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(0, 200)
+                mutation_factor_range=(0.5, 1.5), value_range=projectile_ability_ranges["distanceFromChar"]
             ),
             "speed": PropertyMutationData(
                 property_type=float, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(100, 800)
+                mutation_factor_range=(0.5, 1.5), value_range=projectile_ability_ranges["speed"]
             ),
             "startupTime": PropertyMutationData(
                 property_type=int, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(1, 60)
+                mutation_factor_range=(0.5, 1.5), value_range=projectile_ability_ranges["startupTime"]
             ),
             "activeTime": PropertyMutationData(
                 property_type=int, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(1, 60)
+                mutation_factor_range=(0.5, 1.5), value_range=projectile_ability_ranges["activeTime"]
             ),
             "executionTime": PropertyMutationData(
                 property_type=int, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(1, 60)
+                mutation_factor_range=(0.5, 1.5), value_range=projectile_ability_ranges["executionTime"]
             ),
             "endlagTime": PropertyMutationData(
                 property_type=int, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(1, 60)
+                mutation_factor_range=(0.5, 1.5), value_range=projectile_ability_ranges["endlagTime"]
             ),
             "rechargeTime": PropertyMutationData(
                 property_type=int, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(0, 60)
+                mutation_factor_range=(0.5, 1.5), value_range=projectile_ability_ranges["rechargeTime"]
             ),
             "damage": PropertyMutationData(
                 property_type=float, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(10, 500)
+                mutation_factor_range=(0.5, 1.5), value_range=projectile_ability_ranges["damage"]
             ),
             "baseKnockback": PropertyMutationData(
                 property_type=float, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(10, 1000)
+                mutation_factor_range=(0.5, 1.5), value_range=projectile_ability_ranges["baseKnockback"]
             ),
             "knockbackRatio": PropertyMutationData(
                 property_type=float, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(0.1, 1.0)
+                mutation_factor_range=(0.5, 1.5), value_range=projectile_ability_ranges["knockbackRatio"]
             ),
             "knockbackPoint": PropertyMutationData(
                 property_type=float, probability=probability_per_number_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(-500, 500)
+                mutation_factor_range=(0.5, 1.5), value_range=projectile_ability_ranges["knockbackPoint"]
             ),
             "knockbackTowardPoint": PropertyMutationData(
                 property_type=bool, probability=probability_per_bool_property,
-                mutation_factor_range=(0.5, 1.5), value_range=(False, True)
+                mutation_factor_range=(0.5, 1.5), value_range=projectile_ability_ranges["knockbackTowardPoint"]
             )
         }
     )

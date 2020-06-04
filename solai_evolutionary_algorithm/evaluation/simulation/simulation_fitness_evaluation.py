@@ -59,6 +59,9 @@ class SimulationFitnessEvaluation(FitnessEvaluation, ABC):
         self.desired_values = desired_values
         self.simulation_population_count = simulation_population_count
 
+        self.__prev_simulation_results: List[SimulationResult] = []
+        self.__prev_measures_by_character_id: CharactersAllMeasurements = {}
+
     def __call__(self, population: Population) -> EvaluatedPopulation:
         return self.evaluate_one_population(population)
 
@@ -86,6 +89,7 @@ class SimulationFitnessEvaluation(FitnessEvaluation, ABC):
             characters_all_measurements)
 
         # combine metrics scores for each character by average and weight accordingly
+
         def metrics_score_to_fitness(metrics_score: Dict[str, float]) -> float:
             return mean([metrics_score[key]*self.metrics_weights[key] for key in metrics_score])/mean(self.metrics_weights.values())
 
@@ -185,6 +189,12 @@ class SimulationFitnessEvaluation(FitnessEvaluation, ABC):
         )
 
         return all_measurements_by_character
+
+    def get_prev_simulation_results(self) -> List[SimulationResult]:
+        return self.__prev_simulation_results
+
+    def get_prev_measures_by_character_id(self) -> CharactersAllMeasurements:
+        return self.__prev_measures_by_character_id
 
     def serialize(self):
         config = {'metrics': self.metrics,

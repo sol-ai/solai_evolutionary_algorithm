@@ -62,12 +62,12 @@ class Representation:
         character_copy['characterId'] = str(uuid.uuid1())
         return character_copy
 
-    def __generate_random_ability(self):
+    def generate_random_ability():
         ability_type = self.ability_types[random.randint(
             0, len(self.ability_types)-1)]
-        return self.__generate_random_ability_by_type(ability_type)
+        return generate_random_ability_by_type(ability_type)
 
-    def __generate_random_ability_by_type(self, ability_type):
+    def generate_random_ability_by_type(type):
         ability = {}
         data = self.ability_configs[ability_type]
         ability["type"] = data["type"]

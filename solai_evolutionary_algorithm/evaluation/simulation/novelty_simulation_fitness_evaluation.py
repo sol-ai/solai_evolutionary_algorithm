@@ -36,6 +36,9 @@ class NoveltySimulationFitnessEvaluation(SimulationFitnessEvaluation):
         )
         self.novel_archive: NovelArchive = novel_archive
 
+    def __call__(self, population: Population) -> EvaluatedPopulation:
+        return self.evaluate_one_population(population)
+
     def evaluate_one_population(self, population: Population) -> EvaluatedPopulation:
 
         if not self.novel_archive.get_all_individuals():
@@ -51,12 +54,14 @@ class NoveltySimulationFitnessEvaluation(SimulationFitnessEvaluation):
 
         simulations_results = self.simulate_population(
             population, self.simulation_queue)
+        self.__prev_simulation_results = simulations_results
 
         simulations_measurements = self.simulation_results_to_simulation_measurements(
             simulations_results)
 
         all_measurements_by_character: CharactersAllMeasurements =\
             self.group_all_measures_by_character(simulations_measurements)
+        self.__prev_measures_by_character_id = all_measurements_by_character
 
         metric_fitness_by_character = self.evaluate_fitness_all_characters(
             all_measurements_by_character)

@@ -37,6 +37,11 @@ class Database:
             '$set': {'novelArchive': novel_archive}
         })
 
+    def add_fitness_archive(self, fitness_archive):
+        self.evolution_instances.update_one({'_id': self.evolution_instance_id}, {
+            '$set': {'fitnessArchive': fitness_archive}
+        })
+
     def end_evolution_instance(self):
         finish_time = datetime.now()
         total_time_taken = str(finish_time - self.start_time)

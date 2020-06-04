@@ -48,10 +48,12 @@ SimulationResult = TypedDict("SimulationResult", {
     "metrics": Dict[str, List[float]]
 })
 
+
 class SimulationQueue:
 
     def __init__(self, host='redis', port=6379):
-        print(f"Connecting to redis simulation queue at host: {host} port: {port}")
+        print(
+            f"Connecting to redis simulation queue at host: {host} port: {port}")
         self.redis = redis.StrictRedis(host=host, port=port, db=0)
 
     def push_simulation_data(self, simulation_data: SimulationData) -> None:
@@ -119,7 +121,8 @@ class SimulationQueue:
                 print(f"waited for simulation results for {new_time - start_time:.2f}s, "
                       f"got {len(current_results)} of {pushed_simulations_count}")
                 prev_time = new_time
-        print(f"Simulated {pushed_simulations_count} simulations in {time() - start_time:.2f}s")
+        print(
+            f"Simulated {pushed_simulations_count} simulations in {time() - start_time:.2f}s")
 
         # copied_current_results = deepcopy(current_results)
         return current_results
