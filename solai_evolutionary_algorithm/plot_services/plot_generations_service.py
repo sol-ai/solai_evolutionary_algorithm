@@ -32,11 +32,7 @@ class PlotGenerationsLocalService(EvolverListener):
         plt.boxplot(self.populations_fitness)
         plt.draw()
 
-        if not is_last_generation:
-            plt.pause(0.001)
-        else:
-            plt.ioff()
-            plt.show()
+        plt.pause(0.001)
 
     def on_end(self, *args, **kwargs):
         pass

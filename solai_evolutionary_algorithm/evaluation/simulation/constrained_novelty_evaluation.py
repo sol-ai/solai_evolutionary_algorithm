@@ -5,8 +5,9 @@ from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import 
 
 from solai_evolutionary_algorithm.evolution.evolution_types import FitnessEvaluation, EvaluatedPopulation, Population
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evaluation import SimulationFitnessEvaluation
+from solai_evolutionary_algorithm.evaluation.novel_archive import NovelArchive
 from solai_evolutionary_algorithm.evolution.evolution_types import Population, FitnessEvaluation, EvaluatedPopulation, \
-    EvaluatedIndividual, NovelArchive
+    EvaluatedIndividual
 
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evaluation import SimulationFitnessEvaluation, \
     EvaluatedMetrics, SimulationMeasurements, CharacterAllMeasurements, CharactersAllMeasurements, MetricsByCharacter

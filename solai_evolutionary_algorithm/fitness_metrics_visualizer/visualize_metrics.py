@@ -70,23 +70,20 @@ def visualize_metrics(chars: List[CharacterConfig]):
         "characterWon": 0.8,
         "stageCoverage": 0.7,
         "nearDeathFrames": 700,
-        "gameLength": 7200,
-        "hitInteractions": 20,
+        "gameLength": 7200
     }
     metrics_weights = {
-        "leadChange": 1.0,
-        "characterWon": 1.0,
-        "stageCoverage": 1.0,
-        "nearDeathFrames": 1.0,
-        "gameLength": 1.0,
-        "hitInteractions": 1.0,
+        "leadChange": 0.2,
+        "characterWon": 0.2,
+        "stageCoverage": 0.2,
+        "nearDeathFrames": 0.2,
+        "gameLength": 0.2
     }
-
     repeat_sim_data = repeat_simulate(
         chars,
         metrics_desired_values=metrics_desired_values,
         metrics_weights=metrics_weights,
-        repeat=10
+        repeat=1000
     )
 
     # Dicts are ordered by default in python 3.7+

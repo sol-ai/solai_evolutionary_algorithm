@@ -88,9 +88,9 @@ class SimulationAllVsAllFitnessEvaluation(SimulationFitnessEvaluation):
         Simulate combinations of characters and return simulation results
         """
         character_pairs: List[Tuple[CharacterConfig,
-                                    CharacterConfig]] = [pair for pair in combinations(population, 2)]
+                                    CharacterConfig]] = list(combinations(population, 2))
 
-        all_simulation_pairs = self.simulation_population_count*character_pairs
+        all_simulation_pairs = self.simulation_population_count * character_pairs
 
         current_simulations_data = [
             SimulationData(
