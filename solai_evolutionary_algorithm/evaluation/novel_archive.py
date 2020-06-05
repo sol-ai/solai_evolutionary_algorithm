@@ -78,10 +78,10 @@ class NovelArchive:
             return individual
 
         self.novel_archive = list(
-            map(lambda individual: reset_novelty(individual), self.novel_archive))
+            map(reset_novelty, self.novel_archive))
 
         for individual in self.novel_archive:
-            individual['novelty'] = self.__calculate_novelty_compared_to_archive(
+            individual['archiveNovelty'] = self.__calculate_novelty_compared_to_archive(
                 individual)
 
     def __calculate_novelty_compared_to_archive(self, individual: Individual) -> float:

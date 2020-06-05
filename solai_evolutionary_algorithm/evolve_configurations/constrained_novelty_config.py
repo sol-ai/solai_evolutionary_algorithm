@@ -3,26 +3,15 @@ from solai_evolutionary_algorithm.plot_services.plot_generations_service import 
 from solai_evolutionary_algorithm.mutations.default_properties_mutation import default_properties_mutation
 from solai_evolutionary_algorithm.evolution_end_criteria.fixed_generation_end_criteria import \
     FixedGenerationsEndCriteria
-import json
-from pkg_resources import resource_stream
-from solai_evolutionary_algorithm.initial_population_producers.random_bounded_producer import RandomBoundedProducer
-from solai_evolutionary_algorithm.evolution.novelty_and_fitness_evolver import NoveltyAndFitnessEvolver
-from solai_evolutionary_algorithm.evolution.novelty_evolver import NoveltyEvolver
+from solai_evolutionary_algorithm.evolution.fins_evolver import FinsEvolver
 from solai_evolutionary_algorithm.crossovers.ability_swap_crossover import AbilitySwapCrossover
 from solai_evolutionary_algorithm.database.update_database_service import UpdateDatabaseService
-from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evaluation import SimulationFitnessEvaluation
-from solai_evolutionary_algorithm.evaluation.simulation.novelty_simulation_fitness_evaluation import NoveltySimulationFitnessEvaluation
 from solai_evolutionary_algorithm.evaluation.simulation.constrained_novelty_evaluation import ConstrainedNoveltyEvaluation
 from solai_evolutionary_algorithm.evaluation.novel_archive import NovelArchive
 from solai_evolutionary_algorithm.evaluation.fitness_archive import FitnessArchive
 from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig
-from solai_evolutionary_algorithm.evolution.generation_evolver import DefaultGenerationEvolver
-from solai_evolutionary_algorithm.evolution_end_criteria.fixed_generation_end_criteria import \
-    FixedGenerationsEndCriteria
-from solai_evolutionary_algorithm.initial_population_producers.from_existing_producers import FromExistingProducer
 from solai_evolutionary_algorithm.initial_population_producers.random_bounded_producer import RandomBoundedProducer
-from solai_evolutionary_algorithm.mutations.default_properties_mutation import default_properties_mutation
-from solai_evolutionary_algorithm.plot_services.plot_generations_service import PlotGenerationsLocalService
+from solai_evolutionary_algorithm.initial_population_producers.from_existing_producers import FromExistingProducer
 
 
 random_population_producer = RandomBoundedProducer(RandomBoundedProducer.Config(
@@ -41,11 +30,11 @@ melee_ability_ranges = {
     "radius": (16.0, 200.0),
     "distanceFromChar": (0.0, 200.0),
     "speed": (0.0, 0.0),
-    "startupTime": (10, 60),
-    "activeTime": (10, 60),
-    "executionTime": (0, 60),
-    "endlagTime": (10, 60),
-    "rechargeTime": (0, 60),
+    "startupTime": (1, 30),
+    "activeTime": (1, 60),
+    "executionTime": (1, 30),
+    "endlagTime": (1, 30),
+    "rechargeTime": (0, 30),
     "damage": (100.0, 1000.0),
     "baseKnockback": (10.0, 1000.0),
     "knockbackRatio": (0.1, 1.0),
@@ -62,9 +51,9 @@ projectile_ability_ranges = {
     "speed": (100, 800),
     "startupTime": (1, 60),
     "activeTime": (20, 1000),
-    "executionTime": (0, 60),
-    "endlagTime": (6, 60),
-    "rechargeTime": (13, 80),
+    "executionTime": (1, 30),
+    "endlagTime": (1, 30),
+    "rechargeTime": (1, 120),
     "damage": (15, 500),
     "baseKnockback": (50, 1000),
     "knockbackRatio": (0.1, 1.0),
@@ -100,10 +89,6 @@ novel_archive = NovelArchive(NovelArchive.Config(
 ))
 
 
-fitness_archive = FitnessArchive(FitnessArchive.Config(
-    fitness_archive_size=50,
-))
-
 constrained_novelty_config = EvolverConfig(
     initial_population_producer=from_existing_population_producer,
     # fitness_evaluator=RandomFitnessEvaluation(),
@@ -113,11 +98,11 @@ constrained_novelty_config = EvolverConfig(
                  "stageCoverage", "nearDeathFrames", "gameLength", "hitInteractions"],
         feasible_metric_ranges=feasibility_metric_ranges,
         novel_archive=novel_archive,
-        simulation_population_count=10,
+        simulation_population_count=1,
         queue_host="localhost",
     ),
     # population_evolver=DefaultGenerationEvolver(DefaultGenerationEvolver.PassThroughConfig),
-    population_evolver=NoveltyEvolver(NoveltyEvolver.Config(
+    population_evolver=FinsEvolver(FinsEvolver.Config(
         crossover_share=0.4,
         mutate_only_share=0.5,
         new_individuals_share=0,
@@ -134,9 +119,9 @@ constrained_novelty_config = EvolverConfig(
         ],
         new_individuals_producer=[]
     )),
-    end_criteria=FixedGenerationsEndCriteria(generations=5),
+    end_criteria=FixedGenerationsEndCriteria(generations=20),
     evolver_listeners=[
         UpdateDatabaseService(),
-        # PlotGenerationsLocalService()
+        PlotGenerationsLocalService()
     ],
 )

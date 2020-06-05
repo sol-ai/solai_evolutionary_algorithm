@@ -23,5 +23,5 @@ class EvolverListener:
     def on_new_generation(self, evaluated_population: EvaluatedPopulation, is_last_generation: bool):
         pass
 
-    def on_end(self):
+    def on_end(self, *args, **kwargs):
         pass

@@ -38,5 +38,5 @@ class PlotGenerationsLocalService(EvolverListener):
             plt.ioff()
             plt.show()
 
-    def on_end(self, *args):
+    def on_end(self, *args, **kwargs):
         pass

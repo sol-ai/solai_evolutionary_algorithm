@@ -67,9 +67,8 @@ class ConstrainedNoveltyEvaluation(SimulationFitnessEvaluation):
         evaluated_population: EvaluatedPopulation = [
             EvaluatedIndividual(
                 individual=individual,
-                feasible=feasibility_of_population[individual['characterId']],
+                feasibility_score=feasibility_of_population[individual['characterId']],
                 fitness=[-1.0],
-                novelty=-1
             )
             for individual in population
         ]
@@ -111,16 +110,16 @@ class ConstrainedNoveltyEvaluation(SimulationFitnessEvaluation):
         return simulations_result
 
     def evaluate_feasibility_of_population(self, measurements_by_character):
-        evaluated_population = {individual: self.is_feasible(
+        evaluated_population = {individual: self.feasiblity_score(
             measurements) for individual, measurements in measurements_by_character.items()}
         return evaluated_population
 
-    def is_feasible(self, character_simulation_result) -> bool:
+    def feasiblity_score(self, character_simulation_result) -> bool:
         mean_simulation_results = {metric: mean(metric_result) for (
             metric, metric_result) in character_simulation_result.items()}
-        feasible_number = len(list(filter(None, map(lambda x: self.is_feasible_metric_result(
-            x[0], x[1]), mean_simulation_results.items()))))
-        return feasible_number/len(character_simulation_result) >= self.minimum_required_feasible_metric_percentage
+        feasible_number = len(list(filter(None, map(lambda metric_result: self.is_feasible_metric_result(
+            metric_result[0], metric_result[1]), mean_simulation_results.items()))))
+        return feasible_number/len(character_simulation_result)
 
     def is_feasible_metric_result(self, metric, metric_result):
         return metric_result >= self.feasible_metric_ranges[metric][0] and metric_result <= self.feasible_metric_ranges[metric][1]

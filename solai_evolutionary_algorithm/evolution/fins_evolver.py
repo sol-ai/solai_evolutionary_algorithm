@@ -1,13 +1,9 @@
-
-import math
-import numbers
+import sys
 from dataclasses import dataclass
 from functools import reduce
 from itertools import chain, combinations
 from typing import Callable, List, Optional, Tuple, Dict, Any
 from solai_evolutionary_algorithm.utils.character_distance_utils import normalized_euclidean_distance
-from solai_evolutionary_algorithm.evaluation.novel_archive import NovelArchive
-from solai_evolutionary_algorithm.evaluation.fitness_archive import FitnessArchive
 from solai_evolutionary_algorithm.evolution.evolution_types import EvaluatedPopulation, Population, SubPopulation, \
     Individual, EvaluatedIndividual, NoveltyAndFitnessEvaluatedPopulation, NoveltyAndFitnessEvaluatedIndividual
 
@@ -16,7 +12,7 @@ Mutation = Callable[[Individual], Individual]
 IndividualProducer = Callable[[], Individual]
 
 
-class NoveltyEvolver:
+class FinsEvolver:
 
     @dataclass(frozen=True)
     class Config:
@@ -52,18 +48,46 @@ class NoveltyEvolver:
 
     def __call__(self, evaluated_population: EvaluatedPopulation) -> Population:
 
-        ordered_evaluated_population = sorted(
-            evaluated_population,
+        feasible_population = list(filter(
+            lambda individual: individual['feasibility_score'] == 1.0,
+            evaluated_population))
+
+        infeasible_population = list(filter(
+            lambda individual: individual['feasibility_score'] != 1.0,
+            evaluated_population))
+
+        ordered_evaluated_feasible_population = sorted(
+            feasible_population,
             key=lambda individual: individual['archiveNovelty'],
             reverse=True
         )
 
-        ordered_population = [
+        ordered_evaluated_infeasible_population = sorted(
+            infeasible_population,
+            key=lambda individual: individual['feasibility_score'],
+            reverse=True
+        )
+
+        ordered_feasible_population = [
             evaluated_individual['individual']
-            for evaluated_individual in ordered_evaluated_population
+            for evaluated_individual in ordered_evaluated_feasible_population
         ]
 
-        population_count = len(ordered_evaluated_population)
+        ordered_infeasible_population = [
+            evaluated_individual['individual']
+            for evaluated_individual in ordered_evaluated_infeasible_population
+        ]
+
+        new_feasible_population = self.evolve_population(
+            ordered_feasible_population)
+
+        new_infeasible_population = self.evolve_population(
+            ordered_infeasible_population)
+
+        return new_feasible_population + new_infeasible_population
+
+    def evolve_population(self, ordered_population: EvaluatedPopulation) -> Population:
+        population_count = len(ordered_population)
 
         raw_crossover_count = self._share2amount(
             population_count, self.config.crossover_share)
@@ -81,6 +105,11 @@ class NoveltyEvolver:
         elitism_count = self._share2amount(
             population_count, self.config.elitism_share)
 
+        remaining = len(ordered_population) - (mutate_only_count +
+                                               crossover_count + elitism_count + new_individuals_count)
+
+        elitism_count += remaining
+
         individuals_to_be_crossed = ordered_population[:crossover_count]
         individual_pairs_to_be_crossed = [
             individuals_to_be_crossed[i: i+2]
@@ -94,10 +123,11 @@ class NoveltyEvolver:
         mutate_only_individuals = ordered_population[:mutate_only_count]
         new_individuals = [self.config.new_individuals_producer()
                            for _ in range(new_individuals_count)]
-        elitism_individuals = ordered_population[:elitism_count]
 
         individuals_to_be_mutated = crossover_children + \
             mutate_only_individuals + new_individuals
+
+        elitism_individuals = ordered_population[:elitism_count]
 
         def mutate(individual: Individual) -> Individual:
             mutated_individual = reduce(
@@ -115,7 +145,8 @@ class NoveltyEvolver:
 
         new_population = mutated_individuals + elitism_individuals
 
-        print(f"Produced a new generation of size: {len(new_population)}. "
+        print(f"From a population of size: {len(ordered_population)}. "
+              f"Produced a new generation of size: {len(new_population)}. "
               f"Crossed: {len(crossover_children)}, new: {len(new_individuals)}, "
               f"elited: {len(elitism_individuals)}, only mutated: {len(mutate_only_individuals)}, "
               f"total mutated: {len(mutated_individuals)}")
@@ -127,7 +158,7 @@ class NoveltyEvolver:
         return round(total * share)
 
     def serialize(self) -> Config:
-        config = {'crossoverShare': self.config.crossover_share,
+        config = {'className': str(self.__class__), 'crossoverShare': self.config.crossover_share,
                   'newIndividualsShare': self.config.new_individuals_share}
         if self.config.crossover:
             config['crossover'] = self.config.crossover.serialize()
