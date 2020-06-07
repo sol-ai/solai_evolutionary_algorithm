@@ -34,10 +34,5 @@ class PlotGenerationsLocalService(EvolverListener):
 
         plt.pause(0.001)
 
-    def on_end(self, *args):
-        plt.figure(1)
-        plt.gcf().clear()
-        plt.boxplot(self.populations_fitness)
-        plt.draw()
-        plt.ioff()
-        plt.show()
+    def on_end(self, *args, **kwargs):
+        pass

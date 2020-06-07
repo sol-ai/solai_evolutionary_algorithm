@@ -2,9 +2,9 @@ from solai_evolutionary_algorithm.evolution.evolver import Evolver, EvolverConfi
 # import solai_evolutionary_algorithm.evolve_configurations.test_config as test_config
 # import solai_evolutionary_algorithm.evolve_configurations.fitness_evaluation_on_existing_character_config as fitness_evaluation_on_existing_character_config
 import solai_evolutionary_algorithm.evolve_configurations.fitness_archive_config as fitness_archive_config
-from solai_evolutionary_algorithm.evolve_configurations import test_config
+import solai_evolutionary_algorithm.evolve_configurations.constrained_novelty_config as constrained_novelty_config
 
 
 def main():
     evolver = Evolver()
-    evolver.evolve(test_config.test_config)
+    evolver.evolve(constrained_novelty_config.constrained_novelty_config)

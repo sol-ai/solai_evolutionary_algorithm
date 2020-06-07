@@ -127,6 +127,9 @@ test_config = EvolverConfig(
                 projectile_ability_ranges=projectile_ability_ranges,
                 probability_per_number_property=0.2,
                 probability_per_bool_property=0.05,
+                character_properties_ranges=character_properties_ranges,
+                melee_ability_ranges=melee_ability_ranges,
+                projectile_ability_ranges=projectile_ability_ranges
             )
         ],
         new_individuals_producer=None
