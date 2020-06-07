@@ -9,19 +9,21 @@ from solai_evolutionary_algorithm.evolution.evolution_types import EvaluatedPopu
 
 
 @dataclass(frozen=True)
-class RepeatSimulationData:
+class SimulationStatistics:
+    characters_config_by_char_id: Dict[str, CharacterConfig]
     fitnesses_by_char_id: Dict[str, List[float]]
     metrics_score_by_char_id: Dict[str, Dict[str, List[float]]]
     # average measurement for each evaluated population
     avr_measurements_by_char_id: Dict[str, Dict[str, List[float]]]
 
 
-def repeat_simulate(
+def simulate_statistics(
         chars: List[CharacterConfig],
         metrics_desired_values: Dict[str, float],
         metrics_weights: Dict[str, float],
         repeat: int,
-) -> RepeatSimulationData:
+        simulation_population_count: int = 1
+) -> SimulationStatistics:
 
     metrics = list(metrics_desired_values.keys())
 
@@ -30,7 +32,7 @@ def repeat_simulate(
         queue_host="localhost",
         desired_values=metrics_desired_values,
         metrics_weights=metrics_weights,
-        simulation_population_count=1
+        simulation_population_count=simulation_population_count
     )
 
     fitnesses_by_char_id: Dict[str, List[float]] = {
@@ -95,7 +97,11 @@ def repeat_simulate(
             fitness = sum(evaluated_char['fitness'])
             fitnesses_by_char_id[char['characterId']].append(fitness)
 
-    return RepeatSimulationData(
+    return SimulationStatistics(
+        characters_config_by_char_id= {
+            char['characterId']: char
+            for char in chars
+        },
         fitnesses_by_char_id=fitnesses_by_char_id,
         metrics_score_by_char_id=metrics_score_by_char_id,
         avr_measurements_by_char_id=avr_measurements_by_char_id

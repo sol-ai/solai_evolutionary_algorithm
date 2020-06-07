@@ -1,13 +1,13 @@
 import collections
 from dataclasses import dataclass
-from itertools import chain
+from itertools import chain, combinations
 from statistics import mean
 from typing import List, Dict, OrderedDict, Optional
 
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evaluation import SimulationFitnessEvaluation
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import CharacterConfig
 from solai_evolutionary_algorithm.evolution.evolution_types import EvaluatedPopulation
-from solai_evolutionary_algorithm.fitness_metrics_visualizer.simulation_repeater import repeat_simulate
+from solai_evolutionary_algorithm.fitness_metrics_visualizer.simulation_statistics import simulate_statistics
 from solai_evolutionary_algorithm.initial_population_producers.from_existing_producers import load_char_from_file
 from solai_evolutionary_algorithm.utils.character_id import create_character_id
 import matplotlib.pyplot as plt
@@ -65,49 +65,61 @@ def plot_metrics_values_by_char_individually(
 
 
 def visualize_metrics(chars: List[CharacterConfig]):
+
     metrics_desired_values = {
         "leadChange": 50,
-        "characterWon": 0.8,
-        "stageCoverage": 0.7,
-        "nearDeathFrames": 700,
-        "gameLength": 7200
+        "characterWon": 0.5,
+        "stageCoverage": 0.4,
+        "nearDeathFrames": 100,
+        "gameLength": 5000,
+        "leastInteractionType": 0.1,
     }
     metrics_weights = {
-        "leadChange": 0.2,
-        "characterWon": 0.2,
-        "stageCoverage": 0.2,
-        "nearDeathFrames": 0.2,
-        "gameLength": 0.2
+        "leadChange": 1,
+        "characterWon": 1,
+        "stageCoverage": 1,
+        "nearDeathFrames": 1,
+        "gameLength": 1,
+        "leastInteractionType": 1
     }
-    repeat_sim_data = repeat_simulate(
-        chars,
-        metrics_desired_values=metrics_desired_values,
-        metrics_weights=metrics_weights,
-        repeat=1000
-    )
 
-    # Dicts are ordered by default in python 3.7+
-    chars_id = repeat_sim_data.fitnesses_by_char_id.keys()
-    char_names = [
-        char['name']
-        for char in chars
+    simulate_pair_count = 1
+
+    char_combinations = list(combinations(chars, 2))
+    # char_combinations = [c for c in list(combinations(chars, 2)) if c[0]['name'] == "Brail" or c[1]['name'] == "Brail"]
+
+    combos_statistics = [
+        simulate_statistics(
+            char_combo,
+            metrics_desired_values=metrics_desired_values,
+            metrics_weights=metrics_weights,
+            repeat=simulate_pair_count,
+            simulation_population_count=50
+        )
+        for char_combo in char_combinations
     ]
-    fitnesses = repeat_sim_data.fitnesses_by_char_id.values()
-    plt.figure()
-    plt.boxplot(fitnesses)
-    plt.xticks(range(1, len(char_names) + 1), char_names)
 
-    plot_metrics_values_by_char_individually(
-        "Metric score",
-        char_names,
-        list(repeat_sim_data.metrics_score_by_char_id.values())
-    )
-    plot_metrics_values_by_char_individually(
-        "measurements by metric by character",
-        char_names,
-        list(repeat_sim_data.avr_measurements_by_char_id.values()),
-        baseline_metrics_value=metrics_desired_values
-    )
+    for statistics in combos_statistics:
+
+        # Dicts are ordered by default in python 3.7+
+        chars_id = statistics.fitnesses_by_char_id.keys()
+        char_names = [char['name'] for char in statistics.characters_config_by_char_id.values()]
+        fitnesses = statistics.fitnesses_by_char_id.values()
+        plt.figure()
+        plt.boxplot(fitnesses)
+        plt.xticks(range(1, len(char_names) + 1), char_names)
+
+        # plot_metrics_values_by_char_individually(
+        #     "Metric score",
+        #     char_names,
+        #     list(statistics.metrics_score_by_char_id.values())
+        # )
+        plot_metrics_values_by_char_individually(
+            "measurements by metric by character",
+            char_names,
+            list(statistics.avr_measurements_by_char_id.values()),
+            baseline_metrics_value=metrics_desired_values
+        )
 
     plt.show()
 
