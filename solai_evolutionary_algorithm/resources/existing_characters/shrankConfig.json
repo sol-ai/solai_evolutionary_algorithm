@@ -1,5 +1,5 @@
 {
-  "name": "Shrank",
+  "name": "Frank",
   "radius": 32,
   "moveVelocity": 500,
   "abilities": [
@@ -15,7 +15,7 @@
       "endlagTime": 2,
       "rechargeTime": 30,
       "damage": 100,
-      "baseKnockback": 180,
+      "baseKnockback": 200,
       "knockbackRatio": 0.5,
       "knockbackPoint": -128,
       "knockbackTowardPoint": false
@@ -31,9 +31,9 @@
       "executionTime": 1,
       "endlagTime": 10,
       "rechargeTime": 120,
-      "damage": 350,
-      "baseKnockback": 900,
-      "knockbackRatio": 1.1,
+      "damage": 300,
+      "baseKnockback": 400,
+      "knockbackRatio": 0.8,
       "knockbackPoint": -256,
       "knockbackTowardPoint": false
     },
@@ -49,7 +49,7 @@
       "endlagTime": 8,
       "rechargeTime": 180,
       "damage": 20,
-      "baseKnockback": 1200,
+      "baseKnockback": 1300,
       "knockbackRatio": 0.1,
       "knockbackPoint": 0,
       "knockbackTowardPoint": false

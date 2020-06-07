@@ -33,7 +33,7 @@
       "rechargeTime": 50,
       "damage": 200,
       "baseKnockback": 250,
-      "knockbackRatio": 2,
+      "knockbackRatio": 1,
       "knockbackPoint": -64,
       "knockbackTowardPoint": false
     },
