@@ -6,15 +6,16 @@ Population = List[Individual]
 
 EvaluatedIndividual = TypedDict("EvaluatedIndividual", {
     'individual': Individual,
-    'fitness': List[float],
-    'feasible':  Optional[bool]
-})
-
-NoveltyAndFitnessEvaluatedIndividual = TypedDict("EvaluatedIndividual", {
-    'individual': Individual,
-    'fitness': List[float],
+    'fitness': float,
+    'feasibility_score': float,
     'novelty': float
 })
+
+# NoveltyAndFitnessEvaluatedIndividual = TypedDict("EvaluatedIndividual", {
+#     'individual': Individual,
+#     'fitness': List[float],
+#     'novelty': float
+# })
 
 NoveltyAndFitnessEvaluatedPopulation = List[EvaluatedIndividual]
 EvaluatedPopulation = List[EvaluatedIndividual]

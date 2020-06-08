@@ -1,18 +1,17 @@
-
-from solai_evolutionary_algorithm.plot_services.plot_generations_service import PlotGenerationsLocalService
-from solai_evolutionary_algorithm.mutations.default_properties_mutation import default_properties_mutation
+import solai_evolutionary_algorithm.evolve_configurations.sol_metrics as sol_metrics
+import solai_evolutionary_algorithm.evolve_configurations.sol_properties_ranges as properties_ranges
+from solai_evolutionary_algorithm.crossovers.ability_swap_crossover import AbilitySwapCrossover
+from solai_evolutionary_algorithm.evaluation.novel_archive import NovelArchive
+from solai_evolutionary_algorithm.evaluation.simulation.constrained_novelty_evaluation import \
+    ConstrainedNoveltyEvaluation
+from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig
+from solai_evolutionary_algorithm.evolution.fins_evolver import FinsEvolver
 from solai_evolutionary_algorithm.evolution_end_criteria.fixed_generation_end_criteria import \
     FixedGenerationsEndCriteria
-from solai_evolutionary_algorithm.evolution.fins_evolver import FinsEvolver
-from solai_evolutionary_algorithm.crossovers.ability_swap_crossover import AbilitySwapCrossover
-from solai_evolutionary_algorithm.database.update_database_service import UpdateDatabaseService
-from solai_evolutionary_algorithm.evaluation.simulation.constrained_novelty_evaluation import ConstrainedNoveltyEvaluation
-from solai_evolutionary_algorithm.evaluation.novel_archive import NovelArchive
-from solai_evolutionary_algorithm.evaluation.fitness_archive import FitnessArchive
-from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig
-from solai_evolutionary_algorithm.initial_population_producers.random_bounded_producer import RandomBoundedProducer
 from solai_evolutionary_algorithm.initial_population_producers.from_existing_producers import FromExistingProducer
-
+from solai_evolutionary_algorithm.initial_population_producers.random_bounded_producer import RandomBoundedProducer
+from solai_evolutionary_algorithm.mutations.default_properties_mutation import default_properties_mutation
+from solai_evolutionary_algorithm.plot_services.plot_generations_service import PlotGenerationsLocalService
 
 random_population_producer = RandomBoundedProducer(RandomBoundedProducer.Config(
     population_size=20,
@@ -20,46 +19,6 @@ random_population_producer = RandomBoundedProducer(RandomBoundedProducer.Config(
     melee_ability_ranges={},
     projectile_ability_ranges={}
 ))
-
-character_properties_ranges = {"radius": (28.0, 50.0),
-                               "moveVelocity": (200.0, 800.0)}
-
-melee_ability_ranges = {
-    "name": "abilityName",
-    "type": "MELEE",
-    "radius": (16.0, 200.0),
-    "distanceFromChar": (0.0, 200.0),
-    "speed": (0.0, 0.0),
-    "startupTime": (1, 30),
-    "activeTime": (1, 60),
-    "executionTime": (1, 30),
-    "endlagTime": (1, 30),
-    "rechargeTime": (0, 30),
-    "damage": (100.0, 1000.0),
-    "baseKnockback": (10.0, 1000.0),
-    "knockbackRatio": (0.1, 1.0),
-    "knockbackPoint": (-500.0, 500.0),
-    "knockbackTowardPoint": (False, True)
-}
-
-
-projectile_ability_ranges = {
-    "name": "abilityName",
-    "type": "PROJECTILE",
-    "radius": (5, 50),
-    "distanceFromChar": (0, 200),
-    "speed": (100, 800),
-    "startupTime": (1, 60),
-    "activeTime": (20, 1000),
-    "executionTime": (1, 30),
-    "endlagTime": (1, 30),
-    "rechargeTime": (1, 120),
-    "damage": (15, 500),
-    "baseKnockback": (50, 1000),
-    "knockbackRatio": (0.1, 1.0),
-    "knockbackPoint": (-500, 500),
-    "knockbackTowardPoint": (False, True)
-}
 
 from_existing_population_producer = FromExistingProducer(
     population_size=12,
@@ -71,21 +30,12 @@ from_existing_population_producer = FromExistingProducer(
     ]
 )
 
-feasibility_metric_ranges = {
-    "leadChange": (1, 100),
-    "characterWon": (0.2, 0.6),
-    "stageCoverage": (0.1, 0.7),
-    "nearDeathFrames": (100, 1000),
-    "gameLength": (100, 10000),
-    "hitInteractions": (1, 100)
-}
-
 novel_archive = NovelArchive(NovelArchive.Config(
     novel_archive_size=10,
     nearest_neighbour_number=8,
-    character_properties_ranges=character_properties_ranges,
-    melee_ability_ranges=melee_ability_ranges,
-    projectile_ability_ranges=projectile_ability_ranges,
+    character_properties_ranges=properties_ranges.character_properties_ranges,
+    melee_ability_ranges=properties_ranges.melee_ability_ranges,
+    projectile_ability_ranges=properties_ranges.projectile_ability_ranges,
 ))
 
 
@@ -94,9 +44,8 @@ constrained_novelty_config = EvolverConfig(
     # fitness_evaluator=RandomFitnessEvaluation(),
     fitness_evaluator=ConstrainedNoveltyEvaluation(
         simulation_characters=from_existing_population_producer()[:4],
-        metrics=["leadChange", "characterWon",
-                 "stageCoverage", "nearDeathFrames", "gameLength", "hitInteractions"],
-        feasible_metric_ranges=feasibility_metric_ranges,
+        metrics=list(sol_metrics.feasibility_metric_ranges.keys()),
+        feasible_metric_ranges=sol_metrics.feasibility_metric_ranges,
         novel_archive=novel_archive,
         simulation_population_count=1,
         queue_host="localhost",
@@ -112,12 +61,12 @@ constrained_novelty_config = EvolverConfig(
             default_properties_mutation(
                 probability_per_number_property=0.1,
                 probability_per_bool_property=0.05,
-                character_properties_ranges=character_properties_ranges,
-                melee_ability_ranges=melee_ability_ranges,
-                projectile_ability_ranges=projectile_ability_ranges
+                character_properties_ranges=properties_ranges.character_properties_ranges,
+                melee_ability_ranges=properties_ranges.melee_ability_ranges,
+                projectile_ability_ranges=properties_ranges.projectile_ability_ranges,
             )
         ],
-        new_individuals_producer=[]
+        new_individuals_producer=None
     )),
     end_criteria=FixedGenerationsEndCriteria(generations=20),
     evolver_listeners=[

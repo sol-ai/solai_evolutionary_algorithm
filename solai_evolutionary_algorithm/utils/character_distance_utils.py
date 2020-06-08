@@ -1,8 +1,16 @@
 from typing import Callable, List, Optional, Tuple, Dict, Any
 from math import sqrt
 
+from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import CharacterConfig
 
-def normalized_euclidean_distance(individual1: Dict, individual2: Dict, character_properties_ranges, melee_ability_ranges, projectile_ability_ranges) -> float:
+
+def normalized_euclidean_distance(
+        individual1: CharacterConfig,
+        individual2: CharacterConfig,
+        character_properties_ranges,
+        melee_ability_ranges,
+        projectile_ability_ranges
+) -> float:
 
     abilities1 = sorted(individual1['abilities'],
                         key=lambda ability: ability['type'])
