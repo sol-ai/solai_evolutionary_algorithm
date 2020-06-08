@@ -121,7 +121,7 @@ constrained_novelty_config = EvolverConfig(
     )),
     end_criteria=FixedGenerationsEndCriteria(generations=20),
     evolver_listeners=[
-        UpdateDatabaseService(),
+        # UpdateDatabaseService(),
         PlotGenerationsLocalService()
     ],
 )

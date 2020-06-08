@@ -83,7 +83,7 @@ def visualize_metrics(chars: List[CharacterConfig]):
         "leastInteractionType": 1
     }
 
-    simulate_pair_count = 1
+    simulate_pair_count = 10
 
     char_combinations = list(combinations(chars, 2))
     # char_combinations = [c for c in list(combinations(chars, 2)) if c[0]['name'] == "Brail" or c[1]['name'] == "Brail"]
@@ -94,7 +94,7 @@ def visualize_metrics(chars: List[CharacterConfig]):
             metrics_desired_values=metrics_desired_values,
             metrics_weights=metrics_weights,
             repeat=simulate_pair_count,
-            simulation_population_count=50
+            simulation_population_count=10
         )
         for char_combo in char_combinations
     ]

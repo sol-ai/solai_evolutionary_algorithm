@@ -59,7 +59,7 @@ class ConstrainedNoveltyEvaluation(SimulationFitnessEvaluation):
         simulations_measurements = self.simulation_results_to_simulation_measurements(
             simulations_results)
 
-        all_measurements_by_character: CharacterAllMeasurements = self.group_all_measures_by_character(
+        all_measurements_by_character: CharactersAllMeasurements = self.group_all_measures_by_character(
             simulations_measurements)
 
         feasibility_of_population = self.evaluate_feasibility_of_population(
@@ -110,20 +110,29 @@ class ConstrainedNoveltyEvaluation(SimulationFitnessEvaluation):
 
         return simulations_result
 
-    def evaluate_feasibility_of_population(self, measurements_by_character):
-        evaluated_population = {individual: self.feasiblity_score(
-            measurements) for individual, measurements in measurements_by_character.items()}
+    def evaluate_feasibility_of_population(self, measurements_by_character: CharactersAllMeasurements):
+        evaluated_population = {
+            individual: self.feasibility_score(measurements)
+            for individual, measurements in measurements_by_character.items()
+        }
         return evaluated_population
 
-    def feasiblity_score(self, character_simulation_result) -> bool:
-        mean_simulation_results = {metric: mean(metric_result) for (
-            metric, metric_result) in character_simulation_result.items()}
-        feasible_number = len(list(filter(None, map(lambda metric_result: self.is_feasible_metric_result(
-            metric_result[0], metric_result[1]), mean_simulation_results.items()))))
-        return feasible_number/len(character_simulation_result)
+    def feasibility_score(self, character_simulation_result: CharacterAllMeasurements) -> float:
+        mean_simulation_results = {
+            metric: mean(metric_result)
+            for (metric, metric_result) in character_simulation_result.items()
+        }
+        feasible_number = sum([
+            self.is_feasible_metric_result(metric, metric_result)
+            for metric, metric_result in mean_simulation_results.items()
+        ])
 
-    def is_feasible_metric_result(self, metric, metric_result):
-        return metric_result >= self.feasible_metric_ranges[metric][0] and metric_result <= self.feasible_metric_ranges[metric][1]
+        metrics_count = len(character_simulation_result)
+        return feasible_number / metrics_count
+
+    def is_feasible_metric_result(self, metric: str, metric_result: float) -> bool:
+        feasible_metric_range = self.feasible_metric_ranges[metric]
+        return feasible_metric_range[0] <= metric_result <= feasible_metric_range[1]
 
     def serialize(self):
         config = {'metrics': self.metrics,
