@@ -15,7 +15,6 @@ class RandomBoundedProducer(InitialPopulationProducer):
 
     @dataclass(frozen=True)
     class Config:
-        population_size: int
         character_properties_ranges: any
         melee_ability_ranges: any
         projectile_ability_ranges: any

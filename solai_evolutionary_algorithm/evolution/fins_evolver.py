@@ -5,7 +5,7 @@ from itertools import chain, combinations
 from typing import Callable, List, Optional, Tuple, Dict, Any
 from solai_evolutionary_algorithm.utils.character_distance_utils import normalized_euclidean_distance
 from solai_evolutionary_algorithm.evolution.evolution_types import EvaluatedPopulation, Population, SubPopulation, \
-    Individual, EvaluatedIndividual, NoveltyAndFitnessEvaluatedPopulation, NoveltyAndFitnessEvaluatedIndividual
+    Individual, EvaluatedIndividual, NoveltyAndFitnessEvaluatedPopulation
 
 Crossover = Callable[[SubPopulation], SubPopulation]
 Mutation = Callable[[Individual], Individual]
