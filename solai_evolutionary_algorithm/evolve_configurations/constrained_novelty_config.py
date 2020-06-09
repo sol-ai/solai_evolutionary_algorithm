@@ -16,20 +16,29 @@ from solai_evolutionary_algorithm.plot_services.plot_generations_service import 
 from solai_evolutionary_algorithm.utils.character_distance_utils import create_character_distance_func
 
 random_population_producer = RandomBoundedProducer(RandomBoundedProducer.Config(
-    population_size=20,
+    population_size=60,
     character_properties_ranges=properties_ranges.character_properties_ranges,
     melee_ability_ranges=properties_ranges.melee_ability_ranges,
     projectile_ability_ranges=properties_ranges.projectile_ability_ranges,
 ))
 
+properties_mutation = default_properties_mutation(
+    probability_per_number_property=0.3,
+    probability_per_bool_property=0.1,
+    character_properties_ranges=properties_ranges.character_properties_ranges,
+    melee_ability_ranges=properties_ranges.melee_ability_ranges,
+    projectile_ability_ranges=properties_ranges.projectile_ability_ranges,
+)
+
 from_existing_population_producer = FromExistingProducer(
-    population_size=20,
+    population_size=40,
     chars_filename=[
         "shrankConfig.json",
         "schmathiasConfig.json",
         "brailConfig.json",
         "magnetConfig.json"
-    ]
+    ],
+    mutation=properties_mutation
 )
 
 distance_func = create_character_distance_func(
@@ -59,16 +68,10 @@ constrained_novelty_config = EvolverConfig(
         elitism_count=1,
         crossover=AbilitySwapCrossover(),
         mutations=[
-            default_properties_mutation(
-                probability_per_number_property=0.2,
-                probability_per_bool_property=0.1,
-                character_properties_ranges=properties_ranges.character_properties_ranges,
-                melee_ability_ranges=properties_ranges.melee_ability_ranges,
-                projectile_ability_ranges=properties_ranges.projectile_ability_ranges,
-            )
+            properties_mutation
         ],
     )),
-    end_criteria=FixedGenerationsEndCriteria(generations=20),
+    end_criteria=FixedGenerationsEndCriteria(generations=30),
     evolver_listeners=[
         UpdateDatabaseService(),
         PlotGenerationsLocalService()

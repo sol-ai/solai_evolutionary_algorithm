@@ -1,10 +1,11 @@
 import json
-from typing import List, cast, Dict
+from typing import List, cast, Dict, Optional
 
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import CharacterConfig
 from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, Population
 from pkg_resources import resource_stream
 
+from solai_evolutionary_algorithm.evolution.generation_evolver import Mutation
 from solai_evolutionary_algorithm.utils.character_id import create_character_id
 
 
@@ -21,9 +22,10 @@ class FromExistingProducer(InitialPopulationProducer):
     Generates a population from existing characters, applying mutations / crossovers
     """
 
-    def __init__(self, population_size: int, chars_filename: List[str]):
+    def __init__(self, population_size: int, chars_filename: List[str], mutation: Optional[Mutation] = None):
         self.population_size = population_size
         self.chars_filename = chars_filename
+        self.mutation = mutation
 
     @staticmethod
     def __duplicate_chars_to_size(chars: List[CharacterConfig], size: int) -> List[CharacterConfig]:
@@ -50,7 +52,20 @@ class FromExistingProducer(InitialPopulationProducer):
             }
             for char_without_id in population_without_id
         ]
-        return population
+
+        if self.mutation is not None:
+            keep_char_count = len(self.chars_filename)
+            individuals_to_be_mutated = population[keep_char_count:]
+            individuals_to_be_kept = population[:keep_char_count]
+            mutated_population = [
+                self.mutation(char)
+                for char in individuals_to_be_mutated
+            ]
+            initial_population = individuals_to_be_kept + mutated_population
+        else:
+            initial_population = population
+
+        return initial_population
 
     def serialize(self) -> Dict:
         return {'description': "From existing characters producer", 'populationSize': self.population_size, 'characterFileName': self.chars_filename}
