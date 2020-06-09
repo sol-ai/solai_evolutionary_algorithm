@@ -187,15 +187,15 @@ class ConstrainedNoveltyEvaluation(SimulationFitnessEvaluation):
             measurements_by_character: CharactersAllMeasurements
     ) -> Dict[str, float]:
         evaluated_population = {
-            characterId: self.feasibility_score(measurements)
-            for characterId, measurements in measurements_by_character.items()
+            characterId: self.feasibility_score(measurements_by_metric)
+            for characterId, measurements_by_metric in measurements_by_character.items()
         }
         return evaluated_population
 
     def feasibility_score(self, character_simulation_result: CharacterAllMeasurements) -> float:
         mean_simulation_results = {
-            metric: mean(metric_result)
-            for (metric, metric_result) in character_simulation_result.items()
+            metric: mean(measurements)
+            for (metric, measurements) in character_simulation_result.items()
         }
         feasible_number = sum([
             self.is_feasible_metric_result(metric, metric_result)
