@@ -1,11 +1,10 @@
-import sys
 from dataclasses import dataclass
 from functools import reduce
-from itertools import chain, combinations
-from typing import Callable, List, Optional, Tuple, Dict, Any
-from solai_evolutionary_algorithm.utils.character_distance_utils import normalized_euclidean_distance
+from itertools import chain
+from typing import Callable, List, Optional
+
 from solai_evolutionary_algorithm.evolution.evolution_types import EvaluatedPopulation, Population, SubPopulation, \
-    Individual, EvaluatedIndividual, NoveltyAndFitnessEvaluatedPopulation, NoveltyAndFitnessEvaluatedIndividual
+    Individual
 
 Crossover = Callable[[SubPopulation], SubPopulation]
 Mutation = Callable[[Individual], Individual]
@@ -58,7 +57,7 @@ class FinsEvolver:
 
         ordered_evaluated_feasible_population = sorted(
             feasible_population,
-            key=lambda individual: individual['archiveNovelty'],
+            key=lambda individual: individual['novelty'],
             reverse=True
         )
 

@@ -30,7 +30,7 @@ class RandomBoundedProducer(InitialPopulationProducer):
         self.no_of_abilites = config.no_of_abilities
 
     def __call__(self):
-        return self.generate_random_character()
+        return self.generate_init_population(n=self.config.population_size)
 
     def generate_init_population(self, n=10):
         return [self.generate_random_character() for _ in range(n)]

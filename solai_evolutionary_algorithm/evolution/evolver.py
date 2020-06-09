@@ -42,6 +42,6 @@ class Evolver:
 
         for listener in config.evolver_listeners:
             listener.on_end(
-                novel_archive=config.fitness_evaluator.novel_archive.novel_archive)
+                novel_archive=config.fitness_evaluator.feasible_novel_archive)
 
         return curr_population, evaluated_population

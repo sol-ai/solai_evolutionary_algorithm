@@ -13,45 +13,7 @@ from solai_evolutionary_algorithm.initial_population_producers.from_existing_pro
 from solai_evolutionary_algorithm.initial_population_producers.random_bounded_producer import RandomBoundedProducer
 from solai_evolutionary_algorithm.mutations.default_properties_mutation import default_properties_mutation
 
-character_properties_ranges = {"radius": (28.0, 50.0),
-                               "moveVelocity": (200.0, 800.0)}
 
-melee_ability_ranges = {
-    "name": "abilityName",
-    "type": "MELEE",
-    "radius": (16.0, 200.0),
-    "distanceFromChar": (0.0, 200.0),
-    "speed": (0.0, 0.0),
-    "startupTime": (10, 60),
-    "activeTime": (10, 60),
-    "executionTime": (0, 60),
-    "endlagTime": (10, 60),
-    "rechargeTime": (0, 60),
-    "damage": (100.0, 1000.0),
-    "baseKnockback": (10.0, 1000.0),
-    "knockbackRatio": (0.1, 1.0),
-    "knockbackPoint": (-500.0, 500.0),
-    "knockbackTowardPoint": (False, True)
-}
-
-
-projectile_ability_ranges = {
-    "name": "abilityName",
-    "type": "PROJECTILE",
-    "radius": (5, 50),
-    "distanceFromChar": (0, 200),
-    "speed": (100, 800),
-    "startupTime": (1, 60),
-    "activeTime": (20, 1000),
-    "executionTime": (0, 60),
-    "endlagTime": (6, 60),
-    "rechargeTime": (13, 80),
-    "damage": (15, 500),
-    "baseKnockback": (50, 1000),
-    "knockbackRatio": (0.1, 1.0),
-    "knockbackPoint": (-500, 500),
-    "knockbackTowardPoint": (False, True)
-}
 
 random_population_producer = RandomBoundedProducer(RandomBoundedProducer.Config(
     population_size=20,

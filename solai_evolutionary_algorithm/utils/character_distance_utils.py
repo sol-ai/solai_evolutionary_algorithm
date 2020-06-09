@@ -4,6 +4,22 @@ from math import sqrt
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import CharacterConfig
 
 
+def create_character_distance_func(
+        character_properties_ranges,
+        melee_ability_ranges,
+        projectile_ability_ranges
+) -> Callable[[CharacterConfig, CharacterConfig], float]:
+    def distance_func(char1, char2):
+        return normalized_euclidean_distance(
+            char1,
+            char2,
+            character_properties_ranges,
+            melee_ability_ranges,
+            projectile_ability_ranges
+        )
+    return distance_func
+
+
 def normalized_euclidean_distance(
         individual1: CharacterConfig,
         individual2: CharacterConfig,
