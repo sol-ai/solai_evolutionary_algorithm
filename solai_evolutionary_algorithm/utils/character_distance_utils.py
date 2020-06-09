@@ -1,3 +1,4 @@
+import math
 from typing import Callable, List, Optional, Tuple, Dict, Any
 from math import sqrt
 
@@ -65,7 +66,11 @@ def normalized_euclidean_distance(
     character_properties_normalized_euclidean_distance = euclidean_distance_dictionary(
         individual1_character_properties_normalized, individual2_character_properties_normalized)
 
-    return character_abilities_normalized_euclidean_distance + character_properties_normalized_euclidean_distance
+    distance = character_abilities_normalized_euclidean_distance + character_properties_normalized_euclidean_distance
+    if math.isnan(distance):
+        raise ValueError(f"calculated distance was NaN for characters: "
+                         f"\nCharacter1: {individual1}\nCharacter2: {individual2}")
+    return distance
 
 
 def normalize_dict(dic: Dict, ranges: Dict) -> Dict:
