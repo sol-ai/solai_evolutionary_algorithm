@@ -4,6 +4,7 @@ from functools import reduce
 from itertools import chain
 from typing import Callable, List, Optional, Tuple
 
+from solai_evolutionary_algorithm.evaluation.simulation.constrained_novelty_evaluation import InfeasibleObjective
 from solai_evolutionary_algorithm.evolution.evolution_types import EvaluatedPopulation, Population, SubPopulation, \
     Individual
 import numpy as np
@@ -20,6 +21,8 @@ class FinsEvolver:
         use_crossover: bool = True
         use_mutation: bool = True
         elitism_count: int = 0
+        feasible_boost: bool = False
+        infeasible_objective: InfeasibleObjective = InfeasibleObjective.FEASIBILITY
 
         crossover: Optional[Crossover] = None
         mutations: Optional[List[Mutation]] = None
@@ -43,22 +46,28 @@ class FinsEvolver:
             lambda individual: individual['feasibility_score'] != 1.0,
             evaluated_population))
 
-        nan_population = [
-            evaluated_individual
-            for evaluated_individual in feasible_evaluated_population
-            if math.isnan(evaluated_individual['novelty'])
-        ]
-        if len(nan_population) > 0:
-            raise ValueError(f"nan feasible individuals: {nan_population}")
+        feasible_boost = True
+        if feasible_boost and 2 <= len(feasible_evaluated_population) < len(infeasible_evaluated_population):
+            total_population_size = len(evaluated_population)
+            new_feasible_population_size = math.floor(total_population_size / 2)
+            new_infeasible_population_size = math.ceil(total_population_size / 2)
+        else:
+            new_feasible_population_size = len(feasible_evaluated_population)
+            new_infeasible_population_size = len(infeasible_evaluated_population)
 
         new_feasible_population = self.evolve_population(
             feasible_evaluated_population,
-            evaluation_attribute="novelty"
+            evaluation_attribute="novelty",
+            new_population_size=new_feasible_population_size
         )
 
         new_infeasible_population = self.evolve_population(
             infeasible_evaluated_population,
-            evaluation_attribute="feasibility_score"
+            evaluation_attribute={
+                InfeasibleObjective.FEASIBILITY: "feasibility_score",
+                InfeasibleObjective.NOVELTY: "novelty"
+            }[self.config.infeasible_objective],
+            new_population_size=new_infeasible_population_size
         )
 
         return new_feasible_population + new_infeasible_population
@@ -66,10 +75,9 @@ class FinsEvolver:
     def evolve_population(
             self,
             evaluated_population: EvaluatedPopulation,
-            evaluation_attribute: str
+            evaluation_attribute: str,
+            new_population_size: int
     ) -> Population:
-        population_count = len(evaluated_population)
-
         if self.config.elitism_count > 0:
             ordered_population = sorted(
                 evaluated_population,
@@ -80,19 +88,20 @@ class FinsEvolver:
                 evaluated_individual['individual']
                 for evaluated_individual in ordered_population[:self.config.elitism_count]
             ]
-            select_parents_evaluated_individuals = ordered_population[self.config.elitism_count:]
+            non_elited_evaluated_individuals = ordered_population[self.config.elitism_count:]
         else:
             elited_individuals = []
-            select_parents_evaluated_individuals = evaluated_population
+            non_elited_evaluated_individuals = evaluated_population
 
-        if self.config.use_crossover and len(select_parents_evaluated_individuals) > 0:
-            parents_count = len(select_parents_evaluated_individuals)
-            parent_pairs = math.ceil(parents_count / 2)  # rounded up to produce an even number
+        children_count = new_population_size - len(elited_individuals)
+
+        if self.config.use_crossover and len(evaluated_population) >= 2 and children_count > 0:
+            parents_count = children_count
+            parent_pairs_count = math.ceil(parents_count / 2)  # rounded up to produce an even number
             parent_pairs = self.proportionate_roulette_wheel_selection(
-                select_parents_evaluated_individuals,
+                evaluated_population,
                 evaluation_attribute,
-                parent_pairs_count=parent_pairs,
-                replacement=True
+                parent_pairs_count=parent_pairs_count
             )
 
             children = list(chain.from_iterable(
@@ -102,7 +111,7 @@ class FinsEvolver:
         else:
             children = [
                 evaluated_individual['individual']
-                for evaluated_individual in select_parents_evaluated_individuals
+                for evaluated_individual in non_elited_evaluated_individuals
             ]
 
         def mutate(individual: Individual) -> Individual:
@@ -121,9 +130,10 @@ class FinsEvolver:
 
         new_population = elited_individuals + mutated_children
 
-        print(f"From a population of size: {population_count}. "
+        print(f"From a population of size: {len(evaluated_population)}. "
               f"Produced a new generation of size: {len(new_population)}. "
-              f"elited: {len(elited_individuals)}")
+              f"elited: {len(elited_individuals)}."
+              f" Based on: {evaluation_attribute}")
 
         return new_population
 
@@ -145,15 +155,15 @@ class FinsEvolver:
     def proportionate_roulette_wheel_selection(
             evaluated_population: EvaluatedPopulation,
             evaluation_attribute: str,
-            parent_pairs_count: int,
-            replacement: bool = True
+            parent_pairs_count: int
     ) -> List[Tuple[Individual, Individual]]:
         """
         Chooses children of the same size as the given population
         """
-        population_size = len(evaluated_population)
+        if len(evaluated_population) < 2:
+            raise ValueError("A population of at least 2 is required for roulette wheel selection")
 
-        parents_count = parent_pairs_count * 2
+        population_size = len(evaluated_population)
 
         evaluation_values = np.array([
             individual[evaluation_attribute]
@@ -164,15 +174,19 @@ class FinsEvolver:
         probabilities = evaluation_values / evaluation_values_sum if evaluation_values_sum != 0 \
             else np.ones(population_size) / population_size
 
-        all_parents = np.random.choice(
-            evaluated_population,
-            size=parents_count,
-            replace=replacement,
-            p=probabilities
-        )
+        evaluated_parent_pairs = [
+            tuple(np.random.choice(
+                evaluated_population,
+                size=2,
+                replace=False,
+                p=probabilities
+            ))
+            for _ in range(parent_pairs_count)
+        ]
 
         parent_pairs = [
-            (all_parents[i]['individual'], all_parents[i+1]['individual'])
-            for i in range(0, parents_count, 2)
+            (evaluated_parent_pair[0]['individual'], evaluated_parent_pair[1]['individual'])
+            for evaluated_parent_pair in evaluated_parent_pairs
         ]
+
         return parent_pairs
