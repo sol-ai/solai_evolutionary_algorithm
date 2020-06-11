@@ -1,6 +1,7 @@
 from typing import Callable, List, Optional, Tuple, Dict, Any
 from math import sqrt
-
+from itertools import permutations
+from json import loads
 from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import CharacterConfig
 
 
@@ -21,8 +22,8 @@ def create_character_distance_func(
 
 
 def normalized_euclidean_distance(
-        individual1: CharacterConfig,
-        individual2: CharacterConfig,
+        individual1,
+        individual2,
         character_properties_ranges,
         melee_ability_ranges,
         projectile_ability_ranges
@@ -33,24 +34,8 @@ def normalized_euclidean_distance(
     abilities2 = sorted(individual2['abilities'],
                         key=lambda ability: ability['type'])
 
-    character_abilities_normalized_euclidean_distance = 0
-
-    for (ability1, ability2) in zip(abilities1, abilities2):
-        if ability1['type'] != ability2['type']:
-            character_abilities_normalized_euclidean_distance += len(ability1)
-        else:
-            if ability1["type"] == "MELEE":
-                normalized_ability1 = normalize_dict(
-                    ability1, melee_ability_ranges)
-                normalized_ability2 = normalize_dict(
-                    ability2, melee_ability_ranges)
-            else:
-                normalized_ability1 = normalize_dict(
-                    ability1, projectile_ability_ranges)
-                normalized_ability2 = normalize_dict(
-                    ability2, projectile_ability_ranges)
-            character_abilities_normalized_euclidean_distance += euclidean_distance_dictionary(
-                normalized_ability1, normalized_ability2)
+    character_abilities_normalized_euclidean_distance = shortest_abilities_distances(
+        abilities1, abilities2, melee_ability_ranges, projectile_ability_ranges)
 
     individual1_character_properties = {key: value for (
         key, value) in individual1.items() if key != 'abilities'}
@@ -65,7 +50,45 @@ def normalized_euclidean_distance(
     character_properties_normalized_euclidean_distance = euclidean_distance_dictionary(
         individual1_character_properties_normalized, individual2_character_properties_normalized)
 
-    return character_abilities_normalized_euclidean_distance + character_properties_normalized_euclidean_distance
+    no_of_abilites = len(abilities1)
+    no_of_attributes_per_ability = len(
+        remove_strings_and_convert_to_floats(abilities1[0]))
+    no_of_properties = len(individual1_character_properties)
+    no_of_total_attributes = no_of_abilites * \
+        no_of_attributes_per_ability + no_of_properties
+
+    return (character_abilities_normalized_euclidean_distance + character_properties_normalized_euclidean_distance)/no_of_total_attributes
+
+
+def shortest_abilities_distances(abilities1, abilities2, melee_ability_ranges, projectile_ability_ranges) -> float:
+    abilities1_permutations = list(permutations(abilities1))
+    shortest_dist = float('inf')
+    for p in abilities1_permutations:
+        distance = abilities_distances(
+            list(p), abilities2, melee_ability_ranges, projectile_ability_ranges)
+        if distance < shortest_dist:
+            shortest_dist = distance
+    return shortest_dist
+
+
+def abilities_distances(ordered_abilities1, ordered_abilities2, melee_ability_ranges, projectile_ability_ranges):
+    distance = 0
+    for (ability1, ability2) in zip(ordered_abilities1, ordered_abilities2):
+        distance += ability_distance(ability1, ability2,
+                                     melee_ability_ranges, projectile_ability_ranges)
+    return distance
+
+
+def ability_distance(ability1, ability2, melee_ability_ranges, projectile_ability_ranges):
+    if ability1['type'] != ability2['type']:
+        distance = len(ability1)
+    elif ability1['type'] == 'MELEE':
+        distance = euclidean_distance_dictionary(normalize_dict(
+            ability1, melee_ability_ranges), normalize_dict(ability2, melee_ability_ranges))
+    else:
+        distance = euclidean_distance_dictionary(normalize_dict(
+            ability1, projectile_ability_ranges), normalize_dict(ability2, projectile_ability_ranges))
+    return distance
 
 
 def normalize_dict(dic: Dict, ranges: Dict) -> Dict:
