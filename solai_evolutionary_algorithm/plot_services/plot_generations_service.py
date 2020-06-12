@@ -37,14 +37,14 @@ class PlotGenerationsLocalService(EvolverListener):
         self.feasible_generations_data = GenerationsData()
         self.infeasible_generations_data = GenerationsData()
 
+
+
+    def on_start(self, *args):
         plt.ion()
         _, self.axes = plt.subplots(3, 2)
         plt.xlabel("generations")
         plt.ylabel("fitness")
         plt.show()
-
-    def on_start(self, *args):
-        pass
 
     def on_new_generation(self, evaluated_population, is_last_generation) -> None:
         feasible_evaluated_population = [
@@ -93,7 +93,7 @@ class PlotGenerationsLocalService(EvolverListener):
         feasible_feasibility_ax.boxplot(self.feasible_generations_data.populations_feasibility_score)
         feasible_feasibility_ax.set_ylabel("feasibility")
 
-        feasible_pop_size_ax.plot(feasible_pop_sizes)
+        feasible_pop_size_ax.plot(range(1, len(feasible_pop_sizes)+1), feasible_pop_sizes)
         feasible_pop_size_ax.set_ylabel("population size")
         feasible_pop_size_ax.set_xlabel("generations")
 
@@ -102,7 +102,7 @@ class PlotGenerationsLocalService(EvolverListener):
 
         infeasible_feasibility_ax.boxplot(self.infeasible_generations_data.populations_feasibility_score)
 
-        infeasible_pop_size_ax.plot(infeasible_pop_sizes)
+        infeasible_pop_size_ax.plot(range(1, len(infeasible_pop_sizes)+1), infeasible_pop_sizes)
         infeasible_pop_size_ax.set_xlabel("generations")
 
         plt.tight_layout()
@@ -113,3 +113,4 @@ class PlotGenerationsLocalService(EvolverListener):
     def on_end(self, *args, **kwargs):
         plt.ioff()
         plt.show()
+

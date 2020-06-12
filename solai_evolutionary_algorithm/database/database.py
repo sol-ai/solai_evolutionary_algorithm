@@ -18,6 +18,7 @@ class Database:
         self.client = pymongo.MongoClient(CLUSTER_URL)
         self.database = self.client.solai
         self.evolution_instances = self.database.evolution_instances
+        # self.evolution_instances.delete_many({})
 
     def init_evolution_instance(self, config):
         self.start_time = datetime.now()

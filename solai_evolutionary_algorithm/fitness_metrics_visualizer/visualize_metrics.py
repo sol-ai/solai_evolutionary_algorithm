@@ -1,17 +1,18 @@
-import collections
-from dataclasses import dataclass
-from itertools import chain, combinations
-from statistics import mean
-from typing import List, Dict, OrderedDict, Optional
+import json
+from itertools import combinations
+from itertools import combinations
+from typing import List, Dict, Optional, cast
 
-from solai_evolutionary_algorithm.evaluation.simulation.simulation_fitness_evaluation import SimulationFitnessEvaluation
-from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import CharacterConfig
-from solai_evolutionary_algorithm.evolution.evolution_types import EvaluatedPopulation
-from solai_evolutionary_algorithm.fitness_metrics_visualizer.simulation_statistics import simulate_statistics
-from solai_evolutionary_algorithm.initial_population_producers.from_existing_producers import load_char_from_file
-from solai_evolutionary_algorithm.utils.character_id import create_character_id
 import matplotlib.pyplot as plt
-import numpy as np
+
+from solai_evolutionary_algorithm.evaluation.simulation.constrained_novelty_evaluation import \
+    ConstrainedNoveltyEvaluation
+from solai_evolutionary_algorithm.evaluation.simulation.simulation_queue import CharacterConfig
+from solai_evolutionary_algorithm.evolve_configurations import constrained_novelty_config
+from solai_evolutionary_algorithm.fitness_metrics_visualizer.simulation_statistics import repeat_simulate_statistics
+from solai_evolutionary_algorithm.initial_population_producers.from_existing_producers import load_char_from_file
+from solai_evolutionary_algorithm.plot_services.plot_generations_service import PlotGenerationsLocalService
+from solai_evolutionary_algorithm.utils.character_id import create_character_id
 
 
 def plot_metrics_values_by_char_grouped(title: str, chars_name: List[str], chars_metrics_value_by_metric: List[Dict[str, List[float]]]):
@@ -64,62 +65,76 @@ def plot_metrics_values_by_char_individually(
     fig.suptitle(title)
 
 
+def save_statistics(
+        filename: str,
+        chars_name: List[str],
+        chars_metrics_value_by_metric: List[Dict[str, List[float]]]
+):
+    values_by_char_name = {
+        char_name: measurements_by_metric
+        for char_name, measurements_by_metric in zip(chars_name, chars_metrics_value_by_metric)
+    }
+    file = open(f"files/{filename}", 'w')
+    json.dump(values_by_char_name, file)
+
+
 def visualize_metrics(chars: List[CharacterConfig]):
+    repeat = 100
 
-    metrics_desired_values = {
-        "leadChange": 50,
-        "characterWon": 0.5,
-        "stageCoverage": 0.4,
-        "nearDeathFrames": 100,
-        "gameLength": 5000,
-        "leastInteractionType": 0.1,
-    }
-    metrics_weights = {
-        "leadChange": 1,
-        "characterWon": 1,
-        "stageCoverage": 1,
-        "nearDeathFrames": 1,
-        "gameLength": 1,
-        "leastInteractionType": 1
+    evaluator = cast(ConstrainedNoveltyEvaluation,
+                     constrained_novelty_config.constrained_novelty_config.fitness_evaluator)
+
+    chars_by_id = {
+        char['characterId']: char
+        for char in chars
     }
 
-    simulate_pair_count = 10
+    all_statistics = repeat_simulate_statistics(
+        list(chars_by_id.values()),
+        evaluator=evaluator,
+        repeat=repeat
+    )
 
-    char_combinations = list(combinations(chars, 2))
-    # char_combinations = [c for c in list(combinations(chars, 2)) if c[0]['name'] == "Brail" or c[1]['name'] == "Brail"]
+    metrics = all_statistics[0][0].measurements.keys()
 
-    combos_statistics = [
-        simulate_statistics(
-            char_combo,
-            metrics_desired_values=metrics_desired_values,
-            metrics_weights=metrics_weights,
-            repeat=simulate_pair_count,
-            simulation_population_count=10
-        )
-        for char_combo in char_combinations
+    metric_measurements_by_character_id = {
+        char['characterId']: {
+            **{
+                metric: []
+                for metric in metrics
+            },
+            'feasibility_score': [],
+        }
+        for char in chars
+    }
+    for pop_statistics in all_statistics:
+        for ind_statistics in pop_statistics:
+            character_id = ind_statistics.evaluations['individual']['characterId']
+            feasibility_score = ind_statistics.evaluations['feasibility_score']
+            character_metric_measurements = metric_measurements_by_character_id[character_id]
+            for metric, measurement in ind_statistics.measurements.items():
+                character_metric_measurements[metric].append(measurement)
+            character_metric_measurements['feasibility_score'].append(feasibility_score)
+
+    char_names = [
+        chars_by_id[charId]['name']
+        for charId in metric_measurements_by_character_id.keys()
     ]
 
-    for statistics in combos_statistics:
+    pair_simulation_count = evaluator.simulation_population_count
+    plot_title = f"Average measurements over {repeat} runs, with populations simulated {pair_simulation_count} times"
 
-        # Dicts are ordered by default in python 3.7+
-        chars_id = statistics.fitnesses_by_char_id.keys()
-        char_names = [char['name'] for char in statistics.characters_config_by_char_id.values()]
-        fitnesses = statistics.fitnesses_by_char_id.values()
-        plt.figure()
-        plt.boxplot(fitnesses)
-        plt.xticks(range(1, len(char_names) + 1), char_names)
+    save_statistics(
+        f"{plot_title.replace(' ', '_')}.json",
+        chars_name=char_names,
+        chars_metrics_value_by_metric=list(metric_measurements_by_character_id.values())
+    )
 
-        # plot_metrics_values_by_char_individually(
-        #     "Metric score",
-        #     char_names,
-        #     list(statistics.metrics_score_by_char_id.values())
-        # )
-        plot_metrics_values_by_char_individually(
-            "measurements by metric by character",
-            char_names,
-            list(statistics.avr_measurements_by_char_id.values()),
-            baseline_metrics_value=metrics_desired_values
-        )
+    plot_metrics_values_by_char_individually(
+        plot_title,
+        chars_name=char_names,
+        chars_metrics_value_by_metric=list(metric_measurements_by_character_id.values())
+    )
 
     plt.show()
 

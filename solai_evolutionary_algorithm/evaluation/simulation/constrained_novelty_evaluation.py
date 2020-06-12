@@ -16,8 +16,8 @@ from solai_evolutionary_algorithm.utils.kwargs_utils import filter_not_none_valu
 
 
 class InfeasibleObjective(Enum):
-    NOVELTY="NOVELTY"
-    FEASIBILITY="FEASIBILITY"
+    NOVELTY = "NOVELTY"
+    FEASIBILITY = "FEASIBILITY"
 
 
 class ConstrainedNoveltyEvaluation(SimulationFitnessEvaluation):
@@ -64,8 +64,13 @@ class ConstrainedNoveltyEvaluation(SimulationFitnessEvaluation):
         self.minimum_required_feasible_metric_percentage = minimum_required_feasible_metric_percentage
         self.simulation_population_count = simulation_population_count
 
+        self.__prev_measures_by_character_id: CharactersAllMeasurements = {}
+
     def __call__(self, population: Population) -> EvaluatedPopulation:
         return self.evaluate_one_population(population)
+
+    def get_prev_measures_by_character_id(self) -> CharactersAllMeasurements:
+        return self.__prev_measures_by_character_id
 
     def evaluate_one_population(self, population: Population) -> EvaluatedPopulation:
         simulations_results = self.simulate_population(
@@ -76,6 +81,8 @@ class ConstrainedNoveltyEvaluation(SimulationFitnessEvaluation):
 
         all_measurements_by_character: CharactersAllMeasurements = self.group_all_measures_by_character(
             simulations_measurements)
+
+        self.__prev_measures_by_character_id = all_measurements_by_character
 
         feasibility_by_character_id: Dict[str, float] = self.evaluate_feasibility_of_population(
             all_measurements_by_character)

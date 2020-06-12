@@ -2,7 +2,6 @@ import solai_evolutionary_algorithm.evolve_configurations.sol_metrics as sol_met
 import solai_evolutionary_algorithm.evolve_configurations.sol_properties_ranges as properties_ranges
 from solai_evolutionary_algorithm.crossovers.ability_swap_crossover import AbilitySwapCrossover
 from solai_evolutionary_algorithm.database.update_database_service import UpdateDatabaseService
-from solai_evolutionary_algorithm.evaluation.novel_archive import NovelArchive
 from solai_evolutionary_algorithm.evaluation.simulation.constrained_novelty_evaluation import \
     ConstrainedNoveltyEvaluation, InfeasibleObjective
 from solai_evolutionary_algorithm.evolution.evolver_config import EvolverConfig
@@ -15,8 +14,12 @@ from solai_evolutionary_algorithm.mutations.default_properties_mutation import d
 from solai_evolutionary_algorithm.plot_services.plot_generations_service import PlotGenerationsLocalService
 from solai_evolutionary_algorithm.utils.character_distance_utils import create_character_distance_func
 
+population_size = 10  # 60
+generations = 10  # 100
+infeasible_objective = InfeasibleObjective.NOVELTY
+
 random_population_producer = RandomBoundedProducer(RandomBoundedProducer.Config(
-    population_size=60,
+    population_size=population_size,
     character_properties_ranges=properties_ranges.character_properties_ranges,
     melee_ability_ranges=properties_ranges.melee_ability_ranges,
     projectile_ability_ranges=properties_ranges.projectile_ability_ranges,
@@ -31,7 +34,7 @@ properties_mutation = default_properties_mutation(
 )
 
 from_existing_population_producer = FromExistingProducer(
-    population_size=40,
+    population_size=population_size,
     chars_filename=[
         "shrankConfig.json",
         "schmathiasConfig.json",
@@ -49,7 +52,6 @@ distance_func = create_character_distance_func(
 
 constrained_novelty_config = EvolverConfig(
     initial_population_producer=from_existing_population_producer,
-    # fitness_evaluator=RandomFitnessEvaluation(),
     fitness_evaluator=ConstrainedNoveltyEvaluation(
         simulation_characters=from_existing_population_producer()[:4],
         metrics=list(sol_metrics.feasibility_metric_ranges.keys()),
@@ -57,7 +59,7 @@ constrained_novelty_config = EvolverConfig(
         distance_func=distance_func,
         consider_closest_count=15,
         insert_most_novel_count=5,
-        infeasible_objective=InfeasibleObjective.FEASIBILITY,
+        infeasible_objective=infeasible_objective,
         simulation_population_count=10,
         queue_host="localhost",
     ),
@@ -66,12 +68,14 @@ constrained_novelty_config = EvolverConfig(
         use_crossover=True,
         use_mutation=True,
         elitism_count=1,
+        infeasible_objective=infeasible_objective,
+        feasible_boost=True,
         crossover=AbilitySwapCrossover(),
         mutations=[
             properties_mutation
         ],
     )),
-    end_criteria=FixedGenerationsEndCriteria(generations=30),
+    end_criteria=FixedGenerationsEndCriteria(generations=generations),
     evolver_listeners=[
         UpdateDatabaseService(),
         PlotGenerationsLocalService()
