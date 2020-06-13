@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from functools import reduce
-from typing import List
+from typing import List, Optional
 
 from matplotlib.figure import Figure
 
@@ -33,9 +33,11 @@ def update_generations_data(generations_data: GenerationsData, evaluated_populat
 
 
 class PlotGenerationsLocalService(EvolverListener):
-    def __init__(self):
+    def __init__(self, hold_last_plot: bool = True, save_plot_filename: Optional[str] = None):
         self.feasible_generations_data = GenerationsData()
         self.infeasible_generations_data = GenerationsData()
+        self.hold_last_plot = hold_last_plot
+        self.save_plot_filename = save_plot_filename
 
 
 
@@ -86,21 +88,21 @@ class PlotGenerationsLocalService(EvolverListener):
         infeasible_feasibility_ax = self.axes[1][1]
         infeasible_pop_size_ax = self.axes[2][1]
 
-        feasible_novelty_ax.boxplot(self.feasible_generations_data.populations_novelty)
+        feasible_novelty_ax.boxplot(self.feasible_generations_data.populations_novelty, showmeans=True, meanline=True)
         feasible_novelty_ax.set_title("feasible")
         feasible_novelty_ax.set_ylabel("novelty")
 
-        feasible_feasibility_ax.boxplot(self.feasible_generations_data.populations_feasibility_score)
+        feasible_feasibility_ax.boxplot(self.feasible_generations_data.populations_feasibility_score, showmeans=True, meanline=True)
         feasible_feasibility_ax.set_ylabel("feasibility")
 
         feasible_pop_size_ax.plot(range(1, len(feasible_pop_sizes)+1), feasible_pop_sizes)
         feasible_pop_size_ax.set_ylabel("population size")
         feasible_pop_size_ax.set_xlabel("generations")
 
-        infeasible_novelty_ax.boxplot(self.infeasible_generations_data.populations_novelty)
+        infeasible_novelty_ax.boxplot(self.infeasible_generations_data.populations_novelty, showmeans=True, meanline=True)
         infeasible_novelty_ax.set_title("infeasible")
 
-        infeasible_feasibility_ax.boxplot(self.infeasible_generations_data.populations_feasibility_score)
+        infeasible_feasibility_ax.boxplot(self.infeasible_generations_data.populations_feasibility_score, showmeans=True, meanline=True)
 
         infeasible_pop_size_ax.plot(range(1, len(infeasible_pop_sizes)+1), infeasible_pop_sizes)
         infeasible_pop_size_ax.set_xlabel("generations")
@@ -112,5 +114,10 @@ class PlotGenerationsLocalService(EvolverListener):
 
     def on_end(self, *args, **kwargs):
         plt.ioff()
-        plt.show()
+        if self.save_plot_filename is not None:
+            plt.savefig(f"files/{self.save_plot_filename}", dpi=1000, format='png')
+        if self.hold_last_plot:
+            plt.show()
+        else:
+            plt.close()
 
