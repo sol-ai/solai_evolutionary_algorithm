@@ -51,11 +51,11 @@ def normalized_euclidean_distance(
     character_properties_normalized_euclidean_distance = euclidean_distance_dictionary(
         individual1_character_properties_normalized, individual2_character_properties_normalized)
 
-    no_of_abilites = len(abilities1)
+    no_of_abilities = len(abilities1)
     no_of_attributes_per_ability = len(
         remove_strings_and_convert_to_floats(abilities1[0]))
     no_of_properties = len(individual1_character_properties)
-    no_of_total_attributes = no_of_abilites * \
+    no_of_total_attributes = no_of_abilities * \
         no_of_attributes_per_ability + no_of_properties
 
     return (character_abilities_normalized_euclidean_distance + character_properties_normalized_euclidean_distance)/no_of_total_attributes

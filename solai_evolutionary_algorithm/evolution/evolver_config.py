@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopulationProducer, FitnessEvaluation, \
     PopulationEvolver, EndCriteria, EvaluatedPopulation
@@ -7,6 +7,7 @@ from solai_evolutionary_algorithm.evolution.evolution_types import InitialPopula
 
 @dataclass(frozen=True)
 class EvolverConfig:
+    tag_object: Dict[str, any]
     initial_population_producer: InitialPopulationProducer
     # novel_archive: NovelArchive
     fitness_evaluator: FitnessEvaluation
