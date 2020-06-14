@@ -1,6 +1,5 @@
 import json
 from itertools import combinations
-from itertools import combinations
 from typing import List, Dict, Optional, cast
 
 import matplotlib.pyplot as plt
@@ -114,7 +113,8 @@ def visualize_metrics(chars: List[CharacterConfig]):
             character_metric_measurements = metric_measurements_by_character_id[character_id]
             for metric, measurement in ind_statistics.measurements.items():
                 character_metric_measurements[metric].append(measurement)
-            character_metric_measurements['feasibility_score'].append(feasibility_score)
+            character_metric_measurements['feasibility_score'].append(
+                feasibility_score)
 
     char_names = [
         chars_by_id[charId]['name']
@@ -127,13 +127,15 @@ def visualize_metrics(chars: List[CharacterConfig]):
     save_statistics(
         f"{plot_title.replace(' ', '_')}.json",
         chars_name=char_names,
-        chars_metrics_value_by_metric=list(metric_measurements_by_character_id.values())
+        chars_metrics_value_by_metric=list(
+            metric_measurements_by_character_id.values())
     )
 
     plot_metrics_values_by_char_individually(
         plot_title,
         chars_name=char_names,
-        chars_metrics_value_by_metric=list(metric_measurements_by_character_id.values())
+        chars_metrics_value_by_metric=list(
+            metric_measurements_by_character_id.values())
     )
 
     plt.show()
