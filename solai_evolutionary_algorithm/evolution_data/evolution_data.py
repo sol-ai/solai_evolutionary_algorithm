@@ -7,6 +7,7 @@ from itertools import combinations
 import random
 from statistics import mean
 
+from typing import List
 import pymongo
 
 
@@ -58,6 +59,22 @@ normalized_euclidean_distance = create_character_distance_func(
     projectile_ability_ranges=projectile_ability_ranges)
 
 
+def get_last_generation_of_evolution_instance(evolution_instance) -> List:
+    return evolution_instance['generations'][-1]
+
+
+def get_feasible_diversity_of_evolution_instances(evolution_instances) -> List:
+    diversities = []
+    for evolution in evolution_instances:
+        last_generation = get_last_generation_of_evolution_instance(evolution)
+        most_diverse_feasible_population = larges_permutation_diversity(
+            last_generation)
+        print(most_diverse_feasible_population)
+        diversity_of_generation = diversity(most_diverse_feasible_population)
+        diversities.append(diversity_of_generation)
+    return diversities
+
+
 def avg_diversity_of_populations(populations) -> float:
     return mean([diversity(population) for population in populations.values()])
 
@@ -96,6 +113,7 @@ def diversity(population):
 
 def get_stats_from_evolution_instances(instance, method: str):
     last_generation_feasible_individuals = []
+    print("stats")
     for (i, e) in enumerate(instance):
         feasible_population = filter_feasible_from_population(
             e['generations'][-1])
@@ -106,31 +124,39 @@ def get_stats_from_evolution_instances(instance, method: str):
     return last_generation_feasible_individuals
 
 
+print("connecting to DB...")
 read_only_db = ReadOnlyDatabase()
+print("Connected!\n")
 
+print("getting evolutions")
 FINS_w_random_evolutions = read_only_db.get_FINS_with_random_init_pop_instances()
 FINS_w_existing_evolutions = read_only_db.get_FINS_with_existing_init_pop_instances()
 FI2NS_w_random_evolutions = read_only_db.get_FI2NS_with_random_init_pop_instances()
 FI2NS_w_existing_evolutions = read_only_db.get_FI2NS_with_existing_init_pop_instances()
+print("evolutions received")
 
-last_generation_feasible_individuals_FINS_w_random = get_stats_from_evolution_instances(
-    FINS_w_random_evolutions, "FINS w random")
-last_generation_feasible_individuals_FINS_w_existing = get_stats_from_evolution_instances(
+get_stats_from_evolution_instances(FINS_w_random_evolutions, "FINS w random")
+get_stats_from_evolution_instances(
     FINS_w_existing_evolutions, "FINS w existing")
-last_generation_feasible_individuals_FI2NS_w_random = get_stats_from_evolution_instances(
-    FI2NS_w_random_evolutions, "FI2NS w random")
-last_generation_feasible_individuals_FI2NS_w_existing = get_stats_from_evolution_instances(
+get_stats_from_evolution_instances(FI2NS_w_random_evolutions, "FI2NS w random")
+get_stats_from_evolution_instances(
     FI2NS_w_existing_evolutions, "FI2NS w existing")
 
+FINS_w_random_diversity = get_feasible_diversity_of_evolution_instances(
+    FINS_w_random_evolutions)
 
-most_diverse_pop_of_6_FINS_random = average_largest_population_diversity(
-    last_generation_feasible_individuals_FINS_w_random, "FINS w random")
+FINS_w_existing_diversity = get_feasible_diversity_of_evolution_instances(
+    FINS_w_existing_evolutions)
 
-most_diverse_pop_of_6_FINS_existing = average_largest_population_diversity(
-    last_generation_feasible_individuals_FINS_w_existing, "FINS w existing")
+FI2NS_w_random_diversity = get_feasible_diversity_of_evolution_instances(
+    FI2NS_w_random_evolutions)
 
-most_diverse_pop_of_6_FI2NS_random = average_largest_population_diversity(
-    last_generation_feasible_individuals_FI2NS_w_random, "FI2NS w random")
+FI2NS_w_existing_diversity = get_feasible_diversity_of_evolution_instances(
+    FI2NS_w_existing_evolutions)
 
-most_diverse_pop_of_6_FI2NS_existing = average_largest_population_diversity(
-    last_generation_feasible_individuals_FI2NS_w_existing, "FI2NS w existing")
+
+print(f"Average diversty of different methods:\n \
+        FINS with random init pop: {mean(FINS_w_random_diversity)}\n \
+        FINS with existing init pop: {mean(FINS_w_existing_diversity)}\n\
+        FI2NS with random init pop: {mean(FI2NS_w_random_diversity)}\n\
+        FI2NS with existing init pop: {mean(FI2NS_w_existing_diversity)}\n")
